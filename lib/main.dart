@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
+import 'package:siapprint/screen/sample_screen.dart';
 
 import 'screen/home_page.dart';
 import 'screen/login_page.dart';
@@ -16,7 +17,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getString('user') != null;
 
-  runApp(MyApp(home: status == true ? const AppNavigation() : LoginPage()));
+  runApp(MyApp(home: status == true ? SamplePage() : LoginPage()));
 }
 
 // void main() => runApp(AppWidget());
