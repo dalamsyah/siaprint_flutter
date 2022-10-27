@@ -6,7 +6,7 @@ class InkModel {
 
   final String? ink_code;
   final String? ink_name;
-  final List<SizeModel>? size;
+  final List<Map<String, dynamic>>? size;
 
   InkModel({
     required this.ink_code,
@@ -19,7 +19,7 @@ class InkModel {
     return InkModel(
       ink_code: json['ink_code'],
       ink_name: json['ink_name'],
-      size: json['size'].cast<SizeModel>(),
+      size: json['size'],
     );
   }
 

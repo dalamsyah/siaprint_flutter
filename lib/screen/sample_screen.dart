@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:siapprint/model/inks_model.dart';
+import 'package:siapprint/model/price_model.dart';
 import 'package:siapprint/model/size_model.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 
@@ -20,9 +21,17 @@ class _SamplePageState extends State<SamplePage> {
 
   List<String> _states = ["Choose a state"];
   List<String> _lgas = ["Choose .."];
+  List<String> _lgas2 = ["Choose .."];
+
+  List<SizeModel> sizeModelList = [];
+
   String _selectedState = "Choose a state";
   String _selectedLGA = "Choose ..";
   bool _isLoading = false;
+
+  String _selectedState2 = "Choose a state";
+  String _selectedLGA2 = "Choose ..";
+  bool _isLoading2 = false;
 
   @override
   void initState() {
@@ -45,6 +54,8 @@ class _SamplePageState extends State<SamplePage> {
           padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
           child: Column(
             children: <Widget>[
+
+
               DropdownButton<String>(
                 isExpanded: true,
                 items: _states.map((String dropDownStringItem) {
@@ -56,20 +67,49 @@ class _SamplePageState extends State<SamplePage> {
                 onChanged: (value) => _onSelectedState2(value!),
                 value: _selectedState,
               ),
+
+
               _isLoading
                   ? CircularProgressIndicator()
                   : DropdownButton<String>(
                 isExpanded: true,
                 items: _lgas.map((String dropDownStringItem) {
+
+                  List<SizeModel> list = sizeModelList.where((element) => element.size_code == dropDownStringItem).map((e) =>
+                  e
+                  ).toList();
+
+                  String text = "Choose...";
+                  if (list.isNotEmpty) {
+                    text = '${list.first.size_name} - ${list.first.size_text}';
+                  }
+
+                  return DropdownMenuItem<String>(
+                    value: dropDownStringItem,
+                    child: Text(text),
+                  );
+                }).toList(),
+                // onChanged: (value) => print(value),
+                onChanged: (value) => _onSelectedState3(_selectedState, value!),
+                value: _selectedLGA,
+              ),
+
+
+              _isLoading2
+                  ? CircularProgressIndicator()
+                  : DropdownButton<String>(
+                isExpanded: true,
+                items: _lgas2.map((String dropDownStringItem) {
                   return DropdownMenuItem<String>(
                     value: dropDownStringItem,
                     child: Text(dropDownStringItem),
                   );
                 }).toList(),
                 // onChanged: (value) => print(value),
-                onChanged: (value) => _onSelectedLGA2(value!),
-                value: _selectedLGA,
+                onChanged: (value) => _onSelectedLGA3(value!),
+                value: _selectedLGA2,
               ),
+
             ],
           ),
         ),
@@ -97,8 +137,6 @@ class _SamplePageState extends State<SamplePage> {
   }
 
 
-
-
   void _onSelectedState2(String value) async {
     setState(() {
       _selectedLGA = "Choose ..";
@@ -108,6 +146,7 @@ class _SamplePageState extends State<SamplePage> {
     });
 
     _lgas = List.from(_lgas)..addAll(await repo2.getSizeByInk(value));
+    sizeModelList = List.from(sizeModelList)..addAll(await repo2.getSizeByInk2(value));
 
     setState(() {
       _isLoading = false;
@@ -116,6 +155,27 @@ class _SamplePageState extends State<SamplePage> {
 
   void _onSelectedLGA2(String value) {
     setState(() => _selectedLGA = value);
+  }
+
+
+  void _onSelectedState3(String value, String size) async {
+
+    setState(() {
+      _selectedLGA2 = "Choose ..";
+      _selectedLGA = size;
+      _lgas2 = ["Choose .."];
+      _isLoading2 = true;
+    });
+
+    _lgas2 = List.from(_lgas2)..addAll(await repo2.getPriceBySize(value, size));
+
+    setState(() {
+      _isLoading2 = false;
+    });
+  }
+
+  void _onSelectedLGA3(String value) {
+    setState(() => _selectedLGA2 = value);
   }
 
 }
@@ -138,38 +198,72 @@ class RepoSampel {
       print("Future.delayed");
     });
 
-
-    var tes = _data
-        .map((map) => InkModel.fromJson(map))
-        .where((item) => item.ink_code == state)
-        .toList();
-    //
-    // String stringstudents = json.encode(tes);
-    // print(stringstudents);
-    //
-    // print(ink);
-
-    List<String> ss = ["ok", "oke"];
-
-    // _data
+    // print( jsonEncode(_data
     //     .map((map) => InkModel.fromJson(map))
     //     .where((item) => item.ink_code == state)
-    //     .map((e) => e.size)
-    //     .expand((element) => element!)
-    //     .map((e) => e.size_code!)
-    //     .toList()
+    //     .map((e) => e.size!)
+    //     .expand((element) => element)
+    //     .map((e) => SizeModel.fromJson(e))
+    //     .where((element) => element.size_code == 'SIZ001')
+    //     .map((e) => e.prices)
+    //     .expand((element) => element)
+    //     .map((e) => PriceModel.fromJson(e))
+    //     .map((e) => e.type_paper_name)
+    //     .toList()) );
+
 
     return Future.value(_data
         .map((map) => InkModel.fromJson(map))
         .where((item) => item.ink_code == state)
         .map((e) => e.size!)
         .expand((element) => element)
-        .map((e) => e.size_name!)
+        .map((e) => SizeModel.fromJson(e))
+        .map((e) => e.size_code!)
+        // .map((e) => '${e.size_name} - ${e.size_text!}')
         .toList());
 
-        // .map((item) => item.size)
-        // .map((item) => item.size_code!)
-        // .toList());
+  }
+
+
+  Future<List<SizeModel>> getSizeByInk2(String state) async {
+    await Future.delayed(Duration(seconds: 1), () {
+      print("Future.delayed");
+    });
+
+
+    return Future.value(_data
+        .map((map) => InkModel.fromJson(map))
+        .where((item) => item.ink_code == state)
+        .map((e) => e.size!)
+        .expand((element) => element)
+        .map((e) => SizeModel.fromJson(e))
+        .toList());
+
+  }
+
+
+  Future<List<String>> getPriceBySize(String state, String size) async {
+    await Future.delayed(Duration(seconds: 1), () {
+      print("Future.delayed");
+    });
+
+
+    return Future.value(_data
+        .map((map) => InkModel.fromJson(map))
+        .where((item) => item.ink_code == state)
+        .map((e) => e.size!)
+        .expand((element) => element)
+        .map((e) => SizeModel.fromJson(e))
+        .where((item) => item.size_code == size)
+        .map((e) => e.prices)
+        .expand((element) => element)
+        .map((e) => PriceModel.fromJson(e))
+        .map((e) => e.type_paper_name!)
+        .toList());
+
+    // .map((item) => item.size)
+    // .map((item) => item.size_code!)
+    // .toList());
   }
 
   List _data = [
@@ -2341,10 +2435,6 @@ class Repository {
         .expand((i) => i)
         .toList());
   }
-  // _nigeria.where((list) => list['state'] == state);
-  // .map((item) => item['lgas'])
-  // .expand((i) => i)
-  // .toList();
 
   List<String> getStates() => _nigeria
       .map((map) => StateModel.fromJson(map))

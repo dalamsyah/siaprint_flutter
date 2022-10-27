@@ -22,7 +22,7 @@ class FormPrintPage extends StatefulWidget {
 class _FormPrintPage extends State<FormPrintPage> {
 
   int? _printer = 0;
-  SizeModel defaultSizeModel = SizeModel(size_code: '', size_name: '', size_detail: '', size_text: '', active: '', weight: '', uom: '', prices: '');
+  SizeModel defaultSizeModel = SizeModel(size_code: '', size_name: '', size_detail: '', size_text: '', active: '', weight: '', uom: '', prices: List.empty());
   PriceModel defaultPreiceMode = PriceModel(price_code: '', size_code: '', ink_code: '', type_paper_code: '', price: '', size_name: '', ink_name: '', type_paper_name: '');
 
   List<SizeModel> _ukuranKertas = [];
@@ -111,9 +111,9 @@ class _FormPrintPage extends State<FormPrintPage> {
 
             final List<InkModel> listInks = dataInks.map((data) => InkModel.fromJson2(data) ).toList();
             final ink = listInks.first;
-            final size = ink.size!.map((e) => SizeModel.fromJson2(e));
-            _ukuranKertas.clear();
-            _ukuranKertas.addAll(size);
+            final size = [];
+            // _ukuranKertas.clear();
+            // _ukuranKertas.addAll(size);
 
             // final selectedSize = size.where((element) => element.size_code == 'SIZ001').toList();
             final selectedSize2 = size.first;
@@ -217,10 +217,10 @@ class _FormPrintPage extends State<FormPrintPage> {
                               _dropDownUkuranKertas = value!;
                             });
                           },
-                          items: size.map<DropdownMenuItem<String>>((SizeModel value) {
+                          items: paperType.map<DropdownMenuItem<String>>((PriceModel value) {
                             return DropdownMenuItem<String>(
-                              value: value.size_code,
-                              child: Text('${value.size_name} - ${value.size_text!}'),
+                              value: value.price_code,
+                              child: Text('${value.type_paper_name} - Rp ${value.price!}'),
                             );
                           }).toList(),
                         ),
