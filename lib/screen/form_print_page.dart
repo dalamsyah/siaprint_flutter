@@ -111,7 +111,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
             final List<InkModel> listInks = dataInks.map((data) => InkModel.fromJson2(data) ).toList();
             final ink = listInks.first;
-            final size = ink.size!.map((e) => SizeModel.fromJson(e));
+            final size = ink.size!.map((e) => SizeModel.fromJson2(e));
             _ukuranKertas.clear();
             _ukuranKertas.addAll(size);
 
@@ -425,7 +425,7 @@ class RepoSampel {
 
   List getAll() => _data;
 
-  List<InkModel> listInks = _data.map((data) => InkModel.fromJson2(data) ).toList();
+  // List<InkModel> listInks = _data.map((data) => InkModel.fromJson2(data) ).toList();
   // ink = listInks.first;
   // size = ink.size!.map((e) => SizeModel.fromJson(e));
   //
@@ -434,19 +434,19 @@ class RepoSampel {
   //     .map((item) => item.state)
   //     .toList();
 
-  Future<List<String>> getLocalByState(String state) async {
-    await Future.delayed(Duration(seconds: 3), () {
-      print("Future.delayed");
-    });
-
-
-    return Future.value(_data
-        .map((map) => StateModel.fromJson(map))
-        .where((item) => item.state == state)
-        .map((item) => item.lgas)
-        .expand((i) => i)
-        .toList());
-  }
+  // Future<List<String>> getLocalByState(String state) async {
+  //   await Future.delayed(Duration(seconds: 3), () {
+  //     print("Future.delayed");
+  //   });
+  //
+  //
+  //   return Future.value(_data
+  //       .map((map) => StateModel.fromJson(map))
+  //       .where((item) => item.state == state)
+  //       .map((item) => item.lgas)
+  //       .expand((i) => i)
+  //       .toList());
+  // }
 
   List _data = [{
     "result": {

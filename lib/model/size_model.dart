@@ -58,7 +58,7 @@ class SizeModel {
       active: json['active'],
       weight: json['weight'],
       uom: json['uom'],
-      prices: json['prices'],
+      prices: json['prices'].cast<PriceModel>(),
     );
   }
 
