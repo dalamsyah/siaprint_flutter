@@ -17,7 +17,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getString('user') != null;
 
-  runApp(MyApp(home: status == true ? SamplePage() : SamplePage()));
+  runApp(MyApp(home: status == true ? SamplePage() : FormPrintPage()));
 }
 
 // void main() => runApp(AppWidget());

@@ -11,16 +11,16 @@ class FormService {
 
   Future<http.Response> getFieldFormPrint(String compid) async {
 
-    print("okeee");
+    // SharedPreferences localStorage = await SharedPreferences.getInstance();
+    // UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
 
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
+    // final response = await http.post(Uri.parse(Constant.apiprint), body: {
+    //   'apitoken': Constant.apitoken,
+    //   'userid': userModel.id,
+    //   'compid': compid
+    // });
 
-    final response = await http.post(Uri.parse(Constant.apiprint), body: {
-      'apitoken': Constant.apitoken,
-      'userid': userModel.id,
-      'compid': compid
-    });
+    final response = await http.get(Uri.parse('https://mocki.io/v1/6c0627a3-7981-4b5f-82d5-909c37194718'));
 
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);

@@ -6,7 +6,7 @@ class InkModel {
 
   final String? ink_code;
   final String? ink_name;
-  final List<Map<String, dynamic>>? size;
+  final List<dynamic>? size;
 
   InkModel({
     required this.ink_code,

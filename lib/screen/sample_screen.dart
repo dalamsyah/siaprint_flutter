@@ -16,167 +16,173 @@ class SamplePage extends StatefulWidget {
 }
 
 class _SamplePageState extends State<SamplePage> {
-  Repository repo = Repository();
-  RepoSampel repo2 = RepoSampel();
-
-  List<String> _states = ["Choose a state"];
-  List<String> _lgas = ["Choose .."];
-  List<String> _lgas2 = ["Choose .."];
-
-  List<SizeModel> sizeModelList = [];
-
-  String _selectedState = "Choose a state";
-  String _selectedLGA = "Choose ..";
-  bool _isLoading = false;
-
-  String _selectedState2 = "Choose a state";
-  String _selectedLGA2 = "Choose ..";
-  bool _isLoading2 = false;
-
-  @override
-  void initState() {
-    // _states = List.from(_states)..addAll(repo.getStates());
-    _states = List.from(_states)..addAll(repo2.getSize());
-
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("STATES MULTI DROPDOWN"),
-        elevation: 0.1,
-      ),
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
-          child: Column(
-            children: <Widget>[
-
-
-              DropdownButton<String>(
-                isExpanded: true,
-                items: _states.map((String dropDownStringItem) {
-                  return DropdownMenuItem<String>(
-                    value: dropDownStringItem,
-                    child: Text(dropDownStringItem),
-                  );
-                }).toList(),
-                onChanged: (value) => _onSelectedState2(value!),
-                value: _selectedState,
-              ),
-
-
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : DropdownButton<String>(
-                isExpanded: true,
-                items: _lgas.map((String dropDownStringItem) {
-
-                  List<SizeModel> list = sizeModelList.where((element) => element.size_code == dropDownStringItem).map((e) =>
-                  e
-                  ).toList();
-
-                  String text = "Choose...";
-                  if (list.isNotEmpty) {
-                    text = '${list.first.size_name} - ${list.first.size_text}';
-                  }
-
-                  return DropdownMenuItem<String>(
-                    value: dropDownStringItem,
-                    child: Text(text),
-                  );
-                }).toList(),
-                // onChanged: (value) => print(value),
-                onChanged: (value) => _onSelectedState3(_selectedState, value!),
-                value: _selectedLGA,
-              ),
-
-
-              _isLoading2
-                  ? CircularProgressIndicator()
-                  : DropdownButton<String>(
-                isExpanded: true,
-                items: _lgas2.map((String dropDownStringItem) {
-                  return DropdownMenuItem<String>(
-                    value: dropDownStringItem,
-                    child: Text(dropDownStringItem),
-                  );
-                }).toList(),
-                // onChanged: (value) => print(value),
-                onChanged: (value) => _onSelectedLGA3(value!),
-                value: _selectedLGA2,
-              ),
-
-            ],
-          ),
-        ),
-      ),
-    );
+    // TODO: implement build
+    throw UnimplementedError();
   }
-
-  void _onSelectedState(String value) async {
-    setState(() {
-      _selectedLGA = "Choose ..";
-      _selectedState = value;
-      _lgas = ["Choose .."];
-      _isLoading = true;
-    });
-
-    _lgas = List.from(_lgas)..addAll(await repo.getLocalByState(value));
-
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void _onSelectedLGA(String value) {
-    setState(() => _selectedLGA = value);
-  }
-
-
-  void _onSelectedState2(String value) async {
-    setState(() {
-      _selectedLGA = "Choose ..";
-      _selectedState = value;
-      _lgas = ["Choose .."];
-      _isLoading = true;
-    });
-
-    _lgas = List.from(_lgas)..addAll(await repo2.getSizeByInk(value));
-    sizeModelList = List.from(sizeModelList)..addAll(await repo2.getSizeByInk2(value));
-
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void _onSelectedLGA2(String value) {
-    setState(() => _selectedLGA = value);
-  }
-
-
-  void _onSelectedState3(String value, String size) async {
-
-    setState(() {
-      _selectedLGA2 = "Choose ..";
-      _selectedLGA = size;
-      _lgas2 = ["Choose .."];
-      _isLoading2 = true;
-    });
-
-    _lgas2 = List.from(_lgas2)..addAll(await repo2.getPriceBySize(value, size));
-
-    setState(() {
-      _isLoading2 = false;
-    });
-  }
-
-  void _onSelectedLGA3(String value) {
-    setState(() => _selectedLGA2 = value);
-  }
+//   Repository repo = Repository();
+//   RepoSampel repo2 = RepoSampel();
+//
+//   List<String> _states = ["Choose a state"];
+//   List<String> _lgas = ["Choose .."];
+//   List<String> _lgas2 = ["Choose .."];
+//
+//   List<SizeModel> sizeModelList = [];
+//
+//   String _selectedState = "Choose a state";
+//   String _selectedLGA = "Choose ..";
+//   bool _isLoading = false;
+//
+//   String _selectedState2 = "Choose a state";
+//   String _selectedLGA2 = "Choose ..";
+//   bool _isLoading2 = false;
+//
+//   @override
+//   void initState() {
+//     // _states = List.from(_states)..addAll(repo.getStates());
+//     _states = List.from(_states)..addAll(repo2.getSize());
+//
+//
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text("STATES MULTI DROPDOWN"),
+//         elevation: 0.1,
+//       ),
+//       body: SafeArea(
+//         child: Container(
+//           padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+//           child: Column(
+//             children: <Widget>[
+//
+//
+//               DropdownButton<String>(
+//                 isExpanded: true,
+//                 items: _states.map((String dropDownStringItem) {
+//                   return DropdownMenuItem<String>(
+//                     value: dropDownStringItem,
+//                     child: Text(dropDownStringItem),
+//                   );
+//                 }).toList(),
+//                 onChanged: (value) => _onSelectedState2(value!),
+//                 value: _selectedState,
+//               ),
+//
+//
+//               _isLoading
+//                   ? CircularProgressIndicator()
+//                   : DropdownButton<String>(
+//                 isExpanded: true,
+//                 items: _lgas.map((String dropDownStringItem) {
+//
+//                   List<SizeModel> list = sizeModelList.where((element) => element.size_code == dropDownStringItem).map((e) =>
+//                   e
+//                   ).toList();
+//
+//                   String text = "Choose...";
+//                   if (list.isNotEmpty) {
+//                     text = '${list.first.size_name} - ${list.first.size_text}';
+//                   }
+//
+//                   return DropdownMenuItem<String>(
+//                     value: dropDownStringItem,
+//                     child: Text(text),
+//                   );
+//                 }).toList(),
+//                 // onChanged: (value) => print(value),
+//                 onChanged: (value) => _onSelectedState3(_selectedState, value!),
+//                 value: _selectedLGA,
+//               ),
+//
+//
+//               _isLoading2
+//                   ? CircularProgressIndicator()
+//                   : DropdownButton<String>(
+//                 isExpanded: true,
+//                 items: _lgas2.map((String dropDownStringItem) {
+//                   return DropdownMenuItem<String>(
+//                     value: dropDownStringItem,
+//                     child: Text(dropDownStringItem),
+//                   );
+//                 }).toList(),
+//                 // onChanged: (value) => print(value),
+//                 onChanged: (value) => _onSelectedLGA3(value!),
+//                 value: _selectedLGA2,
+//               ),
+//
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+//
+//   void _onSelectedState(String value) async {
+//     setState(() {
+//       _selectedLGA = "Choose ..";
+//       _selectedState = value;
+//       _lgas = ["Choose .."];
+//       _isLoading = true;
+//     });
+//
+//     _lgas = List.from(_lgas)..addAll(await repo.getLocalByState(value));
+//
+//     setState(() {
+//       _isLoading = false;
+//     });
+//   }
+//
+//   void _onSelectedLGA(String value) {
+//     setState(() => _selectedLGA = value);
+//   }
+//
+//
+//   void _onSelectedState2(String value) async {
+//     setState(() {
+//       _selectedLGA = "Choose ..";
+//       _selectedState = value;
+//       _lgas = ["Choose .."];
+//       _isLoading = true;
+//     });
+//
+//     _lgas = List.from(_lgas)..addAll(await repo2.getSizeByInk(value));
+//     sizeModelList = List.from(sizeModelList)..addAll(await repo2.getSizeByInk2(value));
+//
+//     setState(() {
+//       _isLoading = false;
+//     });
+//   }
+//
+//   void _onSelectedLGA2(String value) {
+//     setState(() => _selectedLGA = value);
+//   }
+//
+//
+//   void _onSelectedState3(String value, String size) async {
+//
+//     setState(() {
+//       _selectedLGA2 = "Choose ..";
+//       _selectedLGA = size;
+//       _lgas2 = ["Choose .."];
+//       _isLoading2 = true;
+//     });
+//
+//     _lgas2 = List.from(_lgas2)..addAll(await repo2.getPriceBySize(value, size));
+//
+//     setState(() {
+//       _isLoading2 = false;
+//     });
+//   }
+//
+//   void _onSelectedLGA3(String value) {
+//     setState(() => _selectedLGA2 = value);
+//   }
 
 }
 
@@ -186,85 +192,85 @@ class ResultSample {
 
 class RepoSampel {
 
-  List getAll() => _data;
-
-  List<String> getSize() => _data.map((e) => InkModel.fromJson(e))
-      .map((item) => item.ink_code!)
-      .toList();
-
-
-  Future<List<String>> getSizeByInk(String state) async {
-    await Future.delayed(Duration(seconds: 1), () {
-      print("Future.delayed");
-    });
-
-    // print( jsonEncode(_data
-    //     .map((map) => InkModel.fromJson(map))
-    //     .where((item) => item.ink_code == state)
-    //     .map((e) => e.size!)
-    //     .expand((element) => element)
-    //     .map((e) => SizeModel.fromJson(e))
-    //     .where((element) => element.size_code == 'SIZ001')
-    //     .map((e) => e.prices)
-    //     .expand((element) => element)
-    //     .map((e) => PriceModel.fromJson(e))
-    //     .map((e) => e.type_paper_name)
-    //     .toList()) );
-
-
-    return Future.value(_data
-        .map((map) => InkModel.fromJson(map))
-        .where((item) => item.ink_code == state)
-        .map((e) => e.size!)
-        .expand((element) => element)
-        .map((e) => SizeModel.fromJson(e))
-        .map((e) => e.size_code!)
-        // .map((e) => '${e.size_name} - ${e.size_text!}')
-        .toList());
-
-  }
-
-
-  Future<List<SizeModel>> getSizeByInk2(String state) async {
-    await Future.delayed(Duration(seconds: 1), () {
-      print("Future.delayed");
-    });
-
-
-    return Future.value(_data
-        .map((map) => InkModel.fromJson(map))
-        .where((item) => item.ink_code == state)
-        .map((e) => e.size!)
-        .expand((element) => element)
-        .map((e) => SizeModel.fromJson(e))
-        .toList());
-
-  }
-
-
-  Future<List<String>> getPriceBySize(String state, String size) async {
-    await Future.delayed(Duration(seconds: 1), () {
-      print("Future.delayed");
-    });
-
-
-    return Future.value(_data
-        .map((map) => InkModel.fromJson(map))
-        .where((item) => item.ink_code == state)
-        .map((e) => e.size!)
-        .expand((element) => element)
-        .map((e) => SizeModel.fromJson(e))
-        .where((item) => item.size_code == size)
-        .map((e) => e.prices)
-        .expand((element) => element)
-        .map((e) => PriceModel.fromJson(e))
-        .map((e) => e.type_paper_name!)
-        .toList());
-
-    // .map((item) => item.size)
-    // .map((item) => item.size_code!)
-    // .toList());
-  }
+  // List getAll() => _data;
+  //
+  // List<String> getSize() => _data.map((e) => InkModel.fromJson(e))
+  //     .map((item) => item.ink_code!)
+  //     .toList();
+  //
+  //
+  // Future<List<String>> getSizeByInk(String state) async {
+  //   await Future.delayed(Duration(seconds: 1), () {
+  //     print("Future.delayed");
+  //   });
+  //
+  //   // print( jsonEncode(_data
+  //   //     .map((map) => InkModel.fromJson(map))
+  //   //     .where((item) => item.ink_code == state)
+  //   //     .map((e) => e.size!)
+  //   //     .expand((element) => element)
+  //   //     .map((e) => SizeModel.fromJson(e))
+  //   //     .where((element) => element.size_code == 'SIZ001')
+  //   //     .map((e) => e.prices)
+  //   //     .expand((element) => element)
+  //   //     .map((e) => PriceModel.fromJson(e))
+  //   //     .map((e) => e.type_paper_name)
+  //   //     .toList()) );
+  //
+  //
+  //   return Future.value(_data
+  //       .map((map) => InkModel.fromJson(map))
+  //       .where((item) => item.ink_code == state)
+  //       .map((e) => e.size!)
+  //       .expand((element) => element)
+  //       .map((e) => SizeModel.fromJson(e))
+  //       .map((e) => e.size_code!)
+  //       // .map((e) => '${e.size_name} - ${e.size_text!}')
+  //       .toList());
+  //
+  // }
+  //
+  //
+  // Future<List<SizeModel>> getSizeByInk2(String state) async {
+  //   await Future.delayed(Duration(seconds: 1), () {
+  //     print("Future.delayed");
+  //   });
+  //
+  //
+  //   return Future.value(_data
+  //       .map((map) => InkModel.fromJson(map))
+  //       .where((item) => item.ink_code == state)
+  //       .map((e) => e.size!)
+  //       .expand((element) => element)
+  //       .map((e) => SizeModel.fromJson(e))
+  //       .toList());
+  //
+  // }
+  //
+  //
+  // Future<List<String>> getPriceBySize(String state, String size) async {
+  //   await Future.delayed(Duration(seconds: 1), () {
+  //     print("Future.delayed");
+  //   });
+  //
+  //
+  //   return Future.value(_data
+  //       .map((map) => InkModel.fromJson(map))
+  //       .where((item) => item.ink_code == state)
+  //       .map((e) => e.size!)
+  //       .expand((element) => element)
+  //       .map((e) => SizeModel.fromJson(e))
+  //       .where((item) => item.size_code == size)
+  //       .map((e) => e.prices)
+  //       .expand((element) => element)
+  //       .map((e) => PriceModel.fromJson(e))
+  //       .map((e) => e.type_paper_name!)
+  //       .toList());
+  //
+  //   // .map((item) => item.size)
+  //   // .map((item) => item.size_code!)
+  //   // .toList());
+  // }
 
   List _data = [
     {
