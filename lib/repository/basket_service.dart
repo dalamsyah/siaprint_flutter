@@ -5,11 +5,20 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/model/basket_model.dart';
+import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/model/user_model.dart';
 
 class BasketService {
 
+  List<BasketModel> listBasket = [];
+  List<CompanyModel> listCompany = [];
+  List<BasketModel> listToPrint = [];
+
+  bool is_loading = false;
+
   Future<http.Response> getBasket() async {
+
+    is_loading = true;
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
@@ -20,10 +29,22 @@ class BasketService {
     });
 
     if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
+
+      final data = jsonDecode(response.body);
+      var dataListCompany = data['result']['company_selected'] as List;
+      var dataListBasket = data['result']['basket'] as List;
+
+      listCompany = dataListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
+
+      listBasket = dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
+
+      print('call api');
+
+      is_loading = false;
 
       return response;
     } else {
+      is_loading = false;
       throw Exception('Failed to get basket.');
     }
 

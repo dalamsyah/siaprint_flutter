@@ -1,15 +1,16 @@
 
 class BasketModel {
 
-  final String? id;
-  final String? user_id;
-  final String? filename;
-  final String? pages_tot;
-  final String? slug;
-  final String? filename_random;
-  final String? created_at;
-  final String? updated_at;
-  final String? deleted_at;
+  String? id;
+  String? user_id;
+  String? filename;
+  String? pages_tot;
+  String? slug;
+  String? filename_random;
+  String? created_at;
+  String? updated_at;
+  String? deleted_at;
+  bool? is_checked;
 
   BasketModel({
     required this.id,
@@ -21,8 +22,23 @@ class BasketModel {
     required this.created_at,
     required this.updated_at,
     required this.deleted_at,
+    required this.is_checked,
   });
 
+  Map<String, dynamic> toJson(){
+    return {
+      "id": id,
+      "user_id": user_id,
+      "filename": filename,
+      "pages_tot": pages_tot,
+      "slug": slug,
+      "filename_random": filename_random,
+      "created_at": created_at,
+      "updated_at": updated_at,
+      "deleted_at": deleted_at,
+      "is_checked": is_checked,
+    };
+  }
 
   factory BasketModel.fromJson(Map<String, dynamic> json) {
     return BasketModel(
@@ -35,6 +51,7 @@ class BasketModel {
       created_at: json['created_at'],
       updated_at: json['updated_at'],
       deleted_at: json['deleted_at'],
+      is_checked: json['is_checked'],
     );
   }
 
@@ -49,6 +66,7 @@ class BasketModel {
       created_at: json['created_at'],
       updated_at: json['updated_at'],
       deleted_at: json['deleted_at'],
+      is_checked: json['is_checked'],
     );
   }
 

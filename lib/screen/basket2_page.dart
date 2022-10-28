@@ -55,7 +55,7 @@ class _Basket2Page extends State<Basket2Page> {
     );
   }
 
-  Widget widgetListDocument(BasketModel basketModel) {
+  Widget widgetListDocument(int index) {
 
     return Container(
       child: Column(
@@ -64,10 +64,12 @@ class _Basket2Page extends State<Basket2Page> {
             children: [
               Checkbox(
                 checkColor: Colors.white,
-                value: isChecked,
-                onChanged: (bool? value) {
+                value: _basketService.listBasket[index].is_checked ?? false,
+                onChanged: (bool? value) async {
                   setState(() {
-                    isChecked = value!;
+                    _basketService.listBasket[index].is_checked != _basketService.listBasket[index].is_checked;
+
+                    print(_basketService.listBasket[index].toJson());
                   });
                 },
               ),
@@ -75,24 +77,23 @@ class _Basket2Page extends State<Basket2Page> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(basketModel.filename != null ? basketModel.filename! : '-',
+                    Text(_basketService.listBasket[index].filename != null ? _basketService.listBasket[index].filename! : '-',
                         style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(basketModel.pages_tot != null ? 'Total halaman: ${basketModel.pages_tot!}' : '-'),
+                    Text(_basketService.listBasket[index].pages_tot != null ? 'Total halaman: ${_basketService.listBasket[index].pages_tot!}' : '-'),
                   ],
                 ),
               )
             ],
           ),
-          // const Divider(
-          //   height: 20,
-          //   thickness: 1,
-          //   indent: 0,
-          //   endIndent: 0,
-          // )
         ],
       ),
     );
 
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -102,13 +103,6 @@ class _Basket2Page extends State<Basket2Page> {
         future: _basketService.getBasket(),
         builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
           if (snapshot.hasData){
-
-            final data = jsonDecode(snapshot.data!.body);
-            var dataListCompany = data['result']['company_selected'] as List;
-            var dataListBasket = data['result']['basket'] as List;
-
-            final List<CompanyModel> listCompany = dataListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
-            final List<BasketModel> listBasket = dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
 
             return Scaffold(
               body: Container(
@@ -127,7 +121,7 @@ class _Basket2Page extends State<Basket2Page> {
                       ),
                       SizedBox(height: 10,),
 
-                      currentAddress(listCompany.first),
+                      currentAddress(_basketService.listCompany.first),
 
                       SizedBox(height: 10,),
 
@@ -152,9 +146,24 @@ class _Basket2Page extends State<Basket2Page> {
                       Expanded(
                           child: ListView.separated(
                             padding: const EdgeInsets.all(8),
-                            itemCount: listBasket.length,
+                            itemCount: _basketService.listBasket.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return widgetListDocument(listBasket[index]);
+                              // return widgetListDocument(index);
+                              return Column(
+                                children: [
+                                  Checkbox(
+                                    checkColor: Colors.white,
+                                    value: _basketService.listBasket[index].is_checked ?? false,
+                                    onChanged: (bool? value) async {
+                                      setState(() {
+                                        _basketService.listBasket[index].is_checked = true;
+
+                                        print(_basketService.listBasket[index].toJson());
+                                      });
+                                    },
+                                  )
+                                ],
+                              );
                             },
                             separatorBuilder: (BuildContext context, int index) => const Divider(),
                           )

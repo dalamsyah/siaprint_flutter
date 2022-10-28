@@ -19,6 +19,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPage extends State<LoginPage> {
 
+  bool _isLoading = false;
+
   final LoginService _service = LoginService();
   TextEditingController _controllerLogin = TextEditingController();
   TextEditingController _controllerPassword = TextEditingController();
@@ -67,9 +69,9 @@ class _LoginPage extends State<LoginPage> {
     );
 
     final loginButton = Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: ElevatedButton(
-        child: Text('Log In'),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child:
+      ElevatedButton(
         style: ButtonStyle(
             padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
@@ -82,6 +84,10 @@ class _LoginPage extends State<LoginPage> {
             )
         ),
         onPressed: () async {
+
+          setState((){
+            _isLoading = true;
+          });
 
           var response = await _service.login(_controllerLogin.text, _controllerPassword.text);
 
@@ -109,8 +115,14 @@ class _LoginPage extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
 
+          setState((){
+            _isLoading = false;
+          });
+
           // Navigator.of(context).pushNamed(BottomPage2.tag);
         },
+        child: const Text('Log In'),
+        // child: _isLoading ? const CircularProgressIndicator() : const Text('Log In'),
       ),
     );
 

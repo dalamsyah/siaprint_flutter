@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
+import 'package:siapprint/model/finishing_model.dart';
 import 'package:siapprint/model/inks_model.dart';
 import 'package:siapprint/model/price_model.dart';
 import 'package:siapprint/model/size_model.dart';
@@ -22,12 +23,15 @@ class FormPrintPage extends StatefulWidget {
 class _FormPrintPage extends State<FormPrintPage> {
 
   int? _printer = 0;
+  int? _delivery = 0;
   bool _isLoading = false;
 
   List<String> _ukuranKertas = ['Silahkan pilih'];
   List<String> _jenisKertas =  ['Silahkan pilih'];
+  List<String> _finishing =  ['Silahkan pilih'];
   List<SizeModel> _sizeAll = [];
   List<PriceModel> _priceAll = [];
+  List<FinishingModel> _finishingAll = [];
 
   int? _pages = 0;
   TextEditingController _pagesRange = TextEditingController();
@@ -37,8 +41,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
   String? _dropDownUkuranKertas = 'Silahkan pilih';
   String? _dropDownJenisKertas = 'Silahkan pilih';
-
-  String _dropDownFinishing = '';
+  String? _dropDownFinishing = 'Silahkan pilih';
 
   final _formService = FormService();
   final _fetchData = FetchDataPrint();
@@ -56,6 +59,11 @@ class _FormPrintPage extends State<FormPrintPage> {
   void _onSelectedInk(int value) async {
     setState(() {
       _ukuranKertas = ['Silahkan pilih'];
+
+      _dropDownUkuranKertas = 'Silahkan pilih';
+      _dropDownJenisKertas = 'Silahkan pilih';
+      _dropDownFinishing = 'Silahkan pilih';
+
       _isLoading = true;
     });
 
@@ -92,10 +100,6 @@ class _FormPrintPage extends State<FormPrintPage> {
 
         Text(
           "Print Laser",
-          style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black),
         ),
 
         Radio(
@@ -111,10 +115,6 @@ class _FormPrintPage extends State<FormPrintPage> {
 
         Text(
           "Print Tinta",
-          style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black),
         ),
 
       ],
@@ -135,248 +135,320 @@ class _FormPrintPage extends State<FormPrintPage> {
             _fetchData.setData(listInks);
 
             return Scaffold(
-              body: SingleChildScrollView(
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      SizedBox(height: 30,),
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: Text('Print'),
-                        color: Colors.grey.withAlpha(50),
-                      ),
-                      option,
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: Text('Ukuran Kertas'),
-                        color: Colors.grey.withAlpha(50),
-                      ),
-
-                      _isLoading ? CircularProgressIndicator() :
-
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: DropdownButton<String>(
-                          value: _dropDownUkuranKertas,
-                          hint: Text('Pilih'),
-                          icon: const Icon(Icons.arrow_downward),
-                          elevation: 16,
-                          style: const TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (String? value) async {
-                            // This is called when the user selects an item.
-                            setState(() {
-                              _dropDownUkuranKertas = value!;
-                              _dropDownJenisKertas = 'Silahkan pilih';
-
-                            });
-
-                            String ink = 'INK002';
-                            if (_printer == 1){
-                              ink = 'INK001';
-                            }
-                            _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas!));
-                            _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas!));
-
-                          },
-                          items: _ukuranKertas.map<DropdownMenuItem<String>>((String value) {
-
-                            List<SizeModel> list = _sizeAll.where((element) => element.size_code == value).map((e) => e).toList();
-
-                            String text = "Silahkan pilih";
-                            if (list.isNotEmpty) {
-                              text = '${list.first.size_name} - ${list.first.size_text}';
-                            }
-
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(text),
-                            );
-                          }).toList(),
+              body: Container(
+                child: SingleChildScrollView(
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 30,),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: Text('Print',),
+                          color: Colors.grey.withAlpha(50),
                         ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: Text('Jenis Kertas'),
-                        color: Colors.grey.withAlpha(50),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: DropdownButton<String>(
-                          value: _dropDownJenisKertas,
-                          icon: const Icon(Icons.arrow_downward),
-                          elevation: 16,
-                          style: const TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (String? value) {
-                            // This is called when the user selects an item.
-                            setState(() {
-                              _dropDownJenisKertas = value!;
-                            });
-                          },
-                          items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
-
-                            List<PriceModel> list = _priceAll.where((element) => element.price_code == value).map((e) => e).toList();
-
-                            String text = "Silahkan pilih";
-                            if (list.isNotEmpty) {
-                              text = '${list.first.type_paper_name} - Rp ${list.first.price}';
-                            }
-
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(text),
-                            );
-                          }).toList(),
+                        option,
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: Text('Ukuran Kertas'),
+                          color: Colors.grey.withAlpha(50),
                         ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: Text('Halaman'),
-                        color: Colors.grey.withAlpha(50),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        child: Row(
-                          children: [
-                            Radio(
-                              value: 1,
-                              groupValue: _pages,
-                              onChanged: (value) {
-                                setState(() {
-                                  _pages = value as int?;
-                                });
-                              },
+
+                        _isLoading ? CircularProgressIndicator() :
+
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: DropdownButton<String>(
+                            value: _dropDownUkuranKertas,
+                            hint: Text('Pilih'),
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
                             ),
+                            onChanged: (String? value) async {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _dropDownUkuranKertas = value!;
+                                _dropDownJenisKertas = 'Silahkan pilih';
+                                _dropDownFinishing = 'Silahkan pilih';
+                              });
 
-                            Text(
-                              "All",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
+                              String ink = 'INK002';
+                              if (_printer == 1){
+                                ink = 'INK001';
+                              }
+                              _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas!));
+                              _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas!));
+
+                              _finishing = List.from(_finishing)..addAll(await _fetchData.getFinishingBySize(ink, _dropDownUkuranKertas!));
+                              _finishingAll = List.from(_finishingAll)..addAll(await _fetchData.getFinishingBySizeAll(ink, _dropDownUkuranKertas!));
+
+                            },
+                            items: _ukuranKertas.map<DropdownMenuItem<String>>((String value) {
+
+                              List<SizeModel> list = _sizeAll.where((element) => element.size_code == value).map((e) => e).toList();
+
+                              String text = "Silahkan pilih";
+                              if (list.isNotEmpty) {
+                                text = '${list.first.size_name} - ${list.first.size_text}';
+                              }
+
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(text),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: Text('Jenis Kertas'),
+                          color: Colors.grey.withAlpha(50),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: DropdownButton<String>(
+                            value: _dropDownJenisKertas,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
                             ),
+                            onChanged: (String? value) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _dropDownJenisKertas = value!;
+                              });
+                            },
+                            items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
 
-                            Radio(
-                              value: 1,
-                              groupValue: _pages,
-                              onChanged: (value) {
-                                setState(() {
-                                  _pages = value as int?;
-                                });
-                              },
+                              List<PriceModel> list = _priceAll.where((element) => element.price_code == value).map((e) => e).toList();
+
+                              String text = "Silahkan pilih";
+                              if (list.isNotEmpty) {
+                                text = '${list.first.type_paper_name} - Rp ${list.first.price}';
+                              }
+
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(text),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: Text('Halaman'),
+                          color: Colors.grey.withAlpha(50),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Radio(
+                                value: 1,
+                                groupValue: _pages,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _pages = value as int?;
+                                  });
+                                },
+                              ),
+
+                              Text(
+                                "All",
+                              ),
+
+                              Radio(
+                                value: 1,
+                                groupValue: _pages,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _pages = value as int?;
+                                  });
+                                },
+                              ),
+
+                              Text(
+                                "Page",
+                              ),
+
+                              SizedBox(width: 10,),
+
+                              Container(
+                                width: 100,
+                                child: TextFormField(
+                                  controller: _pagesRange,
+                                  decoration: InputDecoration(
+                                    hintText: 'Page range',
+                                  ),
+                                ),
+                              )
+
+                            ],
+                          ),
+
+                        ),
+                        Container(
+                          padding: EdgeInsets.fromLTRB(20, 0, 0, 20),
+                          child: Text('** masukkan range halaman atau per halaman cnth : 1-7 atau 1,2,6,7'),
+                        ),
+
+
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: Text('Copy'),
+                          color: Colors.grey.withAlpha(50),
+                        ),
+
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          child: TextFormField(
+                            controller: _copyPage,
+                            decoration: InputDecoration(
+                              hintText: 'Copy',
                             ),
+                          ),
+                        ),
 
-                            Text(
-                              "Page",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: Text('Finishing'),
+                          color: Colors.grey.withAlpha(50),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: DropdownButton<String>(
+                            value: _dropDownFinishing,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
                             ),
+                            onChanged: (String? value) async {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _dropDownFinishing = value!;
+                              });
 
-                            SizedBox(width: 10,),
+                            },
+                            items: _finishing.map<DropdownMenuItem<String>>((String value) {
 
-                            Container(
-                              width: 100,
-                              child: TextFormField(
-                                controller: _pagesRange,
-                                decoration: InputDecoration(
-                                  hintText: 'Page range',
+                              List<FinishingModel> list = _finishingAll.where((element) => element.finish_code == value).map((e) => e).toList();
+
+                              String text = "Silahkan pilih";
+                              if (list.isNotEmpty) {
+                                text = '${list.first.finish_text} - Rp ${list.first.price}';
+                              }
+
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(text),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          width: double.infinity,
+                          child: Text('Catatan'),
+                          color: Colors.grey.withAlpha(50),
+                        ),
+
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          child: TextFormField(
+                            controller: _notesDocument,
+                            decoration: InputDecoration(
+                              hintText: 'Catatan untuk dokumen ini',
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(20),
+                                color: Colors.grey.withAlpha(50),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Total: '),
+                                    Text('Rp 2500')
+                                  ],
                                 ),
                               ),
-                            )
+                              Row(
+                                children: [
+                                  Radio(
+                                    value: 1,
+                                    groupValue: _delivery,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _delivery = value as int?;
+                                      });
+                                    },
+                                  ),
+                                  const Text(
+                                    "Pickup by customer",
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Radio(
+                                    value: 2,
+                                    groupValue: _delivery,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _delivery = value as int?;
+                                      });
+                                    },
+                                  ),
+                                  const Text(
+                                    "Delivery by JNE",
+                                  ),
+                                ],
+                              )
 
-                          ],
-                        ),
-
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(20, 0, 0, 20),
-                        child: Text('** masukkan range halaman atau per halaman cnth : 1-7 atau 1,2,6,7'),
-                      ),
-
-
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: Text('Copy'),
-                        color: Colors.grey.withAlpha(50),
-                      ),
-
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        child: TextFormField(
-                          controller: _copyPage,
-                          decoration: InputDecoration(
-                            hintText: 'Copy',
+                            ],
                           ),
                         ),
-                      ),
 
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: Text('Finishing'),
-                        color: Colors.grey.withAlpha(50),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: DropdownButton<String>(
-                          icon: const Icon(Icons.arrow_downward),
-                          elevation: 16,
-                          style: const TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(20),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                elevation: 2
+                            ),
+                            onPressed: () {},
+                            // onPressed: _onSelectCheckBox(),
+                            child: Text('Proses'),
                           ),
-                          onChanged: (String? value) {
-                            // This is called when the user selects an item.
-                            setState(() {
-                              _dropDownFinishing = value!;
-                            });
-                          },
-                          items: _finishingDocument.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                        )
 
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: double.infinity,
-                        child: Text('Catatan'),
-                        color: Colors.grey.withAlpha(50),
-                      ),
-
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        child: TextFormField(
-                          controller: _notesDocument,
-                          decoration: InputDecoration(
-                            hintText: 'Catatan untuk dokumen ini',
-                          ),
-                        ),
-                      ),
-
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -420,7 +492,6 @@ class FetchDataPrint {
         .expand((element) => element)
         .map((e) => SizeModel.fromJson(e))
         .map((e) => e.size_code!)
-    // .map((e) => '${e.size_name} - ${e.size_text!}')
         .toList());
 
   }
@@ -451,6 +522,33 @@ class FetchDataPrint {
         .map((e) => e.prices)
         .expand((element) => element)
         .map((e) => PriceModel.fromJson(e))
+        .toList());
+  }
+
+  Future<List<String>> getFinishingBySize(String ink, String size) async {
+    return Future.value(_data
+        .where((item) => item.ink_code == ink)
+        .map((e) => e.size!)
+        .expand((element) => element)
+        .map((e) => SizeModel.fromJson(e))
+        .where((item) => item.size_code == size)
+        .map((e) => e.finishing)
+        .expand((element) => element)
+        .map((e) => FinishingModel.fromJson(e))
+        .map((e) => e.finish_code!)
+        .toList());
+  }
+  
+  Future<List<FinishingModel>> getFinishingBySizeAll(String ink, String size) async {
+    return Future.value(_data
+        .where((item) => item.ink_code == ink)
+        .map((e) => e.size!)
+        .expand((element) => element)
+        .map((e) => SizeModel.fromJson(e))
+        .where((item) => item.size_code == size)
+        .map((e) => e.finishing)
+        .expand((element) => element)
+        .map((e) => FinishingModel.fromJson(e))
         .toList());
   }
 

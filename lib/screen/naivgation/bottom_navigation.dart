@@ -24,7 +24,7 @@ class BottomNavigation extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.checklist),
-          label: 'Status',
+          label: 'Keranjang',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),

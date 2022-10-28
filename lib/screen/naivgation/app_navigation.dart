@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket2_page.dart';
+import 'package:siapprint/screen/basket3_page.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/naivgation/bottom_navigation.dart';
 import 'package:siapprint/screen/naivgation/tab_navigator.dart';
@@ -19,9 +20,9 @@ enum TabItem {
 
 enum TabWidgetItem {
 
-  upload( UploadPage() ),
-  formPrint( Basket2Page(onSubmit: null,) ),
-  setting( AccountSettingPage() ),;
+  upload( Basket3Page(onSubmit: null,) ),
+  formPrint( UploadPage() ),
+  setting( AccountSettingPage() );
 
   const TabWidgetItem(this.widget);
   final Widget widget;

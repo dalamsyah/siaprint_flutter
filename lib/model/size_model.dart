@@ -1,6 +1,7 @@
 
 import 'dart:collection';
 
+import 'package:siapprint/model/finishing_model.dart';
 import 'package:siapprint/model/price_model.dart';
 
 class SizeModel {
@@ -13,6 +14,7 @@ class SizeModel {
   final String? weight;
   final String? uom;
   final dynamic prices;
+  final dynamic finishing;
 
   SizeModel({
     required this.size_code,
@@ -23,6 +25,7 @@ class SizeModel {
     required this.weight,
     required this.uom,
     required this.prices,
+    required this.finishing,
   });
 
   Map<String, dynamic> toJson() {
@@ -35,6 +38,7 @@ class SizeModel {
       'weight': weight,
       'uom': uom,
       'prices': prices,
+      'prices': finishing,
     };
   }
 
@@ -48,6 +52,7 @@ class SizeModel {
       weight: json['weight'],
       uom: json['uom'],
       prices: json['prices'],
+      finishing: json['finishing'],
     );
   }
 
@@ -61,6 +66,7 @@ class SizeModel {
       weight: json['weight'],
       uom: json['uom'],
       prices: json['prices'].cast<PriceModel>(),
+      finishing: json['finishing'].cast<FinishingModel>(),
     );
   }
 
