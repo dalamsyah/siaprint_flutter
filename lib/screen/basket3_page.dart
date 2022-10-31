@@ -138,6 +138,11 @@ class _Basket3Page extends State<Basket3Page> {
 
                       if (snapshot.hasData){
                         return currentAddress(_companyService.listCompany);
+                      } else if (snapshot.hasError) {
+                        return Container(
+                            alignment: Alignment.center,
+                            child: Text('something wrong')
+                        );
                       }
 
                       return Center(
