@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/model/user_model.dart';
 import 'package:siapprint/repository/login_service.dart';
 import 'package:siapprint/screen/home_page.dart';
+import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
 
 class LoginPage extends StatefulWidget {
@@ -104,7 +105,7 @@ class _LoginPage extends State<LoginPage> {
             if (data['status'] as int == 0) {
               localStorage.setString('user', jsonEncode(data['result']['user']));
 
-              Navigator.of(context).pushNamedAndRemoveUntil(BottomPage2.tag, (route) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(AppNavigation.tag, (route) => false);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }

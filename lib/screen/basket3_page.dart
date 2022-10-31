@@ -80,6 +80,7 @@ class _Basket3Page extends State<Basket3Page> {
                 onChanged: (bool? value) async {
                   setState(() {
                     _basketService.listBasket[index].is_checked = value;
+                    print(_basketService.listBasket[index].toJson());
                   });
                 },
               ),
@@ -110,95 +111,114 @@ class _Basket3Page extends State<Basket3Page> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      body: Container(
-        child: Container(
-          padding: EdgeInsets.all(20),
-          alignment: Alignment.center,
-          child:
+    return FutureBuilder<Response>(
+        future: _basketService.getBasket(),
+        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
+          if (snapshot.hasData){
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                  padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                  width: double.infinity,
-                  child: Text('Tempat print yang kami rekomendasikan')
-              ),
-              SizedBox(height: 10,),
+            return Scaffold(
+              body: Container(
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  alignment: Alignment.center,
+                  child:
 
-              currentAddress(_basketService.listCompany),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                          width: double.infinity,
+                          child: Text('Tempat print yang kami rekomendasikan')
+                      ),
+                      SizedBox(height: 10,),
 
-              SizedBox(height: 10,),
+                      currentAddress(_basketService.listCompany),
 
-              Container(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () { },
-                  child: Text('Pilih tempat lain'),
-                ),
-              ),
+                      SizedBox(height: 10,),
 
-              SizedBox(height: 10,),
+                      Container(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () { },
+                          child: Text('Pilih tempat lain'),
+                        ),
+                      ),
 
-              Container(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  width: double.infinity,
-                  child: Text('List dokumen')
-              ),
+                      SizedBox(height: 10,),
 
-              SizedBox(height: 10,),
+                      Container(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                          width: double.infinity,
+                          child: Text('List dokumen')
+                      ),
 
-              Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: _basketService.listBasket.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return widgetListDocument(index);
-                    },
-                    separatorBuilder: (BuildContext context, int index) => const Divider(),
-                  )
-              ),
+                      SizedBox(height: 10,),
 
-              SizedBox(height: 10,),
+                      Expanded(
+                          child: ListView.separated(
+                            padding: const EdgeInsets.all(8),
+                            itemCount: _basketService.listBasket.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return widgetListDocument(index);
+                            },
+                            separatorBuilder: (BuildContext context, int index) => const Divider(),
+                          )
+                      ),
 
-              Row(
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.red,
-                      elevation: 2,
-                    ),
-                    onPressed: null,
-                    child: Text('Hapus'),
+                      SizedBox(height: 10,),
+
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red,
+                              elevation: 2,
+                            ),
+                            onPressed: null,
+                            child: Text('Hapus'),
+                          ),
+
+                          SizedBox(width: 10,),
+
+                          Expanded(child: Container(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  elevation: 2
+                              ),
+                              onPressed: (){
+                                Navigator.of(context).pushNamed('/form_print');
+                              },
+                              child: Text('Proses'),
+                            ),
+                          ))
+                        ],
+                      )
+
+                    ],
                   ),
 
-                  SizedBox(width: 10,),
+                ),
+              ),
+            );
+          } else if (snapshot.hasError){
+            return Center(child: Text('error..${snapshot.error}'));
+          }
 
-                  Expanded(child: Container(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          elevation: 2
-                      ),
-                      onPressed: _basketService.listBasket.where((e) => e.is_checked == true).isEmpty ? null : () {
-
-                        Navigator.of(context).pushNamed(TabNavigatorRoutes.form_print);
-
-                        // showDialog(context: context, builder: (BuildContext context) {
-                        //   return customWidget.createDialog();
-                        // });
-                      },
-                      // onPressed: _onSelectCheckBox(),
-                      child: Text('Proses'),
-                    ),
-                  ))
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10,),
+                  Text('Please wait...')
                 ],
-              )
-            ],
-          ),
+              ),
+            ),
+          );
 
-        ),
-      ),
+        }
     );
 
   }

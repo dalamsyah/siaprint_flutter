@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:siapprint/model/finishing_model.dart';
@@ -26,6 +27,9 @@ class _FormPrintPage extends State<FormPrintPage> {
   int? _delivery = 0;
   bool _isLoading = false;
 
+  int? _totalPrint = 0;
+  int _total = 0;
+
   List<String> _ukuranKertas = ['Silahkan pilih'];
   List<String> _jenisKertas =  ['Silahkan pilih'];
   List<String> _finishing =  ['Silahkan pilih'];
@@ -50,7 +54,7 @@ class _FormPrintPage extends State<FormPrintPage> {
   void initState() {
 
     _pagesRange.text = '';
-    _copyPage.text = '';
+    _copyPage.text = '1';
     _notesDocument.text = '';
 
     super.initState();
@@ -237,6 +241,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                               String text = "Silahkan pilih";
                               if (list.isNotEmpty) {
                                 text = '${list.first.type_paper_name} - Rp ${list.first.price}';
+                                _total += int.parse(list.first.price ?? '0');
                               }
 
                               return DropdownMenuItem<String>(
@@ -317,7 +322,11 @@ class _FormPrintPage extends State<FormPrintPage> {
                           padding: EdgeInsets.all(20),
                           child: TextFormField(
                             controller: _copyPage,
-                            decoration: InputDecoration(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
                               hintText: 'Copy',
                             ),
                           ),
@@ -355,6 +364,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                               String text = "Silahkan pilih";
                               if (list.isNotEmpty) {
                                 text = '${list.first.finish_text} - Rp ${list.first.price}';
+                                _total += int.parse(list.first.price ?? '0');
                               }
 
                               return DropdownMenuItem<String>(
@@ -393,9 +403,15 @@ class _FormPrintPage extends State<FormPrintPage> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Total: '),
-                                    Text('Rp 2500')
+                                    Text('Rp ${_totalPrint}')
                                   ],
                                 ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(20),
+                                width: double.infinity,
+                                child: Text('Pilih pengiriman'),
+                                color: Colors.grey.withAlpha(50),
                               ),
                               Row(
                                 children: [
@@ -428,8 +444,18 @@ class _FormPrintPage extends State<FormPrintPage> {
                                     "Delivery by JNE",
                                   ),
                                 ],
-                              )
-
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(20),
+                                color: Colors.grey.withAlpha(50),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Total: '),
+                                    Text('Rp 2500')
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),

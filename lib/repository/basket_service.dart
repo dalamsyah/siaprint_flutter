@@ -39,6 +39,7 @@ class BasketService {
       listBasket = dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
 
       print('call api');
+      print(response.body);
 
       is_loading = false;
 
