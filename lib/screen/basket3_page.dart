@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/repository/basket_service.dart';
+import 'package:siapprint/repository/company_serive.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/naivgation/tab_navigator.dart';
 import 'package:siapprint/screen/utils/custom_widget.dart';
@@ -27,16 +28,15 @@ class _Basket3Page extends State<Basket3Page> {
 
   CustomWidget customWidget = CustomWidget();
   final _basketService = BasketService();
+  final _companyService = CompanyService();
   bool isChecked = false;
   List<Widget> listDocument = [];
+  List<BasketModel> _listBasket = [];
+  late Future<List<BasketModel>> _listBasket2;
 
   Widget currentAddress(List<CompanyModel> companyModels) {
 
-    if (_basketService.is_loading){
-      return Text('loading...');
-    }
-
-    CompanyModel companyModel = _basketService.listCompany.first;
+    CompanyModel companyModel = _companyService.listCompany.first;
 
     return Container(
       width: double.infinity,
@@ -57,7 +57,6 @@ class _Basket3Page extends State<Basket3Page> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(elevation: 2),
             onPressed: () {
-              print(_basketService.listBasket.where((e) => e.is_checked == true));
             },
             child: Text('Pilih'),
           ),
@@ -80,7 +79,6 @@ class _Basket3Page extends State<Basket3Page> {
                 onChanged: (bool? value) async {
                   setState(() {
                     _basketService.listBasket[index].is_checked = value;
-                    print(_basketService.listBasket[index].toJson());
                   });
                 },
               ),
@@ -105,120 +103,158 @@ class _Basket3Page extends State<Basket3Page> {
   @override
   void initState() {
     super.initState();
-    _basketService.getBasket();
+    // getDataBasket();
+    _listBasket2 = _basketService.getBasket2();
+  }
+
+  void getDataBasket() async {
+    _listBasket = List.from(_listBasket)..addAll(await _basketService.getBasket2());
   }
 
   @override
   Widget build(BuildContext context) {
 
-    return FutureBuilder<Response>(
-        future: _basketService.getBasket(),
-        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
-          if (snapshot.hasData){
+    return Scaffold(
+      body: Container(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          alignment: Alignment.center,
+          child:
 
-            return Scaffold(
-              body: Container(
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  alignment: Alignment.center,
-                  child:
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                  width: double.infinity,
+                  child: Text('Tempat print yang kami rekomendasikan')
+              ),
+              SizedBox(height: 10,),
 
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                          width: double.infinity,
-                          child: Text('Tempat print yang kami rekomendasikan')
-                      ),
-                      SizedBox(height: 10,),
+              Container(
+                child: FutureBuilder(
+                    future: _companyService.getCompany(),
+                    builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
 
-                      currentAddress(_basketService.listCompany),
+                      if (snapshot.hasData){
+                        return currentAddress(_companyService.listCompany);
+                      }
 
-                      SizedBox(height: 10,),
-
-                      Container(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () { },
-                          child: Text('Pilih tempat lain'),
+                      return Center(
+                        child: Column(
+                          children: [
+                            Transform.scale(
+                              scale: 0.5,
+                              child: CircularProgressIndicator(),
+                            ),
+                            SizedBox(height: 10,),
+                            Text('Please wait...')
+                          ],
                         ),
-                      ),
+                      );
 
-                      SizedBox(height: 10,),
+                    }
+                ),
+              ),
 
-                      Container(
-                          padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                          width: double.infinity,
-                          child: Text('List dokumen')
-                      ),
+              SizedBox(height: 10,),
 
-                      SizedBox(height: 10,),
+              Container(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () { },
+                  child: Text('Pilih tempat lain'),
+                ),
+              ),
 
-                      Expanded(
-                          child: ListView.separated(
+              SizedBox(height: 10,),
+
+              Container(
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  width: double.infinity,
+                  child: Text('List dokumen')
+              ),
+
+              Expanded(
+                  child: FutureBuilder(
+                      future: _listBasket2,
+                      builder : (BuildContext context, AsyncSnapshot<List<BasketModel>> snapshot) {
+
+                        if (snapshot.hasData) {
+                          return ListView.separated(
                             padding: const EdgeInsets.all(8),
                             itemCount: _basketService.listBasket.length,
                             itemBuilder: (BuildContext context, int index) {
+
+                              if (_basketService.listBasket.isEmpty){
+                                return Container(
+                                  alignment: Alignment.center,
+                                  child: Text('List dokumen kosong'),
+                                );
+                              }
+
                               return widgetListDocument(index);
                             },
                             separatorBuilder: (BuildContext context, int index) => const Divider(),
-                          )
-                      ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Container(
+                            alignment: Alignment.center,
+                            child: Text('something wrong'),
+                          );
+                        }
 
-                      SizedBox(height: 10,),
-
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              elevation: 2,
+                        return Scaffold(
+                          body: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                CircularProgressIndicator(),
+                                SizedBox(height: 10,),
+                                Text('Please wait...')
+                              ],
                             ),
-                            onPressed: null,
-                            child: Text('Hapus'),
                           ),
+                        );
 
-                          SizedBox(width: 10,),
 
-                          Expanded(child: Container(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  elevation: 2
-                              ),
-                              onPressed: (){
-                                Navigator.of(context).pushNamed('/form_print');
-                              },
-                              child: Text('Proses'),
-                            ),
-                          ))
-                        ],
-                      )
+                      })
+              ),
 
-                    ],
+              SizedBox(height: 10,),
+
+              Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                      elevation: 2,
+                    ),
+                    onPressed: null,
+                    child: Text('Hapus'),
                   ),
 
-                ),
-              ),
-            );
-          } else if (snapshot.hasError){
-            return Center(child: Text('error..${snapshot.error}'));
-          }
+                  SizedBox(width: 10,),
 
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 10,),
-                  Text('Please wait...')
+                  Expanded(child: Container(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          elevation: 2
+                      ),
+                      onPressed: (){
+                        Navigator.of(context).pushNamed('/form_print');
+                      },
+                      child: Text('Proses'),
+                    ),
+                  ))
                 ],
-              ),
-            ),
-          );
+              )
 
-        }
+            ],
+          ),
+
+        ),
+      ),
     );
 
   }

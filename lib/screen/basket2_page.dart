@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/repository/basket_service.dart';
+import 'package:siapprint/repository/company_serive.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 
 class Basket2Page extends StatefulWidget {
@@ -24,6 +25,7 @@ class Basket2Page extends StatefulWidget {
 class _Basket2Page extends State<Basket2Page> {
 
   final _basketService = BasketService();
+  final _companyService = CompanyService();
   bool isChecked = false;
   List<Widget> listDocument = [];
 
@@ -121,7 +123,7 @@ class _Basket2Page extends State<Basket2Page> {
                       ),
                       SizedBox(height: 10,),
 
-                      currentAddress(_basketService.listCompany.first),
+                      currentAddress(_companyService.listCompany.first),
 
                       SizedBox(height: 10,),
 

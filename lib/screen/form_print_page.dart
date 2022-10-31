@@ -27,7 +27,10 @@ class _FormPrintPage extends State<FormPrintPage> {
   int? _delivery = 0;
   bool _isLoading = false;
 
-  int? _totalPrint = 0;
+  int _totalPrint = 0;
+  int _priceJenisKertas = 0;
+  int _priceFinishing = 0;
+  int _totalDelivery = 0;
   int _total = 0;
 
   List<String> _ukuranKertas = ['Silahkan pilih'];
@@ -87,6 +90,13 @@ class _FormPrintPage extends State<FormPrintPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    _totalPrint = _priceJenisKertas + _priceFinishing;
+    _total = _totalPrint + _totalDelivery;
+
+    print('price jenis kertas: ${_priceJenisKertas}');
+    print('price finishing kertas: ${_priceFinishing}');
+    print('total: ${_totalPrint}');
 
     var option = Row(
       children: [
@@ -229,9 +239,12 @@ class _FormPrintPage extends State<FormPrintPage> {
                               color: Colors.deepPurpleAccent,
                             ),
                             onChanged: (String? value) {
-                              // This is called when the user selects an item.
+
+                              List<PriceModel> list = _priceAll.where((element) => element.price_code == value).map((e) => e).toList();
+
                               setState(() {
                                 _dropDownJenisKertas = value!;
+                                _priceJenisKertas = int.parse(list.first.price ?? '0');
                               });
                             },
                             items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
@@ -241,7 +254,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                               String text = "Silahkan pilih";
                               if (list.isNotEmpty) {
                                 text = '${list.first.type_paper_name} - Rp ${list.first.price}';
-                                _total += int.parse(list.first.price ?? '0');
+
                               }
 
                               return DropdownMenuItem<String>(
@@ -351,9 +364,11 @@ class _FormPrintPage extends State<FormPrintPage> {
                               color: Colors.deepPurpleAccent,
                             ),
                             onChanged: (String? value) async {
-                              // This is called when the user selects an item.
+                              List<FinishingModel> list = _finishingAll.where((element) => element.finish_code == value).map((e) => e).toList();
+
                               setState(() {
                                 _dropDownFinishing = value!;
+                                _priceFinishing = int.parse(list.first.price ?? '0');
                               });
 
                             },
@@ -364,7 +379,6 @@ class _FormPrintPage extends State<FormPrintPage> {
                               String text = "Silahkan pilih";
                               if (list.isNotEmpty) {
                                 text = '${list.first.finish_text} - Rp ${list.first.price}';
-                                _total += int.parse(list.first.price ?? '0');
                               }
 
                               return DropdownMenuItem<String>(
@@ -440,9 +454,15 @@ class _FormPrintPage extends State<FormPrintPage> {
                                       });
                                     },
                                   ),
-                                  const Text(
-                                    "Delivery by JNE",
-                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Delivery by JNE",
+                                      ),
+                                      Text('Total biaya pengiriman: Rp $_totalDelivery')
+                                    ],
+                                  )
                                 ],
                               ),
                               Container(
@@ -452,7 +472,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Total: '),
-                                    Text('Rp 2500')
+                                    Text('Rp $_total')
                                   ],
                                 ),
                               ),

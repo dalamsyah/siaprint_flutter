@@ -11,7 +11,6 @@ import 'package:siapprint/model/user_model.dart';
 class BasketService {
 
   List<BasketModel> listBasket = [];
-  List<CompanyModel> listCompany = [];
   List<BasketModel> listToPrint = [];
 
   bool is_loading = false;
@@ -31,19 +30,44 @@ class BasketService {
     if (response.statusCode == 200) {
 
       final data = jsonDecode(response.body);
-      var dataListCompany = data['result']['company_selected'] as List;
       var dataListBasket = data['result']['basket'] as List;
-
-      listCompany = dataListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
 
       listBasket = dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
 
-      print('call api');
+      is_loading = false;
+
       print(response.body);
+
+      return response;
+    } else {
+      is_loading = false;
+      throw Exception('Failed to get basket.');
+    }
+
+  }
+
+  Future<List<BasketModel>> getBasket2() async {
+
+    is_loading = true;
+
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
+
+    final response = await http.post(Uri.parse(Constant.basket), body: {
+      'apitoken': Constant.apitoken,
+      'userid': userModel.id
+    });
+
+    if (response.statusCode == 200) {
+
+      final data = jsonDecode(response.body);
+      var dataListBasket = data['result']['basket'] as List;
+
+      listBasket = dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
 
       is_loading = false;
 
-      return response;
+      return listBasket;
     } else {
       is_loading = false;
       throw Exception('Failed to get basket.');
