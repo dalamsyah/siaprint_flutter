@@ -247,7 +247,9 @@ class _Basket3Page extends State<Basket3Page> {
                           elevation: 2
                       ),
                       onPressed: (){
-                        Navigator.of(context).pushNamed('/form_print');
+                        List<BasketModel> basketListSelected = _basketService.listBasket.where((e) => e.is_checked == true).toList();
+
+                        Navigator.of(context).pushNamed(TabNavigatorRoutes.checkout, arguments: basketListSelected);
                       },
                       child: Text('Proses'),
                     ),
@@ -269,12 +271,7 @@ class _Basket3Page extends State<Basket3Page> {
   }
 
   Function? onSelectCheckBox() {
-    Navigator.of(context).pushNamed(TabNavigatorRoutes.form_print);
-    if (_basketService.listBasket.map((e) => e.is_checked == true).isNotEmpty){
-      return () {
-
-      };
-    }
+    Navigator.of(context).pushNamed(TabNavigatorRoutes.checkout);
 
     return null;
   }

@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
     HomePage.tag: (context) => HomePage(),
     BottomBar.tag: (context) => BottomBar(),
     BottomPage2.tag: (context) => BottomPage2(),
-    FormPrintPage.tag: (context) => FormPrintPage(),
   };
 
   // This widget is the root of your application.

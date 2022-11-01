@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
+import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/finishing_model.dart';
 import 'package:siapprint/model/inks_model.dart';
 import 'package:siapprint/model/price_model.dart';
@@ -12,9 +13,10 @@ import 'package:siapprint/repository/form_service.dart';
 
 class FormPrintPage extends StatefulWidget {
 
-  const FormPrintPage({ Key? key }) : super(key: key);
+  const FormPrintPage({ Key? key}) : super(key: key);
 
   static String tag = 'form-print-page';
+  // final List<BasketModel> listBasketModel;
 
   @override
   State<StatefulWidget> createState() => _FormPrintPage();
@@ -22,6 +24,7 @@ class FormPrintPage extends StatefulWidget {
 }
 
 class _FormPrintPage extends State<FormPrintPage> {
+
 
   int? _printer = 0;
   int? _delivery = 0;
@@ -289,7 +292,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                               ),
 
                               Radio(
-                                value: 1,
+                                value: 2,
                                 groupValue: _pages,
                                 onChanged: (value) {
                                   setState(() {
