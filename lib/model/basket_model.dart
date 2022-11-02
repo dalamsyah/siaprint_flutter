@@ -83,5 +83,8 @@ class BasketModel {
     );
   }
 
-
+  @override
+  String toString() {
+    return 'BasketModel{id: $id, user_id: $user_id, filename: $filename, pages_tot: $pages_tot, slug: $slug, filename_random: $filename_random, created_at: $created_at, updated_at: $updated_at, deleted_at: $deleted_at, is_checked: $is_checked, total: $total, printer: $printer, printer_code: $printer_code, pages: $pages, pagesRange: $pagesRange, copyPage: $copyPage, notes: $notes, ukuranKertas: $ukuranKertas, jenisKertas: $jenisKertas, finishing: $finishing}';
+  }
 }

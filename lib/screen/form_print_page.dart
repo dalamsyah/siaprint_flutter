@@ -57,10 +57,16 @@ class _FormPrintPage extends State<FormPrintPage> {
   final _formService = FormService();
   final _fetchData = FetchDataPrint();
 
+  List<InkModel> _dataInk = [];
+
   @override
   void initState() {
 
-    _is_loading = true;
+    basketModel = widget.basketModel;
+
+    setState((){
+      _is_loading = true;
+    });
 
     _formService.getFieldFormPrint("1").then((value) {
 
@@ -71,22 +77,43 @@ class _FormPrintPage extends State<FormPrintPage> {
       final List<InkModel> listInks = dataInks.map((data) => InkModel.fromJson(data) ).toList();
       _fetchData.setData(listInks);
 
-      // setState((){
-      //   _is_loading = false;
-      // });
+      setState((){
+        _is_loading = false;
+        _dataInk = listInks;
+
+        /**
+         * set to edit
+         */
+        if (basketModel.printer != 0) {
+          _onSelectedInk(basketModel.printer);
+        }
+
+        if (!basketModel.ukuranKertas.contains('Silahkan pilih')){
+          _dropDownUkuranKertas = basketModel.ukuranKertas;
+        }
+
+        if (!basketModel.jenisKertas.contains('Silahkan pilih')){
+
+          _onSelectedSize(_printer);
+
+          _dropDownJenisKertas = basketModel.jenisKertas;
+        }
+
+        print(basketModel.toString());
+
+      });
 
     });
 
-    basketModel = widget.basketModel;
-    _total = basketModel.total;
-    _printer = basketModel.printer;
-    _pages = basketModel.pages;
-    _pagesRange.text = basketModel.pagesRange;
-    _copyPage.text = basketModel.copyPage;
-    _notesDocument.text = basketModel.notes;
-    _dropDownUkuranKertas = basketModel.ukuranKertas;
-    _dropDownJenisKertas = basketModel.jenisKertas;
-    _dropDownFinishing = basketModel.finishing;
+    // _total = basketModel.total;
+    // _printer = basketModel.printer;
+    // _pages = basketModel.pages;
+    // _pagesRange.text = basketModel.pagesRange;
+    // _copyPage.text = basketModel.copyPage;
+    // _notesDocument.text = basketModel.notes;
+    // _dropDownUkuranKertas = basketModel.ukuranKertas;
+    // _dropDownJenisKertas = basketModel.jenisKertas;
+    // _dropDownFinishing = basketModel.finishing;
 
     super.initState();
   }
@@ -103,21 +130,17 @@ class _FormPrintPage extends State<FormPrintPage> {
     });
 
     String ink = '';
-    if (_printer == 1){
+    if (value == 1){
       ink = 'INK001';
-    } else if (_printer == 2) {
+    } else if (value == 2) {
       ink = 'INK002';
     }
 
-    basketModel.printer = _printer;
+    basketModel.printer = value;
     basketModel.printer_code = ink;
 
-    _ukuranKertas = List.from(_ukuranKertas)..addAll(await _fetchData.getSizeByInk('INK001'));
-    _sizeAll = List.from(_sizeAll)..addAll(await _fetchData.getSizeAll(ink));
-
-    print(_printer);
-    print(ink);
-    print(_ukuranKertas.length);
+    _ukuranKertas = List.from(_ukuranKertas)..addAll(await _fetchData.getSizeByInk(ink, _dataInk));
+    _sizeAll = List.from(_sizeAll)..addAll(await _fetchData.getSizeAll(ink, _dataInk));
 
     setState(() {
       _isLoading = false;
@@ -125,8 +148,22 @@ class _FormPrintPage extends State<FormPrintPage> {
 
   }
 
-  Future<List<String>> getListUkuranKertas() async {
-    return List.from(_ukuranKertas)..addAll(await _fetchData.getSizeByInk('INK001'));
+  void _onSelectedSize(int value) async {
+
+    String ink = '';
+    if (value == 1){
+      ink = 'INK001';
+    } else if (value == 2) {
+      ink = 'INK002';
+    }
+
+    _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas, _dataInk));
+    _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
+
+    _finishing = List.from(_finishing)..addAll(await _fetchData.getFinishingBySize(ink, _dropDownUkuranKertas, _dataInk));
+    _finishingAll = List.from(_finishingAll)..addAll(await _fetchData.getFinishingBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
+
+    print(_jenisKertas.toString());
   }
 
   void setToEdit(String inkCode) async {
@@ -135,7 +172,7 @@ class _FormPrintPage extends State<FormPrintPage> {
     //   _ukuranKertas = ['Silahkan pilih'];
     // });
 
-    _ukuranKertas = List.from(_ukuranKertas)..addAll(await _fetchData.getSizeByInk(inkCode));
+    _ukuranKertas = List.from(_ukuranKertas)..addAll(await _fetchData.getSizeByInk(inkCode, _fetchData._data));
     print(_ukuranKertas.length);
   }
 
@@ -171,7 +208,7 @@ class _FormPrintPage extends State<FormPrintPage> {
           onChanged: (value) {
             setState(() {
               _printer = value as int;
-              _onSelectedInk(_printer);
+              _onSelectedInk(value);
             });
           },
         ),
@@ -184,19 +221,19 @@ class _FormPrintPage extends State<FormPrintPage> {
     );
 
     return
-      // _is_loading ?
-      //     Scaffold(
-      //       body: Center(
-      //         child: Column(
-      //           mainAxisSize: MainAxisSize.min,
-      //           children: const [
-      //             CircularProgressIndicator(),
-      //             SizedBox(height: 10,),
-      //             Text('Please wait...')
-      //           ],
-      //         ),
-      //       ),
-      //     ) :
+      _is_loading ?
+          Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10,),
+                  Text('Please wait...')
+                ],
+              ),
+            ),
+          ) :
     Scaffold(
       body: Container(
         child: SingleChildScrollView(
@@ -239,17 +276,22 @@ class _FormPrintPage extends State<FormPrintPage> {
                         _dropDownUkuranKertas = value!;
                         _dropDownJenisKertas = 'Silahkan pilih';
                         _dropDownFinishing = 'Silahkan pilih';
+
+                        /**
+                         * set to edit
+                         */
+                        basketModel.ukuranKertas = value;
                       });
 
                       String ink = 'INK002';
                       if (_printer == 1){
                         ink = 'INK001';
                       }
-                      _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas));
-                      _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas));
+                      _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas, _dataInk));
+                      _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
 
-                      _finishing = List.from(_finishing)..addAll(await _fetchData.getFinishingBySize(ink, _dropDownUkuranKertas));
-                      _finishingAll = List.from(_finishingAll)..addAll(await _fetchData.getFinishingBySizeAll(ink, _dropDownUkuranKertas));
+                      _finishing = List.from(_finishing)..addAll(await _fetchData.getFinishingBySize(ink, _dropDownUkuranKertas, _dataInk));
+                      _finishingAll = List.from(_finishingAll)..addAll(await _fetchData.getFinishingBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
 
                     },
                     items: _ukuranKertas.map<DropdownMenuItem<String>>((String value) {
@@ -288,16 +330,21 @@ class _FormPrintPage extends State<FormPrintPage> {
                     ),
                     onChanged: (String? value) {
 
-                      List<PriceModel> list = _priceAll.where((element) => element.price_code == value).map((e) => e).toList();
+                      List<PriceModel> list = _priceAll.where((element) => element.type_paper_code == value).map((e) => e).toList();
 
                       setState(() {
                         _dropDownJenisKertas = value!;
                         _priceJenisKertas = int.parse(list.first.price ?? '0');
+
+                        /**
+                         * set to edit
+                         */
+                        basketModel.jenisKertas = value;
                       });
                     },
                     items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
 
-                      List<PriceModel> list = _priceAll.where((element) => element.price_code == value).map((e) => e).toList();
+                      List<PriceModel> list = _priceAll.where((element) => element.type_paper_code == value).map((e) => e).toList();
 
                       String text = "Silahkan pilih";
                       if (list.isNotEmpty) {
@@ -823,9 +870,9 @@ class FetchDataPrint {
   List<InkModel> _data = [];
   List<InkModel> setData(List<InkModel> list) => _data = list;
 
-  Future<List<String>> getSizeByInk(String state) async {
+  Future<List<String>> getSizeByInk(String state, List<InkModel> data) async {
 
-    return Future.value(_data
+    return Future.value(data
         .where((item) => item.ink_code == state)
         .map((e) => e.size!)
         .expand((element) => element)
@@ -835,9 +882,9 @@ class FetchDataPrint {
 
   }
 
-  Future<List<String>> getPriceBySize(String ink, String size) async {
+  Future<List<String>> getPriceBySize(String ink, String size, List<InkModel> data) async {
 
-    return Future.value(_data
+    return Future.value(data
         .where((item) => item.ink_code == ink)
         .map((e) => e.size!)
         .expand((element) => element)
@@ -846,13 +893,13 @@ class FetchDataPrint {
         .map((e) => e.prices)
         .expand((element) => element)
         .map((e) => PriceModel.fromJson(e))
-        .map((e) => e.price_code!)
+        .map((e) => e.type_paper_code!)
         .toList());
 
   }
 
-  Future<List<PriceModel>> getPriceBySizeAll(String ink, String size) async {
-    return Future.value(_data
+  Future<List<PriceModel>> getPriceBySizeAll(String ink, String size, List<InkModel> data) async {
+    return Future.value(data
         .where((item) => item.ink_code == ink)
         .map((e) => e.size!)
         .expand((element) => element)
@@ -864,8 +911,8 @@ class FetchDataPrint {
         .toList());
   }
 
-  Future<List<String>> getFinishingBySize(String ink, String size) async {
-    return Future.value(_data
+  Future<List<String>> getFinishingBySize(String ink, String size, List<InkModel> data) async {
+    return Future.value(data
         .where((item) => item.ink_code == ink)
         .map((e) => e.size!)
         .expand((element) => element)
@@ -878,8 +925,8 @@ class FetchDataPrint {
         .toList());
   }
   
-  Future<List<FinishingModel>> getFinishingBySizeAll(String ink, String size) async {
-    return Future.value(_data
+  Future<List<FinishingModel>> getFinishingBySizeAll(String ink, String size, List<InkModel> data) async {
+    return Future.value(data
         .where((item) => item.ink_code == ink)
         .map((e) => e.size!)
         .expand((element) => element)
@@ -891,9 +938,9 @@ class FetchDataPrint {
         .toList());
   }
 
-  Future<List<SizeModel>> getSizeAll(String ink) async {
+  Future<List<SizeModel>> getSizeAll(String ink, List<InkModel> data) async {
 
-    return Future.value(_data
+    return Future.value(data
         .where((item) => item.ink_code == ink)
         .map((e) => e.size!)
         .expand((element) => element)

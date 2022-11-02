@@ -31,4 +31,8 @@ class InkModel {
     );
   }
 
+  @override
+  String toString() {
+    return 'InkModel{ink_code: $ink_code, ink_name: $ink_name, size: $size}';
+  }
 }
