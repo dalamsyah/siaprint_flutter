@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siapprint/model/basket_model.dart';
+import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket2_page.dart';
 import 'package:siapprint/screen/checkout_page.dart';
@@ -48,9 +49,11 @@ class TabNavigator extends StatelessWidget {
       TabNavigatorRoutes.root: (context) => tabItem.widget,
       TabNavigatorRoutes.detail: (context) => const AccountSettingPage(),
       TabNavigatorRoutes.upload: (context) => const UploadPage(),
-      TabNavigatorRoutes.form_print: (context) => FormPrintPage(),
+      TabNavigatorRoutes.form_print: (context) => FormPrintPage(
+        basketModel: arguments as BasketModel,
+      ),
       TabNavigatorRoutes.checkout: (context) => CheckoutPage(
-          listBasketModel: arguments as List<BasketModel>
+          transactionModel: arguments as TransactionModel
       ),
     };
   }

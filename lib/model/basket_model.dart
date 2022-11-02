@@ -12,6 +12,19 @@ class BasketModel {
   String? deleted_at;
   bool? is_checked;
 
+  int total = 0;
+  int printer = 0;
+  String printer_code = '';
+
+  int pages = 0;
+  String pagesRange = '';
+  String copyPage = '1';
+  String notes = '';
+
+  String ukuranKertas = 'Silahkan pilih';
+  String jenisKertas = 'Silahkan pilih';
+  String finishing = 'Silahkan pilih';
+
   BasketModel({
     required this.id,
     required this.user_id,

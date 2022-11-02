@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/company_model.dart';
+import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/basket_service.dart';
 import 'package:siapprint/repository/company_serive.dart';
 import 'package:siapprint/screen/form_print_page.dart';
@@ -248,8 +249,9 @@ class _Basket3Page extends State<Basket3Page> {
                       ),
                       onPressed: (){
                         List<BasketModel> basketListSelected = _basketService.listBasket.where((e) => e.is_checked == true).toList();
+                        TransactionModel transactionModel = TransactionModel(listBasketModel: basketListSelected, total_print: 0, delivery_id: 0, delivery_code: '', total: 0);
 
-                        Navigator.of(context).pushNamed(TabNavigatorRoutes.checkout, arguments: basketListSelected);
+                        Navigator.of(context).pushNamed(TabNavigatorRoutes.checkout, arguments: transactionModel);
                       },
                       child: Text('Proses'),
                     ),

@@ -18,6 +18,7 @@ class BasketService {
   Future<http.Response> getBasket() async {
 
     is_loading = true;
+    print('loading...');
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
@@ -35,8 +36,6 @@ class BasketService {
       listBasket = dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
 
       is_loading = false;
-
-      print(response.body);
 
       return response;
     } else {
