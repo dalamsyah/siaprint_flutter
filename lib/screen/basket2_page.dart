@@ -71,7 +71,6 @@ class _Basket2Page extends State<Basket2Page> {
                   setState(() {
                     _basketService.listBasket[index].is_checked != _basketService.listBasket[index].is_checked;
 
-                    print(_basketService.listBasket[index].toJson());
                   });
                 },
               ),

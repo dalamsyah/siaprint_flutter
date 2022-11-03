@@ -16,9 +16,6 @@ class LoginService {
       'password': password
     });
 
-    print(response.statusCode);
-    print(response.body);
-
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
 

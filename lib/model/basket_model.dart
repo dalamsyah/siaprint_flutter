@@ -21,6 +21,9 @@ class BasketModel {
   String copyPage = '1';
   String notes = '';
 
+  int priceJenisKertas = 0;
+  int priceFinishing = 0;
+
   String ukuranKertas = 'Silahkan pilih';
   String jenisKertas = 'Silahkan pilih';
   String finishing = 'Silahkan pilih';

@@ -7,7 +7,7 @@ class TransactionModel {
   int total_print = 0;
   int? delivery_id;
   String? delivery_code;
-  int? total;
+  int total = 0;
 
   TransactionModel({
     required this.listBasketModel,
@@ -47,5 +47,8 @@ class TransactionModel {
     );
   }
 
-
+  @override
+  String toString() {
+    return 'TransactionModel{listBasketModel: $listBasketModel, total_print: $total_print, delivery_id: $delivery_id, delivery_code: $delivery_code, total: $total}';
+  }
 }

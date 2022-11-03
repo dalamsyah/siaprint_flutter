@@ -9,14 +9,18 @@ import 'package:siapprint/model/finishing_model.dart';
 import 'package:siapprint/model/inks_model.dart';
 import 'package:siapprint/model/price_model.dart';
 import 'package:siapprint/model/size_model.dart';
+import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/form_service.dart';
+
+typedef StringValue = Function(BasketModel);
 
 class FormPrintPage extends StatefulWidget {
 
-  const FormPrintPage({ Key? key, required this.basketModel}) : super(key: key);
+  FormPrintPage({ Key? key, required this.basketModel, this.callback}) : super(key: key);
 
   static String tag = 'form-print-page';
   final BasketModel basketModel;
+  StringValue? callback;
 
   @override
   State<StatefulWidget> createState() => _FormPrintPage();
@@ -85,6 +89,7 @@ class _FormPrintPage extends State<FormPrintPage> {
          * set to edit
          */
         if (basketModel.printer != 0) {
+          _printer = basketModel.printer;
           _onSelectedInk(basketModel.printer);
         }
 
@@ -99,7 +104,22 @@ class _FormPrintPage extends State<FormPrintPage> {
           _dropDownJenisKertas = basketModel.jenisKertas;
         }
 
-        print(basketModel.toString());
+        if (!basketModel.finishing.contains('Silahkan pilih')){
+          _dropDownFinishing = basketModel.finishing;
+        }
+
+        if (basketModel.pages != 0) {
+          _pages = basketModel.pages;
+          _pagesRange.text = basketModel.pagesRange;
+        }
+
+        _copyPage.text = basketModel.copyPage;
+        _notesDocument.text = basketModel.notes;
+
+        _priceJenisKertas = basketModel.priceJenisKertas;
+        _priceFinishing = basketModel.priceFinishing;
+        // _totalPrint = basketModel.total;
+
 
       });
 
@@ -136,9 +156,6 @@ class _FormPrintPage extends State<FormPrintPage> {
       ink = 'INK002';
     }
 
-    basketModel.printer = value;
-    basketModel.printer_code = ink;
-
     _ukuranKertas = List.from(_ukuranKertas)..addAll(await _fetchData.getSizeByInk(ink, _dataInk));
     _sizeAll = List.from(_sizeAll)..addAll(await _fetchData.getSizeAll(ink, _dataInk));
 
@@ -163,7 +180,6 @@ class _FormPrintPage extends State<FormPrintPage> {
     _finishing = List.from(_finishing)..addAll(await _fetchData.getFinishingBySize(ink, _dropDownUkuranKertas, _dataInk));
     _finishingAll = List.from(_finishingAll)..addAll(await _fetchData.getFinishingBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
 
-    print(_jenisKertas.toString());
   }
 
   void setToEdit(String inkCode) async {
@@ -180,9 +196,7 @@ class _FormPrintPage extends State<FormPrintPage> {
   Widget build(BuildContext context) {
 
     _totalPrint = _priceJenisKertas + _priceFinishing;
-    _total = _totalPrint + _totalDelivery;
-
-    _fetchData.setData(_formService.listInkModel);
+    // _total = _totalPrint + _totalDelivery;
 
     var option = Row(
       children: [
@@ -241,6 +255,7 @@ class _FormPrintPage extends State<FormPrintPage> {
             alignment: Alignment.center,
             child: Column(
               children: [
+
                 Container(
                   padding: EdgeInsets.all(20),
                   width: double.infinity,
@@ -276,22 +291,9 @@ class _FormPrintPage extends State<FormPrintPage> {
                         _dropDownUkuranKertas = value!;
                         _dropDownJenisKertas = 'Silahkan pilih';
                         _dropDownFinishing = 'Silahkan pilih';
-
-                        /**
-                         * set to edit
-                         */
-                        basketModel.ukuranKertas = value;
                       });
 
-                      String ink = 'INK002';
-                      if (_printer == 1){
-                        ink = 'INK001';
-                      }
-                      _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas, _dataInk));
-                      _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
-
-                      _finishing = List.from(_finishing)..addAll(await _fetchData.getFinishingBySize(ink, _dropDownUkuranKertas, _dataInk));
-                      _finishingAll = List.from(_finishingAll)..addAll(await _fetchData.getFinishingBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
+                      _onSelectedSize(_printer);
 
                     },
                     items: _ukuranKertas.map<DropdownMenuItem<String>>((String value) {
@@ -335,11 +337,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                       setState(() {
                         _dropDownJenisKertas = value!;
                         _priceJenisKertas = int.parse(list.first.price ?? '0');
-
-                        /**
-                         * set to edit
-                         */
-                        basketModel.jenisKertas = value;
+                        basketModel.priceJenisKertas = _priceJenisKertas;
                       });
                     },
                     items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
@@ -403,6 +401,8 @@ class _FormPrintPage extends State<FormPrintPage> {
                         width: 100,
                         child: TextFormField(
                           controller: _pagesRange,
+                          onChanged: (String? value) {
+                          },
                           decoration: InputDecoration(
                             hintText: 'Page range',
                           ),
@@ -463,7 +463,9 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                       setState(() {
                         _dropDownFinishing = value!;
+
                         _priceFinishing = int.parse(list.first.price ?? '0');
+                        basketModel.priceFinishing = _priceFinishing;
                       });
 
                     },
@@ -495,6 +497,8 @@ class _FormPrintPage extends State<FormPrintPage> {
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
                     controller: _notesDocument,
+                    onChanged: (String? value) {
+                    },
                     decoration: InputDecoration(
                       hintText: 'Catatan untuk dokumen ini',
                     ),
@@ -520,347 +524,69 @@ class _FormPrintPage extends State<FormPrintPage> {
                     style: ElevatedButton.styleFrom(
                         elevation: 2
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+
+                      String ink = '';
+                      if (_printer == 1){
+                        ink = 'INK001';
+                      } else if (_printer == 2) {
+                        ink = 'INK002';
+                      }
+
+                      basketModel.printer = _printer;
+                      basketModel.printer_code = ink;
+                      basketModel.ukuranKertas = _dropDownUkuranKertas;
+                      basketModel.jenisKertas = _dropDownJenisKertas;
+                      basketModel.pages = _pages;
+                      basketModel.pagesRange = _pagesRange.text;
+                      basketModel.copyPage = _copyPage.text;
+                      basketModel.finishing = _dropDownFinishing;
+                      basketModel.notes = _notesDocument.text;
+                      basketModel.total = _totalPrint;
+
+                      String errorMsg = '';
+                      if (basketModel.printer == 0) {
+                        errorMsg = 'Printer harus dipilih';
+                      } else if (basketModel.ukuranKertas.contains('Silahkan pilih')) {
+                        errorMsg = 'Ukuran kertas harus dipilih';
+                      } else if (basketModel.jenisKertas.contains('Silahkan pilih')) {
+                        errorMsg = 'Jenis kertas harus dipilih';
+                      } else if (basketModel.pages == 0) {
+                        errorMsg = 'Halaman harus dipilih';
+                      } else if (basketModel.copyPage == '' || basketModel.copyPage == '0') {
+                        errorMsg = 'Copy harus dipilih';
+                      } else if (basketModel.finishing.contains('Silahkan pilih')) {
+                        errorMsg = 'Finishing harus dipilih';
+                      } else if (basketModel.pages == 2){
+                        if (basketModel.pagesRange == '') {
+                          errorMsg = 'Page range harus dipilih';
+                        }
+                      }
+
+                      if (errorMsg != ''){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(errorMsg),
+                        ));
+                      } else {
+
+                        widget.callback!(basketModel);
+
+                        Navigator.pop(context);
+                      }
+
+                    },
                     // onPressed: _onSelectCheckBox(),
                     child: Text('Simpan'),
                   ),
-                )
+                ),
+
 
               ],
             ),
           ),
-        ),
+        )
       ),
     );
-
-    // return FutureBuilder<Response>(
-    //     //TODO: masih hardcode
-    //     future: _formService.getFieldFormPrint("1"),
-    //     builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
-    //
-    //       if (snapshot.hasData){
-    //
-    //         final data = jsonDecode(snapshot.data!.body);
-    //
-    //         var dataInks = data['result']['inks'] as List;
-    //
-    //         final List<InkModel> listInks = dataInks.map((data) => InkModel.fromJson(data) ).toList();
-    //         _fetchData.setData(listInks);
-    //
-    //         /**
-    //          * set data if exist
-    //          */
-    //
-    //         return Scaffold(
-    //           body: Container(
-    //             child: SingleChildScrollView(
-    //               child: Container(
-    //                 alignment: Alignment.center,
-    //                 child: Column(
-    //                   children: [
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: Text('Print',),
-    //                       color: Colors.grey.withAlpha(50),
-    //                     ),
-    //                     option,
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: Text('Ukuran Kertas'),
-    //                       color: Colors.grey.withAlpha(50),
-    //                     ),
-    //
-    //                     _isLoading ? CircularProgressIndicator() :
-    //
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: DropdownButton<String>(
-    //                         value: _dropDownUkuranKertas,
-    //                         hint: Text('Pilih'),
-    //                         icon: const Icon(Icons.arrow_downward),
-    //                         elevation: 16,
-    //                         style: const TextStyle(color: Colors.deepPurple),
-    //                         underline: Container(
-    //                           height: 2,
-    //                           color: Colors.deepPurpleAccent,
-    //                         ),
-    //                         onChanged: (String? value) async {
-    //                           // This is called when the user selects an item.
-    //                           setState(() {
-    //                             _dropDownUkuranKertas = value!;
-    //                             _dropDownJenisKertas = 'Silahkan pilih';
-    //                             _dropDownFinishing = 'Silahkan pilih';
-    //                           });
-    //
-    //                           String ink = 'INK002';
-    //                           if (_printer == 1){
-    //                             ink = 'INK001';
-    //                           }
-    //                           _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas));
-    //                           _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas));
-    //
-    //                           _finishing = List.from(_finishing)..addAll(await _fetchData.getFinishingBySize(ink, _dropDownUkuranKertas));
-    //                           _finishingAll = List.from(_finishingAll)..addAll(await _fetchData.getFinishingBySizeAll(ink, _dropDownUkuranKertas));
-    //
-    //                         },
-    //                         items: _ukuranKertas.map<DropdownMenuItem<String>>((String value) {
-    //
-    //                           List<SizeModel> list = _sizeAll.where((element) => element.size_code == value).map((e) => e).toList();
-    //
-    //                           String text = "Silahkan pilih";
-    //                           if (list.isNotEmpty) {
-    //                             text = '${list.first.size_name} - ${list.first.size_text}';
-    //                           }
-    //
-    //                           return DropdownMenuItem<String>(
-    //                             value: value,
-    //                             child: Text(text),
-    //                           );
-    //                         }).toList(),
-    //                       ),
-    //                     ),
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: Text('Jenis Kertas'),
-    //                       color: Colors.grey.withAlpha(50),
-    //                     ),
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: DropdownButton<String>(
-    //                         value: _dropDownJenisKertas,
-    //                         icon: const Icon(Icons.arrow_downward),
-    //                         elevation: 16,
-    //                         style: const TextStyle(color: Colors.deepPurple),
-    //                         underline: Container(
-    //                           height: 2,
-    //                           color: Colors.deepPurpleAccent,
-    //                         ),
-    //                         onChanged: (String? value) {
-    //
-    //                           List<PriceModel> list = _priceAll.where((element) => element.price_code == value).map((e) => e).toList();
-    //
-    //                           setState(() {
-    //                             _dropDownJenisKertas = value!;
-    //                             _priceJenisKertas = int.parse(list.first.price ?? '0');
-    //                           });
-    //                         },
-    //                         items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
-    //
-    //                           List<PriceModel> list = _priceAll.where((element) => element.price_code == value).map((e) => e).toList();
-    //
-    //                           String text = "Silahkan pilih";
-    //                           if (list.isNotEmpty) {
-    //                             text = '${list.first.type_paper_name} - Rp ${list.first.price}';
-    //
-    //                           }
-    //
-    //                           return DropdownMenuItem<String>(
-    //                             value: value,
-    //                             child: Text(text),
-    //                           );
-    //                         }).toList(),
-    //                       ),
-    //                     ),
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: Text('Halaman'),
-    //                       color: Colors.grey.withAlpha(50),
-    //                     ),
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       child: Row(
-    //                         children: [
-    //                           Radio(
-    //                             value: 1,
-    //                             groupValue: _pages,
-    //                             onChanged: (value) {
-    //                               setState(() {
-    //                                 _pages = value as int;
-    //                               });
-    //                             },
-    //                           ),
-    //
-    //                           Text(
-    //                             "All",
-    //                           ),
-    //
-    //                           Radio(
-    //                             value: 2,
-    //                             groupValue: _pages,
-    //                             onChanged: (value) {
-    //                               setState(() {
-    //                                 _pages = value as int;
-    //                               });
-    //                             },
-    //                           ),
-    //
-    //                           Text(
-    //                             "Page",
-    //                           ),
-    //
-    //                           SizedBox(width: 10,),
-    //
-    //                           Container(
-    //                             width: 100,
-    //                             child: TextFormField(
-    //                               controller: _pagesRange,
-    //                               decoration: InputDecoration(
-    //                                 hintText: 'Page range',
-    //                               ),
-    //                             ),
-    //                           )
-    //
-    //                         ],
-    //                       ),
-    //
-    //                     ),
-    //                     Container(
-    //                       padding: EdgeInsets.fromLTRB(20, 0, 0, 20),
-    //                       child: Text('** masukkan range halaman atau per halaman cnth : 1-7 atau 1,2,6,7'),
-    //                     ),
-    //
-    //
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: Text('Copy'),
-    //                       color: Colors.grey.withAlpha(50),
-    //                     ),
-    //
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       child: TextFormField(
-    //                         controller: _copyPage,
-    //                         keyboardType: TextInputType.number,
-    //                         inputFormatters: <TextInputFormatter>[
-    //                           FilteringTextInputFormatter.digitsOnly
-    //                         ],
-    //                         decoration: const InputDecoration(
-    //                           hintText: 'Copy',
-    //                         ),
-    //                       ),
-    //                     ),
-    //
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: Text('Finishing'),
-    //                       color: Colors.grey.withAlpha(50),
-    //                     ),
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: DropdownButton<String>(
-    //                         value: _dropDownFinishing,
-    //                         icon: const Icon(Icons.arrow_downward),
-    //                         elevation: 16,
-    //                         style: const TextStyle(color: Colors.deepPurple),
-    //                         underline: Container(
-    //                           height: 2,
-    //                           color: Colors.deepPurpleAccent,
-    //                         ),
-    //                         onChanged: (String? value) async {
-    //                           List<FinishingModel> list = _finishingAll.where((element) => element.finish_code == value).map((e) => e).toList();
-    //
-    //                           setState(() {
-    //                             _dropDownFinishing = value!;
-    //                             _priceFinishing = int.parse(list.first.price ?? '0');
-    //                           });
-    //
-    //                         },
-    //                         items: _finishing.map<DropdownMenuItem<String>>((String value) {
-    //
-    //                           List<FinishingModel> list = _finishingAll.where((element) => element.finish_code == value).map((e) => e).toList();
-    //
-    //                           String text = "Silahkan pilih";
-    //                           if (list.isNotEmpty) {
-    //                             text = '${list.first.finish_text} - Rp ${list.first.price}';
-    //                           }
-    //
-    //                           return DropdownMenuItem<String>(
-    //                             value: value,
-    //                             child: Text(text),
-    //                           );
-    //                         }).toList(),
-    //                       ),
-    //                     ),
-    //
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       width: double.infinity,
-    //                       child: Text('Catatan'),
-    //                       color: Colors.grey.withAlpha(50),
-    //                     ),
-    //
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       child: TextFormField(
-    //                         controller: _notesDocument,
-    //                         decoration: InputDecoration(
-    //                           hintText: 'Catatan untuk dokumen ini',
-    //                         ),
-    //                       ),
-    //                     ),
-    //
-    //                     Container(
-    //                       padding: EdgeInsets.all(20),
-    //                       color: Colors.grey.withAlpha(50),
-    //                       child: Row(
-    //                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                         children: [
-    //                           Text('Total print: '),
-    //                           Text('Rp ${_totalPrint}')
-    //                         ],
-    //                       ),
-    //                     ),
-    //
-    //                     Container(
-    //                       width: double.infinity,
-    //                       padding: EdgeInsets.all(20),
-    //                       child: ElevatedButton(
-    //                         style: ElevatedButton.styleFrom(
-    //                             elevation: 2
-    //                         ),
-    //                         onPressed: () {},
-    //                         // onPressed: _onSelectCheckBox(),
-    //                         child: Text('Simpan'),
-    //                       ),
-    //                     )
-    //
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         );
-    //
-    //       } else if (snapshot.hasError){
-    //         return Center(child: Text('error..${snapshot.error}'));
-    //       }
-    //
-    //       return Scaffold(
-    //         body: Container(
-    //           child: Center(
-    //             child: Column(
-    //               mainAxisSize: MainAxisSize.min,
-    //               children: [
-    //                 CircularProgressIndicator(),
-    //                 SizedBox(height: 10,),
-    //                 Text('Please wait...')
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       );
-    //
-    //     }
-    // );
 
   }
 }

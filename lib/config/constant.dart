@@ -10,6 +10,7 @@ class Constant {
   static String basket = '${baseUrl}apibasket';
   static String company_detail = '${baseUrl}apicompany';
   static String apiprint = '${baseUrl}apiprint';
+  static String apijne = '${baseUrl}apidelv-jne';
 
 
 
