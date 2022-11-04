@@ -11,7 +11,20 @@ class Constant {
   static String company_detail = '${baseUrl}apicompany';
   static String apiprint = '${baseUrl}apiprint';
   static String apijne = '${baseUrl}apidelv-jne';
+  static String apideliverylist = '${baseUrl}apidelivery';
+  static String apisavetransaction = '${baseUrl}apibasketsave';
+  static String apiuploadfile = '${baseUrl}apiuploadsave';
 
+  static String INK_LASER = 'INK001';
+  static String INK_TINTA = 'INK002';
 
+}
+
+enum Ink {
+  INK_LASER('INK001'),
+  INK_TINTA('INK002');
+
+  const Ink(this.code);
+  final String code;
 
 }

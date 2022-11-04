@@ -23,6 +23,9 @@ class BasketModel {
 
   int priceJenisKertas = 0;
   int priceFinishing = 0;
+  double weightJenisKertas = 0;
+  double weightFinishing = 0;
+  double totalWeight = 0;
 
   String ukuranKertas = 'Silahkan pilih';
   String jenisKertas = 'Silahkan pilih';

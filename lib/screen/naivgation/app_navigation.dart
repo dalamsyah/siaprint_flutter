@@ -20,8 +20,8 @@ enum TabItem {
 
 enum TabWidgetItem {
 
-  upload( Basket3Page(onSubmit: null,) ),
-  formPrint( UploadPage() ),
+  upload( UploadPage() ),
+  formPrint( Basket3Page() ),
   setting( AccountSettingPage() );
 
   const TabWidgetItem(this.widget);

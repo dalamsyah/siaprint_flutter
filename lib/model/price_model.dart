@@ -9,6 +9,7 @@ class PriceModel {
   final String? size_name;
   final String? ink_name;
   final String? type_paper_name;
+  final String? weight;
 
   PriceModel({
     required this.price_code,
@@ -19,6 +20,7 @@ class PriceModel {
     required this.size_name,
     required this.ink_name,
     required this.type_paper_name,
+    required this.weight,
   });
 
 
@@ -32,6 +34,7 @@ class PriceModel {
       size_name: json['size_name'],
       ink_name: json['ink_name'],
       type_paper_name: json['type_paper_name'],
+      weight: json['weight'],
     );
   }
 }

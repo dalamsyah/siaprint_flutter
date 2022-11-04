@@ -1,13 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:siapprint/main.dart';
 import 'package:siapprint/screen/login_page.dart';
+import 'package:siapprint/screen/naivgation/app_navigation.dart';
+import 'package:siapprint/screen/naivgation/tab_navigator.dart';
+
+typedef StringValue2 = Function();
 
 class AccountSettingPage extends StatefulWidget {
 
-  const AccountSettingPage({ Key? key }) : super(key: key);
+  const AccountSettingPage({ Key? key, this.callback }) : super(key: key);
 
   static String tag = 'account-setting-page';
+  final StringValue2? callback;
+
   @override
   State<StatefulWidget> createState() => _AccountSettingPage();
 
@@ -45,7 +52,7 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "Common",
+                        "Account",
                         style: headingStyleIOS,
                       ),
                     ],
@@ -56,7 +63,7 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                     subtitle: Text("English"),
                   ),
                   const Divider(),
-                  GestureDetector(
+                  InkWell(
                     child: const ListTile(
                       leading: Icon(Icons.account_circle),
                       title: Text("Logout"),
@@ -71,10 +78,32 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (BuildContext context) => LoginPage(),
+                          builder: (BuildContext context) => const LoginPage(),
                         ),
                             (route) => false,
                       );
+
+                      // widget.callback;
+
+                      // Navigator.pushReplacementNamed(context, 'login-page');
+                      // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                      //         builder: (BuildContext context) => LoginPage(),
+                      //       ), (route) => false);
+
+
+                      // runApp( MyApp(home: LoginPage()) );
+
+                      // Navigator.of(context).pushNamedAndRemoveUntil(
+                      //     'login-page', (Route<dynamic> route) => false);
+
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (_) => LoginPage(),
+                      //   ),
+                      // );
+
+                      // Navigator.of(context).pushNamedAndRemoveUntil(TabNavigatorRoutes.root, (route) => false);
+                      // Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
 
                     },
                   ),

@@ -47,7 +47,11 @@ class TabNavigator extends StatelessWidget {
                 _push(context, materialIndex: materialIndex),
           ),
       TabNavigatorRoutes.root: (context) => tabItem.widget,
-      TabNavigatorRoutes.detail: (context) => const AccountSettingPage(),
+      TabNavigatorRoutes.detail: (context) => AccountSettingPage(
+        callback: (){
+          print('callback logout');
+        },
+      ),
       TabNavigatorRoutes.upload: (context) => const UploadPage(),
       TabNavigatorRoutes.form_print: (context) => FormPrintPage(
         basketModel: arguments as BasketModel,

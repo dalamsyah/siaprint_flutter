@@ -8,10 +8,13 @@ import 'package:siapprint/repository/login_service.dart';
 import 'package:siapprint/screen/home_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
+import 'package:siapprint/screen/naivgation/single_navigation.dart';
 
 class LoginPage extends StatefulWidget {
 
   static String tag = 'login-page';
+
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _LoginPage();
@@ -28,9 +31,9 @@ class _LoginPage extends State<LoginPage> {
 
   @override
   void initState() {
-    _controllerLogin.text = 'raimunsuandi';
+    // _controllerLogin.text = 'raimunsuandi';
     // _controllerPassword.text = 'nowomennocry1234';
-    // _controllerLogin.text = 'test2';
+    _controllerLogin.text = 'test2';
     _controllerPassword.text = 'dimas123456';
 
 
@@ -107,7 +110,7 @@ class _LoginPage extends State<LoginPage> {
             if (data['status'] as int == 0) {
               localStorage.setString('user', jsonEncode(data['result']['user']));
 
-              Navigator.of(context).pushNamedAndRemoveUntil(AppNavigation.tag, (route) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(SingleNavigationPage.tag, (route) => false);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:path/path.dart';
+import 'package:siapprint/repository/upload_service.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({ Key? key }) : super(key: key);
@@ -15,8 +17,11 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
   String _image = 'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
   late AnimationController loadingController;
 
+  final UploadService _uploadService = UploadService();
+
   File? _file;
-  PlatformFile? _platformFile;
+  List<File> _files = [];
+  List<PlatformFile> _platformFiles = [];
 
   selectFile() async {
     final file = await FilePicker.platform.pickFiles(
@@ -27,7 +32,8 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
     if (file != null) {
       setState(() {
         _file = File(file.files.single.path!);
-        _platformFile = file.files.first;
+        _platformFiles.add( file.files.first );
+        _files.add(_file!);
       });
     }
 
@@ -45,11 +51,6 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
     super.initState();
   }
 
-  //////////////////////////////////
-  /// @theflutterlover on Instagram
-  ///
-  /// https://afgprogrammer.com
-  //////////////////////////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +93,7 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                   )
               ),
             ),
-            _platformFile != null
+            _platformFiles.isNotEmpty
                 ? Container(
                 padding: EdgeInsets.all(20),
                 child: Column(
@@ -101,64 +102,95 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                     Text('Selected File',
                       style: TextStyle(color: Colors.grey.shade400, fontSize: 15, ),),
                     SizedBox(height: 10,),
-                    Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.shade200,
-                                offset: Offset(0, 1),
-                                blurRadius: 3,
-                                spreadRadius: 2,
-                              )
-                            ]
-                        ),
-                        child: Row(
+
+                    Column(
+                      children: List.generate(_files.length, (index)  {
+                        return Column(
                           children: [
-                            // ClipRRect(
-                            //     borderRadius: BorderRadius.circular(8),
-                            //     child: Image.file(_file!, width: 70,)
-                            // ),
-                            SizedBox(width: 10,),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(_platformFile!.name,
-                                    style: TextStyle(fontSize: 13, color: Colors.black),),
-                                  SizedBox(height: 5,),
-                                  Text('${(_platformFile!.size / 1024).ceil()} KB',
-                                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                                  ),
-                                  SizedBox(height: 5,),
-                                  Container(
-                                      height: 5,
-                                      clipBehavior: Clip.hardEdge,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        color: Colors.blue.shade50,
-                                      ),
-                                      child: LinearProgressIndicator(
-                                        value: loadingController.value,
+                            Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.shade200,
+                                        offset: Offset(0, 1),
+                                        blurRadius: 3,
+                                        spreadRadius: 2,
                                       )
-                                  ),
-                                ],
-                              ),
+                                    ]
+                                ),
+                                child: Row(
+                                  children: [
+                                    // ClipRRect(
+                                    //     borderRadius: BorderRadius.circular(8),
+                                    //     child: Image.file(_file!, width: 70,)
+                                    // ),
+                                    SizedBox(width: 10,),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(basename(_files[index].path),
+                                            style: TextStyle(fontSize: 13, color: Colors.black),),
+                                          SizedBox(height: 5,),
+                                          Text('${(_platformFiles[index].size / 1024).ceil()} KB',
+                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                          ),
+                                          SizedBox(height: 5,),
+                                          Container(
+                                              height: 5,
+                                              clipBehavior: Clip.hardEdge,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(5),
+                                                color: Colors.blue.shade50,
+                                              ),
+                                              child: LinearProgressIndicator(
+                                                value: loadingController.value,
+                                              )
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 10,),
+                                  ],
+                                )
                             ),
-                            SizedBox(width: 10,),
+                            const SizedBox(height: 10),
                           ],
-                        )
+                        );
+                      }),
                     ),
+
+
                     SizedBox(height: 20,),
-                    // MaterialButton(
-                    //   minWidth: double.infinity,
-                    //   height: 45,
-                    //   onPressed: () {},
-                    //   color: Colors.black,
-                    //   child: Text('Upload', style: TextStyle(color: Colors.white),),
-                    // )
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    side: BorderSide(color: Colors.transparent)
+                                )
+                            )
+                        ),
+                        child: const Text('Upload'),
+                        onPressed: () {
+                          // List<String> listFile = [];
+                          // _files.forEach((element) {
+                          //   listFile.add(element.path);
+                          // });
+
+                          _uploadService.uploadFile(_files);
+                        },
+                      ),
+                    )
                   ],
                 ))
                 : Container(),

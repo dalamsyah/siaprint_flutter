@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
+import 'package:siapprint/config/constant.dart';
+import 'package:siapprint/config/format_number.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/finishing_model.dart';
 import 'package:siapprint/model/inks_model.dart';
@@ -36,6 +38,9 @@ class _FormPrintPage extends State<FormPrintPage> {
   int _totalPrint = 0;
   int _priceJenisKertas = 0;
   int _priceFinishing = 0;
+  double _totalWeight = 0;
+  double _weightJenisKertas = 0;
+  double _weightFinishing = 0;
   int _totalDelivery = 0;
   int _total = 0;
 
@@ -118,6 +123,8 @@ class _FormPrintPage extends State<FormPrintPage> {
 
         _priceJenisKertas = basketModel.priceJenisKertas;
         _priceFinishing = basketModel.priceFinishing;
+        _weightJenisKertas = basketModel.weightJenisKertas;
+        _weightFinishing = basketModel.weightFinishing;
         // _totalPrint = basketModel.total;
 
 
@@ -151,9 +158,9 @@ class _FormPrintPage extends State<FormPrintPage> {
 
     String ink = '';
     if (value == 1){
-      ink = 'INK001';
+      ink = Constant.INK_LASER;
     } else if (value == 2) {
-      ink = 'INK002';
+      ink = Constant.INK_TINTA;
     }
 
     _ukuranKertas = List.from(_ukuranKertas)..addAll(await _fetchData.getSizeByInk(ink, _dataInk));
@@ -169,10 +176,15 @@ class _FormPrintPage extends State<FormPrintPage> {
 
     String ink = '';
     if (value == 1){
-      ink = 'INK001';
+      ink = Constant.INK_LASER;
     } else if (value == 2) {
-      ink = 'INK002';
+      ink = Constant.INK_TINTA;
     }
+
+    setState(() {
+      _jenisKertas = ['Silahkan pilih'];
+      _finishing = ['Silahkan pilih'];
+    });
 
     _jenisKertas = List.from(_jenisKertas)..addAll(await _fetchData.getPriceBySize(ink, _dropDownUkuranKertas, _dataInk));
     _priceAll = List.from(_priceAll)..addAll(await _fetchData.getPriceBySizeAll(ink, _dropDownUkuranKertas, _dataInk));
@@ -196,7 +208,8 @@ class _FormPrintPage extends State<FormPrintPage> {
   Widget build(BuildContext context) {
 
     _totalPrint = _priceJenisKertas + _priceFinishing;
-    // _total = _totalPrint + _totalDelivery;
+    _totalWeight = _weightJenisKertas + _weightFinishing;
+    _totalWeight = double.parse(_totalWeight.toStringAsFixed(3));
 
     var option = Row(
       children: [
@@ -334,10 +347,13 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                       List<PriceModel> list = _priceAll.where((element) => element.type_paper_code == value).map((e) => e).toList();
 
+                      print(value);
+
                       setState(() {
                         _dropDownJenisKertas = value!;
                         _priceJenisKertas = int.parse(list.first.price ?? '0');
                         basketModel.priceJenisKertas = _priceJenisKertas;
+                        basketModel.weightJenisKertas = double.parse(list.first.weight ?? '0');
                       });
                     },
                     items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
@@ -346,7 +362,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                       String text = "Silahkan pilih";
                       if (list.isNotEmpty) {
-                        text = '${list.first.type_paper_name} - Rp ${list.first.price}';
+                        text = '${list.first.type_paper_name} - ${MyNumber.convertToIdr(int.parse(list.first.price ?? '0'))}';
 
                       }
 
@@ -466,6 +482,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                         _priceFinishing = int.parse(list.first.price ?? '0');
                         basketModel.priceFinishing = _priceFinishing;
+                        basketModel.weightFinishing = double.parse(list.first.weight ?? '0');
                       });
 
                     },
@@ -475,7 +492,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                       String text = "Silahkan pilih";
                       if (list.isNotEmpty) {
-                        text = '${list.first.finish_text} - Rp ${list.first.price}';
+                        text = '${list.first.finish_text} - ${MyNumber.convertToIdr(int.parse(list.first.price ?? '0'))}';
                       }
 
                       return DropdownMenuItem<String>(
@@ -508,13 +525,24 @@ class _FormPrintPage extends State<FormPrintPage> {
                 Container(
                   padding: EdgeInsets.all(20),
                   color: Colors.grey.withAlpha(50),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Text('Total print: '),
-                      Text('Rp ${_totalPrint}')
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Total print: '),
+                          Text(MyNumber.convertToIdr(_totalPrint))
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Total weight: '),
+                          Text('${_totalWeight} kg')
+                        ],
+                      ),
                     ],
-                  ),
+                  )
                 ),
 
                 Container(
@@ -528,9 +556,9 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                       String ink = '';
                       if (_printer == 1){
-                        ink = 'INK001';
+                        ink = Constant.INK_LASER;
                       } else if (_printer == 2) {
-                        ink = 'INK002';
+                        ink = Constant.INK_TINTA;
                       }
 
                       basketModel.printer = _printer;
@@ -543,6 +571,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                       basketModel.finishing = _dropDownFinishing;
                       basketModel.notes = _notesDocument.text;
                       basketModel.total = _totalPrint;
+                      basketModel.totalWeight = _totalWeight;
 
                       String errorMsg = '';
                       if (basketModel.printer == 0) {

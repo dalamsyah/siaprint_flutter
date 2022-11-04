@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:siapprint/screen/account_setting.dart';
+import 'package:siapprint/screen/basket3_page.dart';
 import 'package:siapprint/screen/form_print_page.dart';
+import 'package:siapprint/screen/home_page.dart';
+import 'package:siapprint/screen/login_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
+import 'package:siapprint/screen/naivgation/single_navigation.dart';
 import 'package:siapprint/screen/sample_screen.dart';
 
-import 'screen/home_page.dart';
-import 'screen/login_page.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -17,7 +20,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getString('user') != null;
 
-  runApp(MyApp(home: status == true ? AppNavigation() : LoginPage()));
+  runApp(MyApp(home: status == true ? SingleNavigationPage() : const LoginPage()));
 }
 
 // void main() => runApp(AppWidget());
@@ -44,7 +47,11 @@ class MyApp extends StatelessWidget {
   final Widget home;
 
   final routes = <String, WidgetBuilder>{
-    LoginPage.tag: (context) => LoginPage(),
+    LoginPage.tag: (context) => const LoginPage(),
+    Basket3Page.tag: (context) => const Basket3Page(),
+    AccountSettingPage.tag: (context) => const AccountSettingPage(),
+    SingleNavigationPage.tag: (context) => const SingleNavigationPage(),
+
     AppNavigation.tag: (context) => AppNavigation(),
     HomePage.tag: (context) => HomePage(),
     BottomBar.tag: (context) => BottomBar(),

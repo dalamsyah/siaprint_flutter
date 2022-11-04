@@ -14,11 +14,9 @@ import 'package:siapprint/screen/utils/custom_widget.dart';
 
 class Basket3Page extends StatefulWidget {
 
-  const Basket3Page({Key? key, required this.onSubmit}) : super(key: key);
-
-  final ValueChanged<int>? onSubmit;
-
   static String tag = 'basket3-page';
+
+  const Basket3Page({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Basket3Page();
@@ -249,7 +247,13 @@ class _Basket3Page extends State<Basket3Page> {
                       ),
                       onPressed: (){
                         List<BasketModel> basketListSelected = _basketService.listBasket.where((e) => e.is_checked == true).toList();
-                        TransactionModel transactionModel = TransactionModel(listBasketModel: basketListSelected, total_print: 0, delivery_id: 0, delivery_code: '', total: 0);
+                        TransactionModel transactionModel = TransactionModel(
+                            listBasketModel: basketListSelected,
+                            companyModel: _companyService.listCompany.first,
+                            total_print: 0,
+                            delivery_id: 0,
+                            delivery_code: '',
+                            total: 0);
 
                         Navigator.of(context).pushNamed(TabNavigatorRoutes.checkout, arguments: transactionModel);
                       },

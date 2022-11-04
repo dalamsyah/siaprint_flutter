@@ -6,6 +6,7 @@ class FinishingModel {
   final String? finish_code;
   final String? finish_text;
   final String? price;
+  final String? weight;
 
   FinishingModel({
     required this.price_finish_code,
@@ -13,6 +14,7 @@ class FinishingModel {
     required this.finish_code,
     required this.finish_text,
     required this.price,
+    required this.weight,
   });
 
 
@@ -23,6 +25,7 @@ class FinishingModel {
       finish_code: json['finish_code'],
       finish_text: json['finish_text'],
       price: json['price'],
+      weight: json['weight'],
     );
   }
 }
