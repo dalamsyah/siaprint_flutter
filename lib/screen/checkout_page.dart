@@ -11,7 +11,7 @@ import 'package:siapprint/model/inks_model.dart';
 import 'package:siapprint/model/price_model.dart';
 import 'package:siapprint/model/size_model.dart';
 import 'package:siapprint/model/transaction_model.dart';
-import 'package:siapprint/repository/delivery_service.dart';
+import 'package:siapprint/repository/checkout_service.dart';
 import 'package:siapprint/repository/form_service.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 
@@ -348,7 +348,9 @@ class _CheckoutPage extends State<CheckoutPage> {
                       content: Text(errorMsg),
                     ));
                   } else {
-                    Navigator.pop(context);
+
+                    _deliveryService.saveTransaction(transactionModel);
+
                   }
 
                 },

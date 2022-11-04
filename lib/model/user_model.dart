@@ -1,4 +1,9 @@
 
+import 'dart:collection';
+
+import 'package:flutter/material.dart';
+import 'package:siapprint/model/address_model.dart';
+
 class UserModel {
 
   final String? id;
@@ -22,6 +27,7 @@ class UserModel {
   final String? last_name;
   final String? admin_comp;
   final String? owner;
+  final dynamic address;
 
   UserModel({
     required this.id,
@@ -44,7 +50,8 @@ class UserModel {
     required this.first_name,
     required this.last_name,
     required this.admin_comp,
-    required this.owner
+    required this.owner,
+    required this.address,
   });
 
 
@@ -71,6 +78,7 @@ class UserModel {
       last_name: json['last_name'],
       admin_comp: json['admin_comp'],
       owner: json['owner'],
+      address: json['address'],
     );
   }
 }

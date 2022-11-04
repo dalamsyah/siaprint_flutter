@@ -16,6 +16,8 @@ class AddressModel {
   String? district_id;
   String? villages_id;
   String? default_addr;
+  String? regency_name;
+  String? province_name;
 
   AddressModel({
       this.id,
@@ -32,7 +34,10 @@ class AddressModel {
       this.regencies_id,
       this.district_id,
       this.villages_id,
-      this.default_addr});
+      this.default_addr,
+      this.regency_name,
+      this.province_name,
+  });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
@@ -51,11 +56,13 @@ class AddressModel {
       district_id: json['district_id'],
       villages_id: json['villages_id'],
       default_addr: json['default_addr'],
+      regency_name: json['regency_name'],
+      province_name: json['province_name'],
     );
   }
 
   @override
   String toString() {
-    return 'AddressModel{id: $id, user_id: $user_id, addr_name: $addr_name, receiver: $receiver, address: $address, postcode: $postcode, created_at: $created_at, updated_at: $updated_at, phone: $phone, delete_at: $delete_at, province_id: $province_id, regencies_id: $regencies_id, district_id: $district_id, villages_id: $villages_id, default_addr: $default_addr}';
+    return 'AddressModel{id: $id, user_id: $user_id, addr_name: $addr_name, receiver: $receiver, address: $address, postcode: $postcode, created_at: $created_at, updated_at: $updated_at, phone: $phone, delete_at: $delete_at, province_id: $province_id, regencies_id: $regencies_id, district_id: $district_id, villages_id: $villages_id, default_addr: $default_addr, regency_name: $regency_name, province_name: $province_name}';
   }
 }

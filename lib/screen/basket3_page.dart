@@ -18,7 +18,7 @@ class Basket3Page extends StatefulWidget {
 
   final ValueChanged<int>? onSubmit;
 
-  static String tag = 'basket2-page';
+  static String tag = 'basket3-page';
 
   @override
   State<StatefulWidget> createState() => _Basket3Page();
@@ -142,7 +142,7 @@ class _Basket3Page extends State<Basket3Page> {
                       } else if (snapshot.hasError) {
                         return Container(
                             alignment: Alignment.center,
-                            child: Text('something wrong')
+                            child: Text('something wrong ${snapshot.error}')
                         );
                       }
 

@@ -15,48 +15,6 @@ class BasketService {
 
   bool is_loading = false;
 
-  Future<http.Response> saveTransaction() async {
-
-    is_loading = true;
-
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
-
-
-    Map<String, dynamic> map = {};
-    map['fn_addr_default_regencies_id'] = '';
-    map['fn_addr_default_provinces_id'] = '';
-    map['fn_addr_default_address'] = '';
-    map['fn_addr_default_regencies_name'] = '';
-    map['fn_addr_default_provinces_name'] = '';
-    map['fn_addr_default_postcode'] = '';
-    map['fn_addr_default_phone'] = '';
-    map['fn_addr_default_receiver'] = '';
-    map[''] = '';
-
-
-    final response = await http.post(Uri.parse(Constant.basket), body: {
-      'apitoken': Constant.apitoken,
-      'userid': userModel.id
-    });
-
-    if (response.statusCode == 200) {
-
-      final data = jsonDecode(response.body);
-      var dataListBasket = data['result']['basket'] as List;
-
-      listBasket = dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
-
-      is_loading = false;
-
-      return response;
-    } else {
-      is_loading = false;
-      throw Exception('Failed to get basket.');
-    }
-
-  }
-
   Future<http.Response> getBasket() async {
 
     is_loading = true;
