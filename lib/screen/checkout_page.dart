@@ -19,10 +19,10 @@ import 'package:siapprint/config/format_number.dart';
 
 class CheckoutPage extends StatefulWidget {
 
-  const CheckoutPage({ Key? key, required this.transactionModel }) : super(key: key);
+  const CheckoutPage({ Key? key, this.transactionModel }) : super(key: key);
 
   static String tag = 'checkout-page';
-  final TransactionModel transactionModel;
+  final TransactionModel? transactionModel;
 
   @override
   State<StatefulWidget> createState() => _CheckoutPage();
@@ -42,7 +42,7 @@ class _CheckoutPage extends State<CheckoutPage> {
 
   @override
   void initState() {
-    transactionModel = widget.transactionModel;
+    transactionModel = widget.transactionModel!;
     super.initState();
   }
 
@@ -179,7 +179,7 @@ class _CheckoutPage extends State<CheckoutPage> {
             Expanded(child: ListView.separated(
               padding: const EdgeInsets.all(10),
               shrinkWrap: true,
-              itemCount: widget.transactionModel.listBasketModel.length,
+              itemCount: transactionModel.listBasketModel.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                     elevation: 3,
@@ -305,183 +305,6 @@ class _CheckoutPage extends State<CheckoutPage> {
                     ),
                   ],
                 ),
-
-                // FutureBuilder(
-                //     future: _checkoutService.getDeliveryList(),
-                //     builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
-                //
-                //       if (snapshot.hasData){
-                //
-                //         final data = jsonDecode(snapshot.data!.body);
-                //         var list = data['result']['delivery'] as List;
-                //         List<DeliveryModel> listInks = list.map((data) => DeliveryModel.fromJson(data) ).toList();
-                //
-                //         return ListView.builder(
-                //             itemCount: listInks.length,
-                //             itemBuilder: (BuildContext context, int index) {
-                //           return Row(
-                //             children: [
-                //               Radio(
-                //                 value: 2,
-                //                 groupValue: _delivery,
-                //                 onChanged: (value) {
-                //                   setState(() {
-                //                     _delivery = value as int?;
-                //                   });
-                //                 },
-                //               ),
-                //               InkWell(
-                //                 child: Column(
-                //                   crossAxisAlignment: CrossAxisAlignment.start,
-                //                   children: [
-                //                     Text(
-                //                       "Delivery by ${listInks[index].delv_name!.toUpperCase()}",
-                //                     ),
-                //                     Text('Total biaya pengiriman: Rp $_totalDelivery')
-                //                   ],
-                //                 ),
-                //                 onTap: (){
-                //                   showModalBottomSheet(
-                //                       backgroundColor: Colors.transparent,
-                //                       isScrollControlled: true,
-                //                       context: context, builder: (BuildContext context) {
-                //                     return Container(
-                //                       height: MediaQuery.of(context).size.height * 0.50,
-                //                       child: Container(
-                //                         decoration: const BoxDecoration(
-                //                           color: Colors.white,
-                //                           borderRadius: BorderRadius.only(
-                //                             topLeft: Radius.circular(20.0),
-                //                             topRight: Radius.circular(20.0),
-                //                           ),
-                //                         ),
-                //                         child: Column(
-                //                           children: [
-                //                             Container(
-                //                                 padding: const EdgeInsets.all(10),
-                //                                 child: Container(
-                //                                   height: 4,
-                //                                   width: 50,
-                //                                   decoration: BoxDecoration(
-                //                                     color: Colors.grey.withOpacity(0.2),
-                //                                     borderRadius: const BorderRadius.only(
-                //                                         topLeft: Radius.circular(25.0),
-                //                                         topRight: Radius.circular(25.0),
-                //                                         bottomLeft: Radius.circular(25.0),
-                //                                         bottomRight: Radius.circular(25.0)
-                //                                     ),
-                //                                   ),
-                //                                 )),
-                //                             Expanded(
-                //                               child:
-                //                               FutureBuilder<Response>(
-                //                                   future: _checkoutService.getDeliveryJNE(),
-                //                                   builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
-                //
-                //                                     if (snapshot.hasData){
-                //
-                //                                       final data = jsonDecode(snapshot.data!.body);
-                //                                       var list = data['result']['result_detail'] as List;
-                //
-                //                                       return Scaffold(
-                //                                           body: ListView.builder(
-                //                                               itemCount: list.length,
-                //                                               itemBuilder: (BuildContext content, int index) {
-                //
-                //                                                 String cost = list[index]['cost'][0]['value'].toString();
-                //                                                 double persenUp = double.parse(data['result']['percent_up']);
-                //                                                 double persen = int.parse(cost) * persenUp;
-                //
-                //                                                 double a = int.parse(cost) + persen;
-                //                                                 int ongkir = a.toInt();
-                //
-                //                                                 return Container(
-                //                                                   padding: EdgeInsets.all(20),
-                //                                                   child: Row(
-                //                                                     children: [
-                //                                                       Expanded(child:
-                //                                                       Column(
-                //                                                         mainAxisAlignment: MainAxisAlignment.start,
-                //                                                         crossAxisAlignment: CrossAxisAlignment.start,
-                //                                                         children: [
-                //                                                           Text('Jenis: ${list[index]['service']}'),
-                //                                                           Text('Waktu: ${list[index]['cost'][0]['etd']} hari'),
-                //                                                           Text('Biaya: Rp $ongkir')
-                //                                                         ],
-                //                                                       )
-                //                                                       ),
-                //                                                       ElevatedButton(
-                //                                                         style: ElevatedButton.styleFrom(
-                //                                                             elevation: 2
-                //                                                         ),
-                //                                                         onPressed: () {
-                //                                                           setState((){
-                //                                                             _totalDelivery = ongkir;
-                //                                                             _delivery = 2;
-                //                                                           });
-                //                                                           Navigator.pop(context);
-                //                                                         },
-                //                                                         // onPressed: _onSelectCheckBox(),
-                //                                                         child: const Text('Pilih'),
-                //                                                       )
-                //                                                     ],
-                //                                                   ),
-                //                                                 );
-                //                                               })
-                //                                       );
-                //                                     } else if (snapshot.hasError){
-                //                                       return Center(child: Text('error..${snapshot.error}'));
-                //                                     }
-                //
-                //                                     return Scaffold(
-                //                                       body: Center(
-                //                                         child: Column(
-                //                                           mainAxisSize: MainAxisSize.min,
-                //                                           children: const [
-                //                                             CircularProgressIndicator(),
-                //                                             SizedBox(height: 10,),
-                //                                             Text('Please wait...')
-                //                                           ],
-                //                                         ),
-                //                                       ),
-                //                                     );
-                //
-                //                                   }
-                //                               ),
-                //                             )
-                //                           ],
-                //                         ),
-                //                       ),
-                //                     );
-                //                   });
-                //                 },
-                //               )
-                //             ],
-                //           );
-                //         });
-                //
-                //       } else if (snapshot.hasError) {
-                //         return Container(
-                //             alignment: Alignment.center,
-                //             child: Text('something wrong ${snapshot.error}')
-                //         );
-                //       }
-                //
-                //       return Center(
-                //         child: Column(
-                //           children: [
-                //             Transform.scale(
-                //               scale: 0.5,
-                //               child: CircularProgressIndicator(),
-                //             ),
-                //             SizedBox(height: 10,),
-                //             Text('Please wait...')
-                //           ],
-                //         ),
-                //       );
-                //
-                //     }
-                // ),
 
                 Row(
                   children: [

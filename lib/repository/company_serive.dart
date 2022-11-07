@@ -11,6 +11,7 @@ import 'package:siapprint/model/user_model.dart';
 class CompanyService {
 
   List<CompanyModel> listCompany = [];
+  List<CompanyModel> allListCompany = [];
 
   bool is_loading = false;
 
@@ -30,8 +31,10 @@ class CompanyService {
 
       final data = jsonDecode(response.body);
       var dataListCompany = data['result']['company_selected'] as List;
+      var dataAllListCompany = data['result']['company'] as List;
 
       listCompany = dataListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
+      allListCompany = dataAllListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
 
       is_loading = false;
 

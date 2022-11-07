@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket3_page.dart';
+import 'package:siapprint/screen/checkout_page.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/home_page.dart';
 import 'package:siapprint/screen/login_page.dart';
@@ -50,6 +52,7 @@ class MyApp extends StatelessWidget {
     LoginPage.tag: (context) => const LoginPage(),
     Basket3Page.tag: (context) => const Basket3Page(),
     AccountSettingPage.tag: (context) => const AccountSettingPage(),
+    CheckoutPage.tag: (context) => const CheckoutPage(),
     SingleNavigationPage.tag: (context) => const SingleNavigationPage(),
 
     AppNavigation.tag: (context) => AppNavigation(),
@@ -57,6 +60,18 @@ class MyApp extends StatelessWidget {
     BottomBar.tag: (context) => BottomBar(),
     BottomPage2.tag: (context) => BottomPage2(),
   };
+
+  Map<String, WidgetBuilder> _routeBuilders(BuildContext buildContext, Object? arguments) {
+    return {
+      LoginPage.tag: (context) => const LoginPage(),
+      Basket3Page.tag: (context) => const Basket3Page(),
+      AccountSettingPage.tag: (context) => const AccountSettingPage(),
+      CheckoutPage.tag: (context) => CheckoutPage(
+          transactionModel: arguments as TransactionModel
+      ),
+      SingleNavigationPage.tag: (context) => const SingleNavigationPage(),
+    };
+  }
 
   // This widget is the root of your application.
   @override
@@ -76,7 +91,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: home,
-      routes: routes,
+      onGenerateRoute: (routeSettings) {
+        return MaterialPageRoute(
+          // builder: (context) => _routeBuilders[routeSettings.name!]!(context),
+          builder: (context) => _routeBuilders(context, routeSettings.arguments)[routeSettings.name]!(context),
+        );
+      },
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/basket_service.dart';
 import 'package:siapprint/repository/company_serive.dart';
+import 'package:siapprint/screen/checkout_page.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/naivgation/tab_navigator.dart';
 import 'package:siapprint/screen/utils/custom_widget.dart';
@@ -35,7 +36,7 @@ class _Basket3Page extends State<Basket3Page> {
 
   Widget currentAddress(List<CompanyModel> companyModels) {
 
-    CompanyModel companyModel = _companyService.listCompany.first;
+    CompanyModel selectedCompanyModel = _companyService.listCompany.first;
 
     return Container(
       width: double.infinity,
@@ -50,15 +51,23 @@ class _Basket3Page extends State<Basket3Page> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(companyModel.comp_name != null ? companyModel.comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
-          Text(companyModel.comp_address != null ? '${companyModel.comp_address!}, ${companyModel.regencies_name!}, ${companyModel.provinces_name!}' : '-'),
+          Text(selectedCompanyModel.comp_name != null ? selectedCompanyModel.comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(selectedCompanyModel.comp_address != null ? '${selectedCompanyModel.comp_address!}, ${selectedCompanyModel.regencies_name!}, ${selectedCompanyModel.provinces_name!}' : '-'),
 
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(elevation: 2),
-            onPressed: () {
-            },
-            child: Text('Pilih'),
-          ),
+          selectedCompanyModel.price_status == null && selectedCompanyModel.price_finish_status == null ?
+              Text('Coming soon')
+          :
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(elevation: 2),
+              onPressed: () {
+
+
+
+              },
+              child: Text('Pilih'),
+            ),
+
+          
 
         ],
       ),
@@ -136,7 +145,7 @@ class _Basket3Page extends State<Basket3Page> {
                     builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
 
                       if (snapshot.hasData){
-                        return currentAddress(_companyService.listCompany);
+                        return currentAddress(_companyService.allListCompany);
                       } else if (snapshot.hasError) {
                         return Container(
                             alignment: Alignment.center,
@@ -166,7 +175,60 @@ class _Basket3Page extends State<Basket3Page> {
               Container(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () { },
+                  onPressed: () {
+                    showModalBottomSheet(
+                        backgroundColor: Colors.transparent,
+                        isScrollControlled: true,
+                        context: context, builder: (BuildContext context) {
+
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.50,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20.0),
+                              topRight: Radius.circular(20.0),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Container(
+                                    height: 4,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(25.0),
+                                          topRight: Radius.circular(25.0),
+                                          bottomLeft: Radius.circular(25.0),
+                                          bottomRight: Radius.circular(25.0)
+                                      ),
+                                    ),
+                                  )),
+                              Column(
+                                children: List.generate(_companyService.allListCompany.length, (index) {
+                                  return Column(
+                                    children: [
+                                      Text(_companyService.allListCompany[index].comp_name != null ? _companyService.allListCompany[index].comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Text(_companyService.allListCompany[index].comp_address != null ? '${_companyService.allListCompany[index].comp_address!}, ${_companyService.allListCompany[index].regencies_name!}, ${_companyService.allListCompany[index].provinces_name!}' : '-'),
+
+                                      _companyService.allListCompany[index].price_status == null && _companyService.allListCompany[index].price_finish_status == null ?
+                                      Text('Coming soon') : Text('')
+                                    ],
+                                  );
+                                }),
+                              )
+
+                            ],
+                          ),
+                        ),
+                      );
+
+                    });
+                  },
                   child: Text('Pilih tempat lain'),
                 ),
               ),
@@ -255,7 +317,7 @@ class _Basket3Page extends State<Basket3Page> {
                             delivery_code: '',
                             total: 0);
 
-                        Navigator.of(context).pushNamed(TabNavigatorRoutes.checkout, arguments: transactionModel);
+                        Navigator.of(context).pushNamed(CheckoutPage.tag, arguments: transactionModel);
                       },
                       child: Text('Proses'),
                     ),
@@ -272,15 +334,6 @@ class _Basket3Page extends State<Basket3Page> {
 
   }
 
-  void _onSelectCheckBox(){
-    Navigator.of(context).pushNamed(TabNavigatorRoutes.form_print);
-  }
-
-  Function? onSelectCheckBox() {
-    Navigator.of(context).pushNamed(TabNavigatorRoutes.checkout);
-
-    return null;
-  }
 
 
 }
