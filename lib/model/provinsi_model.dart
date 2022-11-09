@@ -22,4 +22,14 @@ class ProvinsiModel {
       regencies_name: json['regencies_name'],
     );
   }
+
+  factory ProvinsiModel.fromJson2(dynamic json) {
+    return ProvinsiModel(
+      provinces_id: json['provinces_id'],
+      provinces_name: json['provinces_name'],
+      regencies_id: json['regencies_id'],
+      regencies_name: json['regencies_name'],
+    );
+  }
+
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/company_model.dart';
+import 'package:siapprint/model/provinsi_model.dart';
 import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/basket_service.dart';
 import 'package:siapprint/repository/company_serive.dart';
@@ -32,11 +33,22 @@ class _Basket3Page extends State<Basket3Page> {
   bool isChecked = false;
   List<Widget> listDocument = [];
   List<BasketModel> _listBasket = [];
+  Future<List<CompanyModel>>? listCompanyFilter;
   late Future<List<BasketModel>> _listBasket2;
+
+  String _dropDownProvinsi = 'Silahkan pilih';
+  List<String> _provinsi = ['Silahkan pilih'];
+
+  CompanyModel? companyModel;
+  setCompanySelected(CompanyModel value){
+    setState((){
+      companyModel = value;
+    });
+  }
 
   Widget currentAddress(List<CompanyModel> companyModels) {
 
-    CompanyModel selectedCompanyModel = _companyService.listCompany.first;
+    CompanyModel selectedCompanyModel = companyModel == null ? _companyService.listCompany.first : companyModel!;
 
     return Container(
       width: double.infinity,
@@ -57,17 +69,23 @@ class _Basket3Page extends State<Basket3Page> {
           selectedCompanyModel.price_status == null && selectedCompanyModel.price_finish_status == null ?
               Text('Coming soon')
           :
-            ElevatedButton(
+          companyModel == null ? ElevatedButton(
               style: ElevatedButton.styleFrom(elevation: 2),
               onPressed: () {
-
-
-
+                setState((){
+                  companyModel = selectedCompanyModel;
+                });
               },
               child: Text('Pilih'),
+            ) : ElevatedButton(
+              style: ElevatedButton.styleFrom(elevation: 2, primary: Colors.redAccent),
+              onPressed: () {
+                setState((){
+                  companyModel = null;
+                });
+              },
+              child: Text('Batal'),
             ),
-
-          
 
         ],
       ),
@@ -113,11 +131,25 @@ class _Basket3Page extends State<Basket3Page> {
     super.initState();
     // getDataBasket();
     _listBasket2 = _basketService.getBasket2();
+    listCompanyFilter = _companyService.getCompanyFilter(_dropDownProvinsi == 'Silahkan pilih' ? '' : _dropDownProvinsi);
+
+    // _companyService.getProvinsiId(_dropDownProvinsi).then((value) => {
+    //   _dropDownProvinsi = value
+    // });
   }
 
   void getDataBasket() async {
     _listBasket = List.from(_listBasket)..addAll(await _basketService.getBasket2());
   }
+
+  void _chooseOtherTapPlace(List<ProvinsiModel> data) async {
+
+    setState((){
+      _dropDownProvinsi = 'Silahkan pilih';
+    });
+    _provinsi = List.from(_provinsi)..addAll(await _companyService.getProvinsiByUser(data));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -176,56 +208,161 @@ class _Basket3Page extends State<Basket3Page> {
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () {
+
+                    _chooseOtherTapPlace(_companyService.listProvince);
+
                     showModalBottomSheet(
                         backgroundColor: Colors.transparent,
                         isScrollControlled: true,
                         context: context, builder: (BuildContext context) {
 
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.50,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.0),
-                              topRight: Radius.circular(20.0),
+                      return StatefulBuilder(builder: (BuildContext context, setState) {
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.50,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.0),
+                                topRight: Radius.circular(20.0),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Container(
+                                      height: 4,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(25.0),
+                                            topRight: Radius.circular(25.0),
+                                            bottomLeft: Radius.circular(25.0),
+                                            bottomRight: Radius.circular(25.0)
+                                        ),
+                                      ),
+                                    )),
+
+                                Container(
+                                  padding: EdgeInsets.all(20),
+                                  width: double.infinity,
+                                  child: DropdownButton<String>(
+                                    value: _dropDownProvinsi,
+                                    hint: Text('Pilih'),
+                                    icon: const Icon(Icons.arrow_downward),
+                                    elevation: 16,
+                                    style: const TextStyle(color: Colors.deepPurple),
+                                    underline: Container(
+                                      height: 2,
+                                      color: Colors.deepPurpleAccent,
+                                    ),
+                                    onChanged: (String? value) {
+                                      // This is called when the user selects an item.
+                                      setState(() {
+                                        _dropDownProvinsi = value!;
+
+                                        listCompanyFilter = _companyService.getCompanyFilter(_dropDownProvinsi == 'Silahkan pilih' ? '' : _dropDownProvinsi);
+
+                                      });
+
+                                    },
+                                    items: _provinsi.map<DropdownMenuItem<String>>((String value) {
+
+                                      List<String> list = _companyService.getAllProvinsiByUser(_companyService.listProvince, value);
+
+                                      String text = "Silahkan pilih";
+                                      if (list.isNotEmpty) {
+                                        text = list.first;
+                                      }
+
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(text),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+
+                                Expanded(
+                                  child: FutureBuilder(
+                                      future: listCompanyFilter,
+                                      builder: (BuildContext context, AsyncSnapshot<List<CompanyModel>> list) {
+
+                                        if (list.hasData) {
+                                          if(list.data == null) {
+                                            return Container(
+                                              alignment: Alignment.center,
+                                              child: Text('data not found'),
+                                            );
+                                          }
+                                          return StatefulBuilder(builder: (BuildContext context, setState) {
+                                            return Column(
+                                              children: List.generate(list.data!.length, (index) {
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      child: Container(
+                                                        padding: EdgeInsets.all(20),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text(list.data![index].comp_name != null ? list.data![index].comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                                Text(list.data![index].comp_address != null ? '${list.data![index].comp_address!}, ${list.data![index].regencies_name!}, ${list.data![index].provinces_name!}' : '-'),
+                                                              ],
+                                                            )),
+
+                                                            SizedBox(width: 10),
+
+                                                            list.data![index].price_status == null && list.data![index].price_finish_status == null ?
+                                                            Text('Coming soon') : ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(elevation: 2),
+                                                              onPressed: () {
+                                                                setCompanySelected(list.data![index]);
+                                                                Navigator.pop(context);
+                                                              },
+                                                              child: Text('Pilih'),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                );
+                                              }),
+                                            );
+                                          });
+                                        } else if (list.hasError) {
+                                          return Container(
+                                            alignment: Alignment.center,
+                                            child: Text('something wrong'),
+                                          );
+                                        }
+
+                                        return Scaffold(
+                                          body: Center(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: const [
+                                                CircularProgressIndicator(),
+                                                SizedBox(height: 10,),
+                                                Text('Please wait...')
+                                              ],
+                                            ),
+                                          ),
+                                        );
+
+                                      }),
+                                ),
+
+                              ],
                             ),
                           ),
-                          child: Column(
-                            children: [
-                              Container(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Container(
-                                    height: 4,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(25.0),
-                                          topRight: Radius.circular(25.0),
-                                          bottomLeft: Radius.circular(25.0),
-                                          bottomRight: Radius.circular(25.0)
-                                      ),
-                                    ),
-                                  )),
-                              Column(
-                                children: List.generate(_companyService.allListCompany.length, (index) {
-                                  return Column(
-                                    children: [
-                                      Text(_companyService.allListCompany[index].comp_name != null ? _companyService.allListCompany[index].comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      Text(_companyService.allListCompany[index].comp_address != null ? '${_companyService.allListCompany[index].comp_address!}, ${_companyService.allListCompany[index].regencies_name!}, ${_companyService.allListCompany[index].provinces_name!}' : '-'),
-
-                                      _companyService.allListCompany[index].price_status == null && _companyService.allListCompany[index].price_finish_status == null ?
-                                      Text('Coming soon') : Text('')
-                                    ],
-                                  );
-                                }),
-                              )
-
-                            ],
-                          ),
-                        ),
-                      );
+                        );
+                      });
 
                     });
                   },
@@ -247,18 +384,18 @@ class _Basket3Page extends State<Basket3Page> {
                       builder : (BuildContext context, AsyncSnapshot<List<BasketModel>> snapshot) {
 
                         if (snapshot.hasData) {
+
+                          if (_basketService.listBasket.isEmpty){
+                            return Container(
+                              alignment: Alignment.center,
+                              child: Text('List dokumen kosong'),
+                            );
+                          }
+
                           return ListView.separated(
                             padding: const EdgeInsets.all(8),
                             itemCount: _basketService.listBasket.length,
                             itemBuilder: (BuildContext context, int index) {
-
-                              if (_basketService.listBasket.isEmpty){
-                                return Container(
-                                  alignment: Alignment.center,
-                                  child: Text('List dokumen kosong'),
-                                );
-                              }
-
                               return widgetListDocument(index);
                             },
                             separatorBuilder: (BuildContext context, int index) => const Divider(),
@@ -308,16 +445,30 @@ class _Basket3Page extends State<Basket3Page> {
                           elevation: 2
                       ),
                       onPressed: (){
-                        List<BasketModel> basketListSelected = _basketService.listBasket.where((e) => e.is_checked == true).toList();
-                        TransactionModel transactionModel = TransactionModel(
-                            listBasketModel: basketListSelected,
-                            companyModel: _companyService.listCompany.first,
-                            total_print: 0,
-                            delivery_id: 0,
-                            delivery_code: '',
-                            total: 0);
 
-                        Navigator.of(context).pushNamed(CheckoutPage.tag, arguments: transactionModel);
+                        List<BasketModel> basketListSelected = _basketService.listBasket.where((e) => e.is_checked == true).toList();
+
+                        if (companyModel == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text('Mohon tempat print dipilih terlebih dahulu'),
+                          ));
+                        } else if (basketListSelected.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text('Mohon pilih dokumen yang akan di print'),
+                          ));
+                        } else {
+                          TransactionModel transactionModel = TransactionModel(
+                              listBasketModel: basketListSelected,
+                              companyModel: _companyService.listCompany.first,
+                              total_print: 0,
+                              delivery_id: 0,
+                              delivery_code: '',
+                              total: 0);
+
+                          Navigator.of(context).pushNamed(CheckoutPage.tag, arguments: transactionModel);
+                        }
+
+
                       },
                       child: Text('Proses'),
                     ),

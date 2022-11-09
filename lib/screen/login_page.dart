@@ -31,10 +31,10 @@ class _LoginPage extends State<LoginPage> {
 
   @override
   void initState() {
-    _controllerLogin.text = 'raimunsuandi';
-    _controllerPassword.text = 'nowomennocry1234';
-    // _controllerLogin.text = 'test2';
-    // _controllerPassword.text = 'dimas123456';
+    // _controllerLogin.text = 'raimunsuandi';
+    // _controllerPassword.text = 'nowomennocry1234';
+    _controllerLogin.text = 'test2';
+    _controllerPassword.text = 'dimas123456';
 
 
     super.initState();
@@ -76,7 +76,9 @@ class _LoginPage extends State<LoginPage> {
 
     final loginButton = Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child:
+      child: _service.is_loading ? const Center(
+        child: CircularProgressIndicator(),
+      ) :
       ElevatedButton(
         style: ButtonStyle(
             padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
@@ -92,40 +94,26 @@ class _LoginPage extends State<LoginPage> {
         onPressed: () async {
 
           setState((){
-            _isLoading = true;
+            _service.is_loading = true;
           });
 
-          var response = await _service.login(_controllerLogin.text, _controllerPassword.text);
+          final response = await _service.login(_controllerLogin.text, _controllerPassword.text);
 
-          var data = jsonDecode(response.body);
-          final snackBar = SnackBar(
-            content: Text(data['message']),
-          );
+          setState((){
+            _service.is_loading = false;
+          });
 
-          if (response.statusCode == 200) {
-            SharedPreferences localStorage = await SharedPreferences.getInstance();
+          if (!mounted) return;
+          final data = jsonDecode(response);
+          final snackBar = SnackBar(content: Text(data['message']));
 
-            if (!mounted) return;
-
-            if (data['status'] as int == 0) {
-              localStorage.setString('user', jsonEncode(data['result']['user']));
-
-              Navigator.of(context).pushNamedAndRemoveUntil(SingleNavigationPage.tag, (route) => false);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
+          if (data['status'] as int == 0) {
+            Navigator.of(context).pushNamedAndRemoveUntil(SingleNavigationPage.tag, (route) => false);
           } else {
-
-            if (!mounted) return;
-
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
 
-          setState((){
-            _isLoading = false;
-          });
 
-          // Navigator.of(context).pushNamed(BottomPage2.tag);
         },
         child: const Text('Log In'),
         // child: _isLoading ? const CircularProgressIndicator() : const Text('Log In'),
@@ -142,7 +130,7 @@ class _LoginPage extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
+      body:  Center(
         child: ListView(
           shrinkWrap: true,
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
@@ -154,10 +142,13 @@ class _LoginPage extends State<LoginPage> {
             password,
             SizedBox(height: 24.0),
             loginButton,
-            forgotLabel
+            forgotLabel,
+
+
+
           ],
         ),
-      ),
+      )
     );
 
   }

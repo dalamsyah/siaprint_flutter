@@ -9,22 +9,50 @@ import 'package:siapprint/model/user_model.dart';
 class LoginService {
 
   final Dio _dio = Dio();
+  bool is_loading = false;
+  String msg = '';
 
-  Future<http.Response> login(String email, String password) async {
+  Future<String> login(String email, String password) async {
+
+    is_loading = true;
+
     final response = await http.post(Uri.parse(Constant.login), body: {
       'login': email,
       'password': password
     });
 
+    var data = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
 
-      // SharedPreferences localStorage = await SharedPreferences.getInstance();
-      // localStorage.setString('user', json['result']['user']);
+      msg = data['message'];
 
-      return response;
-      // return UserModel.fromJson(jsonDecode(response.body));
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+
+      if (data['status'] as int == 0) {
+        localStorage.setString('user', jsonEncode(data['result']['user']));
+      }
+
+      // if (response.statusCode == 200) {
+      //
+      //   if (data['status'] as int == 0) {
+      //     localStorage.setString('user', jsonEncode(data['result']['user']));
+      //
+      //     Navigator.of(context).pushNamedAndRemoveUntil(SingleNavigationPage.tag, (route) => false);
+      //   } else {
+      //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      //   }
+      //
+      // } else {
+      //
+      //   if (!mounted) return;
+      //
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // }
+
+      return response.body;
     } else {
+      // is_loading = false;
       // If the server did not return a 201 CREATED response,
       // then throw an exception.
       throw Exception('Failed to login.');

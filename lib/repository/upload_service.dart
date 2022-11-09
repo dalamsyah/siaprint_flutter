@@ -29,7 +29,7 @@ class UploadService {
     }
 
     Map<String, String> map = {
-      'apitoken': 'siaprint98765'
+      'apitoken': Constant.apitoken
     };
 
     request.fields.addAll(map);
