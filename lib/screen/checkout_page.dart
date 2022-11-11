@@ -40,6 +40,8 @@ class _CheckoutPage extends State<CheckoutPage> {
   int _totalDelivery = 0;
   int _total = 0;
 
+  bool _isLoading = false;
+
   @override
   void initState() {
     transactionModel = widget.transactionModel!;
@@ -82,7 +84,7 @@ class _CheckoutPage extends State<CheckoutPage> {
                 child:
                 FutureBuilder<Response>(
                     future: _checkoutService.getDeliveryJNE(
-                        'DLV002',
+                        'DLV002', //hard code
                         transactionModel.companyModel.provinces_id!,
                         transactionModel.companyModel.regencies_id!,
                         transactionModel.total_weight.toString()
@@ -235,6 +237,7 @@ class _CheckoutPage extends State<CheckoutPage> {
                                     Expanded(
                                         child: FormPrintPage(
                                           basketModel: transactionModel.listBasketModel[index],
+                                          comp_id: transactionModel.companyModel.comp_id!,
                                           callback: (basketModel) {
                                             // transactionModel.listBasketModel[index] = basketModel;
 
@@ -242,15 +245,13 @@ class _CheckoutPage extends State<CheckoutPage> {
                                               _totalPrint = 0;
                                               _totalWeight = 0;
 
-                                              transactionModel.listBasketModel.forEach((element) {
+                                              for (var element in transactionModel.listBasketModel) {
                                                 _totalPrint += element.total;
                                                 _totalWeight += element.totalWeight;
-                                              });
+                                              }
 
                                               transactionModel.total_print = _totalPrint;
                                               transactionModel.total_weight = _totalWeight;
-
-                                              print(transactionModel.toString());
 
                                             });
 
@@ -349,6 +350,10 @@ class _CheckoutPage extends State<CheckoutPage> {
               ],
             ),
 
+            _isLoading ? Container(
+              padding: const EdgeInsets.all(20),
+              child: const CircularProgressIndicator(),
+            ) :
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -357,6 +362,7 @@ class _CheckoutPage extends State<CheckoutPage> {
                     elevation: 2
                 ),
                 onPressed: () {
+
 
                   String errorMsg = '';
                   if (_delivery == 0) {
@@ -391,7 +397,16 @@ class _CheckoutPage extends State<CheckoutPage> {
                     ));
                   } else {
 
-                    _checkoutService.saveTransaction(transactionModel);
+                    setState((){
+                      _isLoading = true;
+                    });
+
+                    _checkoutService.saveTransaction(transactionModel).then((value) {
+                      setState((){
+                        _isLoading = false;
+                      });
+                      //TODO: goto payment
+                    });
 
                   }
 

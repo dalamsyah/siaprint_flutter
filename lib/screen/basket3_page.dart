@@ -3,6 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/model/provinsi_model.dart';
@@ -77,13 +80,13 @@ class _Basket3Page extends State<Basket3Page> {
                 });
               },
               child: Text('Pilih'),
-            ) : ElevatedButton(
-              style: ElevatedButton.styleFrom(elevation: 2, primary: Colors.redAccent),
+            ) : OutlinedButton(
               onPressed: () {
                 setState((){
                   companyModel = null;
                 });
               },
+            style: ElevatedButton.styleFrom(primary: Colors.white38),
               child: Text('Batal'),
             ),
 
@@ -150,6 +153,13 @@ class _Basket3Page extends State<Basket3Page> {
     _provinsi = List.from(_provinsi)..addAll(await _companyService.getProvinsiByUser(data));
   }
 
+  Future<void> _refreshBaskets(BuildContext context) async {
+    return fetchBasket();
+  }
+
+  Future fetchBasket() async {
+    _basketService.getBasket2();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -379,49 +389,52 @@ class _Basket3Page extends State<Basket3Page> {
               ),
 
               Expanded(
-                  child: FutureBuilder(
-                      future: _listBasket2,
-                      builder : (BuildContext context, AsyncSnapshot<List<BasketModel>> snapshot) {
+                  child: RefreshIndicator(
+                    onRefresh: () => _refreshBaskets(context),
+                    child: FutureBuilder(
+                        future: _listBasket2,
+                        builder : (BuildContext context, AsyncSnapshot<List<BasketModel>> snapshot) {
 
-                        if (snapshot.hasData) {
+                          if (snapshot.hasData) {
 
-                          if (_basketService.listBasket.isEmpty){
+                            if (_basketService.listBasket.isEmpty){
+                              return Container(
+                                alignment: Alignment.center,
+                                child: Text('List dokumen kosong'),
+                              );
+                            }
+
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(8),
+                              itemCount: _basketService.listBasket.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return widgetListDocument(index);
+                              },
+                              separatorBuilder: (BuildContext context, int index) => const Divider(),
+                            );
+                          } else if (snapshot.hasError) {
                             return Container(
                               alignment: Alignment.center,
-                              child: Text('List dokumen kosong'),
+                              child: Text('something wrong'),
                             );
                           }
 
-                          return ListView.separated(
-                            padding: const EdgeInsets.all(8),
-                            itemCount: _basketService.listBasket.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return widgetListDocument(index);
-                            },
-                            separatorBuilder: (BuildContext context, int index) => const Divider(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Container(
-                            alignment: Alignment.center,
-                            child: Text('something wrong'),
-                          );
-                        }
-
-                        return Scaffold(
-                          body: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                CircularProgressIndicator(),
-                                SizedBox(height: 10,),
-                                Text('Please wait...')
-                              ],
+                          return Scaffold(
+                            body: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 10,),
+                                  Text('Please wait...')
+                                ],
+                              ),
                             ),
-                          ),
-                        );
+                          );
 
 
-                      })
+                        }),
+                  )
               ),
 
               SizedBox(height: 10,),
@@ -433,7 +446,39 @@ class _Basket3Page extends State<Basket3Page> {
                       primary: Colors.red,
                       elevation: 2,
                     ),
-                    onPressed: null,
+                    onPressed: _basketService.listBasket.where((e) => e.is_checked == true).toList().isEmpty ? null : () {
+
+                      Dialogs.materialDialog(
+                        context: context,
+                        msg: 'Delete file?',
+                        title: 'Delete',
+                        color: Colors.white,
+                        actions: [
+                          IconsOutlineButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            text: 'Cancel',
+                            textStyle: TextStyle(color: Colors.grey),
+                          ),
+                          IconsButton(
+                            onPressed: () {
+                              _basketService.deleteFileBasket(_basketService.listBasket.where((e) => e.is_checked == true).toList()).then((value) {
+                                setState((){
+                                  _basketService.listBasket = value;
+                                });
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            text: 'Delete',
+                            color: Colors.red,
+                            textStyle: TextStyle(color: Colors.white),
+                          ),
+                        ]
+                      );
+
+
+                    },
                     child: Text('Hapus'),
                   ),
 
@@ -459,7 +504,7 @@ class _Basket3Page extends State<Basket3Page> {
                         } else {
                           TransactionModel transactionModel = TransactionModel(
                               listBasketModel: basketListSelected,
-                              companyModel: _companyService.listCompany.first,
+                              companyModel: companyModel!,
                               total_print: 0,
                               delivery_id: 0,
                               delivery_code: '',

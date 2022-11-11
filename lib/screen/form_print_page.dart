@@ -18,10 +18,11 @@ typedef StringValue = Function(BasketModel);
 
 class FormPrintPage extends StatefulWidget {
 
-  FormPrintPage({ Key? key, required this.basketModel, this.callback}) : super(key: key);
+  FormPrintPage({ Key? key, required this.basketModel, this.comp_id, this.callback}) : super(key: key);
 
   static String tag = 'form-print-page';
   final BasketModel basketModel;
+  final String? comp_id;
   StringValue? callback;
 
   @override
@@ -77,7 +78,7 @@ class _FormPrintPage extends State<FormPrintPage> {
       _is_loading = true;
     });
 
-    _formService.getFieldFormPrint("1").then((value) {
+    _formService.getFieldFormPrint(widget.comp_id!).then((value) {
 
       final data = jsonDecode(value.body);
 
@@ -347,13 +348,13 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                       List<PriceModel> list = _priceAll.where((element) => element.type_paper_code == value).map((e) => e).toList();
 
-                      print(value);
-
                       setState(() {
                         _dropDownJenisKertas = value!;
                         _priceJenisKertas = int.parse(list.first.price ?? '0');
+                        _weightJenisKertas = double.parse(list.first.weight ?? '0');
+
                         basketModel.priceJenisKertas = _priceJenisKertas;
-                        basketModel.weightJenisKertas = double.parse(list.first.weight ?? '0');
+                        basketModel.weightJenisKertas = _weightJenisKertas;
                       });
                     },
                     items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
@@ -481,8 +482,11 @@ class _FormPrintPage extends State<FormPrintPage> {
                         _dropDownFinishing = value!;
 
                         _priceFinishing = int.parse(list.first.price ?? '0');
+                        _weightFinishing = double.parse(list.first.weight ?? '0');
+
                         basketModel.priceFinishing = _priceFinishing;
-                        basketModel.weightFinishing = double.parse(list.first.weight ?? '0');
+                        basketModel.weightFinishing = _weightFinishing;
+
                       });
 
                     },

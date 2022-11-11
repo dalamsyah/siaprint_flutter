@@ -16,6 +16,10 @@ class CheckoutService {
 
   Future<http.Response> saveTransaction(TransactionModel transactionModel) async {
 
+    await Future.delayed(Duration(seconds: 3), () {
+      print("Future.delayed");
+    });
+
     is_loading = true;
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -75,27 +79,27 @@ class CheckoutService {
 
     print(jsonEncode(map));
 
-    return http.Response('', 200);
+    // return http.Response('', 200);
 
-    // final response = await http.post(Uri.parse(Constant.apisavetransaction), body: {
-    //   'apitoken': Constant.apitoken,
-    //   'userid': userModel.id,
-    //   'data': jsonEncode(map)
-    // });
-    //
-    // if (response.statusCode == 200) {
-    //
-    //   final data = jsonDecode(response.body);
-    //
-    //   print(data);
-    //
-    //   is_loading = false;
-    //
-    //   return response;
-    // } else {
-    //   is_loading = false;
-    //   throw Exception('Failed to get basket.');
-    // }
+    final response = await http.post(Uri.parse(Constant.apisavetransaction), body: {
+      'apitoken': Constant.apitoken,
+      'userid': userModel.id,
+      'data': jsonEncode(map)
+    });
+
+    if (response.statusCode == 200) {
+
+      final data = jsonDecode(response.body);
+
+      print(data);
+
+      is_loading = false;
+
+      return response;
+    } else {
+      is_loading = false;
+      throw Exception('Failed to save basket.');
+    }
 
   }
 

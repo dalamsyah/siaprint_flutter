@@ -11,6 +11,7 @@ import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
 import 'package:siapprint/screen/naivgation/single_navigation.dart';
 import 'package:siapprint/screen/sample_screen.dart';
+import 'package:siapprint/screen/status_page.dart';
 
 
 // void main() {
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
     Basket3Page.tag: (context) => const Basket3Page(),
     AccountSettingPage.tag: (context) => const AccountSettingPage(),
     CheckoutPage.tag: (context) => const CheckoutPage(),
+    StatusPage.tag: (context) => const StatusPage(),
     SingleNavigationPage.tag: (context) => const SingleNavigationPage(),
 
     AppNavigation.tag: (context) => AppNavigation(),
@@ -69,6 +71,7 @@ class MyApp extends StatelessWidget {
       CheckoutPage.tag: (context) => CheckoutPage(
           transactionModel: arguments as TransactionModel
       ),
+      StatusPage.tag: (context) => const StatusPage(),
       SingleNavigationPage.tag: (context) => const SingleNavigationPage(),
     };
   }

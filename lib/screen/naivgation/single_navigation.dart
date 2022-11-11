@@ -9,6 +9,7 @@ import 'package:siapprint/screen/basket3_page.dart';
 import 'package:siapprint/screen/home_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
+import 'package:siapprint/screen/status_page.dart';
 import 'package:siapprint/screen/upload_page.dart';
 
 class SingleNavigationPage extends StatefulWidget {
@@ -36,6 +37,13 @@ class _SingleNavigationPage extends State<SingleNavigationPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  IconButton(
+                      onPressed: (){
+                        Navigator.of(context).pushNamed(StatusPage.tag);
+                      },
+                      color: Colors.blueAccent.withOpacity(0.9),
+                      icon: const Icon(Icons.checklist)
+                  ),
                   IconButton(
                       onPressed: (){
                         Navigator.of(context).pushNamed(Basket3Page.tag);

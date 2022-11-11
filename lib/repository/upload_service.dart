@@ -29,7 +29,8 @@ class UploadService {
     }
 
     Map<String, String> map = {
-      'apitoken': Constant.apitoken
+      'apitoken': Constant.apitoken,
+      'userid': userModel.id!
     };
 
     request.fields.addAll(map);
@@ -40,12 +41,7 @@ class UploadService {
     var responseBytes = await response.stream.toBytes();
     var responseString = utf8.decode(responseBytes);
 
-    print('\n\n');
-    print('RESPONSE WITH HTTP');
-    print(responseString);
-    print('\n\n');
     return responseString;
-
   }
 
   Future<dynamic> uploadPhotos(List<String> paths) async {

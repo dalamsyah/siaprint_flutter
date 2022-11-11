@@ -46,6 +46,10 @@ class BasketService {
 
   Future<List<BasketModel>> getBasket2() async {
 
+    // await Future.delayed(Duration(seconds: 3), () {
+    //   print("Future.delayed");
+    // });
+
     is_loading = true;
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -69,6 +73,34 @@ class BasketService {
     } else {
       is_loading = false;
       throw Exception('Failed to get basket.');
+    }
+
+  }
+
+  Future<List<BasketModel>> deleteFileBasket(List<BasketModel> basketModels) async {
+
+    is_loading = true;
+
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
+
+    final response = await http.post(Uri.parse(Constant.apideletefilebasket), body: {
+      'apitoken': Constant.apitoken,
+      'userid': userModel.id,
+      'baskets': jsonEncode(basketModels)
+    });
+
+    if (response.statusCode == 200) {
+
+      final data = jsonDecode(response.body);
+      var dataListBasket = data['result']['basket'] as List;
+
+      is_loading = false;
+
+      return dataListBasket.map((data) => BasketModel.fromJson2(data) ).toList();
+    } else {
+      is_loading = false;
+      throw Exception('Failed to get delet basket.');
     }
 
   }

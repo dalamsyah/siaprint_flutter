@@ -16,6 +16,8 @@ class Constant {
   static String apisavetransaction = '${baseUrl}apibasketsave';
   static String apiuploadfile = '${baseUrl}apiuploadsave';
   static String apicompanyfromprovince = '${baseUrl}apicompanyfromprovince';
+  static String apideletefilebasket = '${baseUrl}apideletefilebasket';
+  static String apilisttransaction = '${baseUrl}apilisttransaction';
 
   static String INK_LASER = 'INK001';
   static String INK_TINTA = 'INK002';
