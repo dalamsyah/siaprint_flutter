@@ -7,6 +7,7 @@ import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/model/address_model.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/company_model.dart';
+import 'package:siapprint/model/payment_type_model.dart';
 import 'package:siapprint/model/status_model.dart';
 import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/model/user_model.dart';
@@ -14,10 +15,12 @@ import 'package:siapprint/model/user_model.dart';
 class StatusService {
 
   bool is_loading = false;
+  List<PaymentTypeModel> paymentTypeList = [];
 
   Future<List<StatusModel>> getListStatus(String statuscode) async {
 
     is_loading = true;
+    paymentTypeList = [];
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
@@ -41,12 +44,111 @@ class StatusService {
       final data = jsonDecode(response.body);
 
       var list = data['result']['trsc_print_h'] as List;
+      var listPaymentType = data['result']['payment_type'] as List;
+
       var listData = list.map((data) => StatusModel.fromJson2(data) ).toList();
+      var listDataPaymentType = listPaymentType.map((data) => PaymentTypeModel.fromJson2(data) ).toList();
+      paymentTypeList = List.from(paymentTypeList)..addAll(listDataPaymentType);
 
       return listData;
     } else {
       is_loading = false;
       throw Exception('Failed to get status list.');
+    }
+
+  }
+
+  Future<String> cancelTransaction(String trans_code) async {
+
+    // await Future.delayed(Duration(seconds: 5), () {
+    //   print("Future.delayed");
+    // });
+
+    is_loading = true;
+
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
+
+    final response = await http.post(Uri.parse(Constant.apistatuscancel), body: {
+      'apitoken': Constant.apitoken,
+      'userid': userModel.id,
+      'trsc_no': trans_code,
+    });
+
+    if (response.statusCode == 200) {
+
+      final data = jsonDecode(response.body);
+
+      return data['message'];
+    } else {
+      is_loading = false;
+      throw Exception('Failed to cancel status.');
+    }
+
+  }
+
+
+  Future<String> payment(PaymentTypeModel paymentTypeModel, String payment_no, String total_amount, String phone_no) async {
+
+    // await Future.delayed(Duration(seconds: 3), () {
+    //   print("Future.delayed");
+    // });
+    //
+    // SharedPreferences localStorage = await SharedPreferences.getInstance();
+    // UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
+    //
+    // final data = {
+    //   'apitoken': Constant.apitoken,
+    //   'userid': userModel.id,
+    //   'payment_no': payment_no,
+    //   'total_amount': total_amount,
+    //   'payment_type': paymentTypeModel.payment_type_code,
+    //   'payment_name': paymentTypeModel.payment_type_name,
+    //   'phone_no': phone_no,
+    //   'vendor_code': paymentTypeModel.vendor_code,
+    // };
+    // print(data);
+    //
+    // return 'OKE';
+
+    is_loading = true;
+
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
+
+    final data = {
+      'apitoken': Constant.apitoken,
+      'userid': userModel.id,
+      'payment_no': payment_no,
+      'total_amount': total_amount,
+      'payment_type': paymentTypeModel.payment_type_code,
+      'payment_name': paymentTypeModel.payment_type_name,
+      'phone_no': phone_no,
+      'vendor_code': paymentTypeModel.vendor_code,
+    };
+    print(data);
+
+    final response = await http.post(Uri.parse(Constant.apipayment), body: {
+      'apitoken': Constant.apitoken,
+      'userid': userModel.id,
+      'payment_no': payment_no,
+      'total_amount': total_amount,
+      'payment_type': paymentTypeModel.payment_type_code,
+      'payment_name': paymentTypeModel.payment_type_name,
+      'phone_no': phone_no,
+      'vendor_code': paymentTypeModel.vendor_code,
+    });
+
+    if (response.statusCode == 200) {
+
+      final data = jsonDecode(response.body);
+
+      print(data);
+
+      return data['message'];
+    } else {
+      is_loading = false;
+      throw Exception('Failed to cancel status.');
     }
 
   }

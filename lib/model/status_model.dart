@@ -30,6 +30,7 @@ class StatusModel {
   final String? shipp_postcode;
   final String? delv_text2;
   final dynamic status_detail;
+  final dynamic status_detail_date;
 
   StatusModel({
     required this.print_h_code,
@@ -55,6 +56,7 @@ class StatusModel {
     required this.shipp_postcode,
     required this.delv_text2,
     required this.status_detail,
+    required this.status_detail_date,
   });
 
 
@@ -83,6 +85,7 @@ class StatusModel {
       shipp_postcode: json['shipp_postcode'],
       delv_text2: json['delv_text2'],
       status_detail: json['trsc_print_d'],
+      status_detail_date: json['status_detail'],
     );
   }
 
@@ -111,6 +114,7 @@ class StatusModel {
       shipp_postcode: json['shipp_postcode'],
       delv_text2: json['delv_text2'],
       status_detail: json['trsc_print_d'],
+      status_detail_date: json['status_detail'],
     );
   }
 

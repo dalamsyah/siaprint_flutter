@@ -1,9 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/format_number.dart';
+import 'package:siapprint/model/payment_type_model.dart';
+import 'package:siapprint/model/status_detail_date_model.dart';
 import 'package:siapprint/model/status_detail_model.dart';
 import 'package:siapprint/model/status_model.dart';
 import 'package:siapprint/model/user_model.dart';
@@ -14,7 +18,9 @@ import 'package:siapprint/screen/basket3_page.dart';
 import 'package:siapprint/screen/home_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
+import 'package:siapprint/screen/naivgation/single_navigation.dart';
 import 'package:siapprint/screen/upload_page.dart';
+import 'package:siapprint/screen/waiting_payment_page.dart';
 
 class StatusPage extends StatefulWidget {
 
@@ -31,9 +37,37 @@ class _StatusPage extends State<StatusPage> {
 
   StatusService _statusService = StatusService();
   String _statuscode = 'Sedang berjalan';
+  bool _isLoading = false;
+  TextEditingController _controllerNoHp = TextEditingController();
+
+  List<StatusModel> _listStatus = [];
+
+  Future<void>? _initStatusData;
+
+  Future<void> _initStatus() async {
+    final list = await _statusService.getListStatus(_statuscode);
+    _listStatus = list;
+  }
+
+  Future<void> _refreshStatus() async {
+    final list = await _statusService.getListStatus(_statuscode);
+    setState(() {
+      _listStatus = list;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controllerNoHp.text = '';
+    _initStatusData = _initStatus();
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -48,8 +82,8 @@ class _StatusPage extends State<StatusPage> {
                       child: Column(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(20),
-                            child: Text('Sedang berjalan',),
+                            padding: const EdgeInsets.all(20),
+                            child: const Text('Sedang berjalan',),
                           ),
                           _statuscode.contains('Sedang berjalan') ? Container(height: 2, color: Colors.lightBlue, width: double.infinity,) : Container(height: 2, color: Colors.white38, width: double.infinity,)
                         ],
@@ -59,6 +93,7 @@ class _StatusPage extends State<StatusPage> {
                       setState((){
                         _statuscode = 'Sedang berjalan';
                       });
+                      _refreshStatus();
                     },
                   )),
 
@@ -68,8 +103,8 @@ class _StatusPage extends State<StatusPage> {
                       child: Column(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(20),
-                            child: Text('Selesai',),
+                            padding: const EdgeInsets.all(20),
+                            child: const Text('Selesai',),
                           ),
                           _statuscode.contains('Selesai') ? Container(height: 2, color: Colors.lightBlue, width: double.infinity,) : Container(height: 2, color: Colors.white38, width: double.infinity,)
                         ],
@@ -79,6 +114,7 @@ class _StatusPage extends State<StatusPage> {
                       setState((){
                         _statuscode = 'Selesai';
                       });
+                      _refreshStatus();
                     },
                   )),
 
@@ -86,140 +122,136 @@ class _StatusPage extends State<StatusPage> {
               ),
             ),
 
-            Expanded(child: FutureBuilder(
-                future: _statusService.getListStatus(_statuscode),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<StatusModel>> snapshot){
+            Expanded(
+                child: FutureBuilder(
+                    future: _initStatusData,
+                    builder: (BuildContext context, snapshot) {
 
-                  if (snapshot.hasData) {
-
-                    if (snapshot.data!.isEmpty){
-                      return const Center(child: Text('No data'));
-                    }
-
-                    final list = snapshot.data!;
-
-                    return ListView.separated(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (BuildContext content, int index) {
-
-                          final detail = snapshot.data![index].status_detail as List;
-                          final listDetail = detail.map((data) => StatusDetailModel.fromJson2(data) ).toList();
-
-                          return InkWell(
-                            onTap: (){
-                              showModalBottomSheet(backgroundColor: Colors.transparent, context: context, builder: (BuildContext context) {
-                                return StatefulBuilder(builder: (BuildContext context, setState){
-                                  return SizedBox(
-                                    height: MediaQuery.of(context).size.height * 0.50,
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(20.0),
-                                          topRight: Radius.circular(20.0),
-                                        ),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                              padding: const EdgeInsets.all(10),
-                                              child: Container(
-                                                height: 4,
-                                                width: 50,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey.withOpacity(0.2),
-                                                  borderRadius: const BorderRadius.only(
-                                                      topLeft: Radius.circular(25.0),
-                                                      topRight: Radius.circular(25.0),
-                                                      bottomLeft: Radius.circular(25.0),
-                                                      bottomRight: Radius.circular(25.0)
-                                                  ),
-                                                ),
-                                              )),
-
-                                          Expanded(child: Container(
-                                            child: ListView.separated(
-                                                itemCount: listDetail.length,
-                                                itemBuilder: (BuildContext context, int index) {
-                                                  return Column(
-                                                    children: [
-                                                      Text('${listDetail[index].filename}'),
-                                                      Text('${listDetail[index].ink_name} | '
-                                                          '${listDetail[index].size_name} | '
-                                                          '${listDetail[index].type_paper_name} | '
-                                                          '${listDetail[index].finish_text} | '
-                                                          'copy: ${listDetail[index].copy} | '
-                                                          'total hal:${listDetail[index].total_pages} | '
-                                                          '${listDetail[index].pages_remarks} | '
-                                                          '${listDetail[index].ntgew_d}kg | '
-                                                          '${MyNumber.convertToIdr(double.parse(listDetail[index].amount_d!))} | '
-                                                          'catatan: ${listDetail[index].remarks_d} '
-                                                      )
-                                                    ],
-                                                  );
-                                                }, separatorBuilder: (BuildContext context, int index) => const Divider()),
-                                          ))
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                });
-                              });
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(20),
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.active: {
+                          return Scaffold(
+                            body: Center(
                               child: Column(
-                                children: [
-                                  Text('ID: ${list[index].print_h_code} | ${list[index].company_name}'),
-                                  Text('${list[index].comp_address}, ${list[index].regencies_name}, ${list[index].provinces_name}',
-                                    style: TextStyle(fontSize: 12),),
-
-                                  SizedBox(height: 20,),
-
-                                  Container(
-                                    width: double.infinity,
-                                    child: Text('Pengiriman: ${list[index].delv_name}'),
-                                  ),
-
-                                  SizedBox(height: 20,),
-
-                                  Container(
-                                      width: double.infinity,
-                                      child: Text(
-                                        '${list[index].created_at} | '
-                                            '${list[index].ntgew_h} | '
-                                            '${list[index].ntgew_uom_h} | '
-                                            '${MyNumber.convertToIdr(double.parse(list[index].amount_p!))} | '
-                                            '${MyNumber.convertToIdr(double.parse(list[index].delv_cost!))} | '
-                                            '${MyNumber.convertToIdr(double.parse(list[index].amount_h!))}', style: TextStyle(fontSize: 12),)
-                                  )
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 10,),
+                                  Text('Please wait...')
                                 ],
                               ),
                             ),
                           );
+                        }
+                        case ConnectionState.done: {
 
-                        }, separatorBuilder: (BuildContext context, int index) => const Divider(),);
+                          if (_listStatus.isEmpty) {
+                            return Scaffold(
+                              body: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Text('No data')
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
 
-                  } else if (snapshot.hasError){
-                    return Center(child: Text('error..${snapshot.error}'));
-                  }
+                          return RefreshIndicator(
+                            onRefresh: _refreshStatus,
+                            child: ListView.separated(
+                            itemCount: _listStatus.length,
+                            itemBuilder: (BuildContext content, int index) {
 
-                  return Scaffold(
-                    body: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 10,),
-                          Text('Please wait...')
-                        ],
-                      ),
-                    ),
-                  );
+                              final detail = _listStatus[index].status_detail as List;
+                              final dateDetail = _listStatus[index].status_detail_date as List;
+                              final listDetail = detail.map((data) => StatusDetailModel.fromJson2(data) ).toList();
+                              final listDateDetail = dateDetail.map((data) => StatusDetailDateModel.fromJson2(data) ).toList();
+                              final list = _listStatus;
 
+                              return InkWell(
+                                onTap: () {
+                                  onClickStatus(list[index], listDetail, listDateDetail);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Column(
+                                    children: [
+                                      Text('ID: ${list[index].print_h_code} | ${list[index].company_name}'),
+                                      Text('${list[index].comp_address}, ${list[index].regencies_name}, ${list[index].provinces_name}',
+                                        style: const TextStyle(fontSize: 12),),
 
-                }))
+                                      const SizedBox(height: 20,),
+
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('Pengiriman: ${list[index].delv_name}'),
+                                            Text('Penerima: ${list[index].shipp_receiver}'),
+                                          ],
+                                        )
+                                      ),
+
+                                      const SizedBox(height: 20,),
+
+                                      SizedBox(
+                                          width: double.infinity,
+                                          child: Text(
+                                            '${list[index].created_at} | '
+                                                '${list[index].ntgew_h} | '
+                                                '${list[index].ntgew_uom_h} | '
+                                                '${MyNumber.convertToIdr(double.parse(list[index].amount_p!))} | '
+                                                '${MyNumber.convertToIdr(double.parse(list[index].delv_cost!))} | '
+                                                '${MyNumber.convertToIdr(double.parse(list[index].amount_h!))}', style: const TextStyle(fontSize: 12),)
+                                      ),
+
+                                      const SizedBox(height: 10,),
+
+                                      Container(
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+
+                                            statusWidget(list[index].trsc_h_status_text!),
+
+                                            buttonPayment(list[index].trsc_h_status_text!, list[index].print_h_code!, list[index].amount_h!),
+
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+
+                            }, separatorBuilder: (BuildContext context, int index) => const Divider(),),
+                          );
+                        }
+                        case ConnectionState.none:
+                          // TODO: Handle this case.
+                          break;
+                        case ConnectionState.waiting:
+                          // TODO: Handle this case.
+                          break;
+                      }
+
+                      return Scaffold(
+                        body: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 10,),
+                              Text('Please wait...')
+                            ],
+                          ),
+                        ),
+                      );
+
+                    })
+            )
 
           ],
         ),
@@ -227,5 +259,507 @@ class _StatusPage extends State<StatusPage> {
     );
   }
 
+  onClickStatus(StatusModel model, List<StatusDetailModel> listDetail, List<StatusDetailDateModel> listDateDetail) {
+    showModalBottomSheet(backgroundColor: Colors.transparent, isScrollControlled: true, context: context, builder: (BuildContext context) {
+      return StatefulBuilder(builder: (BuildContext context, setState){
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
+              ),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Container(
+                        height: 4,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.2),
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(25.0),
+                              topRight: Radius.circular(25.0),
+                              bottomLeft: Radius.circular(25.0),
+                              bottomRight: Radius.circular(25.0)
+                          ),
+                        ),
+                      )),
+
+
+                  model.delv_name!.contains('Pickup') ? Container() : Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        child: const Text('Alamat penerima', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                      ),
+
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${model.shipp_receiver}'),
+                            Text('${model.shipp_phone}'),
+                            Text('${model.shipp_address}, ${model.shipp_postcode}'),
+                            Text('Resi: ${model.delv_text2 ?? '-'}'),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20,),
+                    ],
+                  ),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    child: const Text('Keterangan', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                  ),
+
+                  Container(
+                    color: Colors.transparent,
+                    child: Column(
+                      children: List.generate(listDateDetail.length, (index) {
+                        return Container(
+                          padding: const EdgeInsets.all(10),
+                          color: index % 2 == 0 ? Colors.grey.withOpacity(0.2) : Colors.white,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('${listDateDetail[index].text}'),
+                              const SizedBox(width: 20,),
+                              Text(listDateDetail[index].date ?? '-')
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20,),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    child: const Text('Files', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                  ),
+
+                  Container(
+                    color: Colors.transparent,
+                    child: Column(
+                      children: List.generate(listDetail.length, (index) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              color: Colors.grey.withOpacity(0.2),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                children: [
+                                  Expanded(child: Text('${listDetail[index].filename}'))
+                                ],
+                              ),
+                            ),
+                            Padding(padding: const EdgeInsets.all(10), child:
+                            Table(
+                              columnWidths: const {
+                                0: FlexColumnWidth(10),
+                                1: FlexColumnWidth(20),
+                              },
+                              children: [
+                                TableRow(
+                                    children: [
+                                      const Text('Tipe printer'),
+                                      Text(': ${listDetail[index].ink_name}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Jenis kertas'),
+                                      Text(': ${listDetail[index].size_name}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Ukuran kertas'),
+                                      Text(': ${listDetail[index].type_paper_name}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Finishing'),
+                                      Text(': ${listDetail[index].finish_text}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Copy'),
+                                      Text(': ${listDetail[index].copy}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Total halaman'),
+                                      Text(': ${listDetail[index].total_pages}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Print halaman'),
+                                      Text(': ${listDetail[index].pages_remarks}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Total berat:'),
+                                      Text(': ${listDetail[index].ntgew_d}kg')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Total harga'),
+                                      Text(': ${MyNumber.convertToIdr(double.parse(listDetail[index].amount_d!))}')
+                                    ]
+                                ),
+                                TableRow(
+                                    children: [
+                                      const Text('Catatan'),
+                                      Text(': ${listDetail[index].remarks_d != '' ? listDetail[index].remarks_d : '-'}')
+                                    ]
+                                ),
+                              ],
+                            ),),
+                          ],
+                        );
+                      }),
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+          ),
+        );
+      });
+    });
+  }
+
+  showProgress() {
+    if (_isLoading){
+      Dialogs.materialDialog(
+          context: context,
+          barrierDismissible: false,
+          actions: [
+            Container(
+              child: Column(
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10,),
+                  Text('Mohon tunggu'),
+                ],
+              ),
+            )
+          ]
+      );
+    }
+  }
+
+  btnPayment(PaymentTypeModel paymentTypeModel, String  payment_no, String total_amount) {
+
+    var logoPayment = Container();
+    if (paymentTypeModel.payment_type_name!.contains('OVO')){
+      logoPayment = Container(
+        height: 25,
+        child: Image.asset('assets/ic_ovo.png'),
+      );
+    } else if (paymentTypeModel.payment_type_name!.contains('GOPAY')) {
+      logoPayment = Container(
+        height: 25,
+        child: Image.asset('assets/ic_gopay.png'),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.only(bottom: 10),
+      width: double.infinity,
+      child: OutlinedButton(
+        style: ButtonStyle(
+            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.black.withOpacity(0.7)),
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    side: BorderSide(color: Colors.transparent)
+                )
+            )
+        ),
+        onPressed: () {
+
+          final data = {
+            'payment_no': payment_no,
+            'total_amount': total_amount,
+            'phone_no': _controllerNoHp.text,
+            'paymentTypeModel': paymentTypeModel.toJson(),
+          };
+
+          // Navigator.of(context).pushNamed(WaitingPaymentPage.tag, arguments: jsonEncode(data));
+          // Navigator.of(context).pushReplacementNamed(WaitingPaymentPage.tag, arguments: jsonEncode(data));
+
+          Navigator.of(context).pop();
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context){
+            return WaitingPaymentPage(data: jsonEncode(data),);
+          }));
+
+          // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context){
+          //   return WaitingPaymentPage(data: jsonEncode(data),);
+          // }), (r){
+          //   return false;
+          // });
+
+          // Navigator.pushAndRemoveUntil(
+          //     context,
+          //     MaterialPageRoute(builder: (BuildContext context) => const WaitingPaymentPage()),
+          //     ModalRoute.withName(SingleNavigationPage.tag),
+          // );
+
+        },
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('${paymentTypeModel.payment_type_text}'),
+              SizedBox(width: 20,),
+              logoPayment
+            ],
+          ),
+        ),
+        // child: _isLoading ? const CircularProgressIndicator() : const Text('Log In'),
+      ),
+    );
+  }
+
+  buttonPayment(String status, String print_h_code, String total){
+
+    final noHp = TextFormField(
+      controller: _controllerNoHp,
+      keyboardType: TextInputType.number,
+      autofocus: false,
+      decoration: InputDecoration(
+        hintText: 'No Hp',
+        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+      ),
+    );
+
+    if (status.contains('Menunggu pembayaran')){
+      return Row(
+        children: [
+          ElevatedButton(
+              onPressed: (){
+                showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    context: context, builder: (BuildContext context) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+
+                          Container(
+                              padding: const EdgeInsets.all(10),
+                              child: Container(
+                                height: 4,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(25.0),
+                                      topRight: Radius.circular(25.0),
+                                      bottomLeft: Radius.circular(25.0),
+                                      bottomRight: Radius.circular(25.0)
+                                  ),
+                                ),
+                              )),
+
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: SingleChildScrollView(
+                              child:  Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Pembayaran $print_h_code', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold) ),
+                                  Text('Total ${MyNumber.convertToIdr(double.parse(total))}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+
+                                  SizedBox(height: 10,),
+                                  noHp,
+                                  SizedBox(height: 10,),
+
+                                  Column(
+                                    children: List.generate(_statusService.paymentTypeList.length, (index) {
+                                      return btnPayment(_statusService.paymentTypeList[index], print_h_code, total);
+                                    }),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                });
+              },
+              style: ElevatedButton.styleFrom(primary: Colors.green),
+              child: const Text('Bayar')
+          ),
+          const SizedBox(width: 10,),
+          ElevatedButton(
+              onPressed: (){
+
+                Dialogs.materialDialog(
+                    context: context,
+                    msg: 'Batalkan transaksi $print_h_code?',
+                    title: 'Transaksi',
+                    color: Colors.white,
+                    actions: [
+                      IconsOutlineButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        text: 'Tidak',
+                        textStyle: const TextStyle(color: Colors.grey),
+                      ),
+                      IconsButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+
+                          progressDialog(true, context);
+
+                          _statusService.cancelTransaction(print_h_code).then((value) {
+
+                            progressDialog(false, context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(value),
+                            ));
+
+                            _refreshStatus();
+
+                          });
+
+                        },
+                        text: 'Ya',
+                        color: Colors.red,
+                        textStyle: const TextStyle(color: Colors.white),
+                      ),
+                    ]
+                );
+
+              },
+              style: ElevatedButton.styleFrom(primary: Colors.red),
+              child: const Text('Batal')
+          ),
+        ],
+      );
+    }
+
+    return Row();
+  }
+
+  progressDialog(bool isLoading, BuildContext context) {
+    AlertDialog dialog = AlertDialog(
+      content: SizedBox(
+          height: 40.0,
+          child: Center(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const <Widget>[
+                CircularProgressIndicator(),
+                Padding(padding: EdgeInsets.only(left: 15.0)),
+                Text("Please wait")
+              ],
+            ),
+          )),
+      contentPadding: const EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 15.0),
+    );
+    if (!isLoading) {
+      Navigator.of(context, rootNavigator: true).pop();
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(onWillPop: null, child: dialog);
+        },
+        useRootNavigator: true,
+      );
+    }
+  }
+
+  statusWidget(String status){
+    if (status.contains('Sudah dibayar') || status.contains('Selesai')){
+      return Container(
+        padding: const EdgeInsets.all(5),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+            bottomLeft: Radius.circular(20.0),
+            bottomRight: Radius.circular(20.0),
+          ),
+        ),
+        child: Text(status, style: const TextStyle(fontSize: 12, color: Colors.white)),
+      );
+    } else if (status.contains('Proses Printing')) {
+      return Container(
+        padding: const EdgeInsets.all(5),
+        decoration: const BoxDecoration(
+          color: Colors.yellow,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+            bottomLeft: Radius.circular(20.0),
+            bottomRight: Radius.circular(20.0),
+          ),
+        ),
+        child: Text(status, style: const TextStyle(fontSize: 12)),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      decoration: const BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+          bottomLeft: Radius.circular(20.0),
+          bottomRight: Radius.circular(20.0),
+        ),
+      ),
+      child: Text(status, style: const TextStyle(fontSize: 12, color: Colors.white)),
+    );
+    
+  }
 
 }

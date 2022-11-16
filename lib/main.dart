@@ -12,6 +12,7 @@ import 'package:siapprint/screen/naivgation/bottom_bar.dart';
 import 'package:siapprint/screen/naivgation/single_navigation.dart';
 import 'package:siapprint/screen/sample_screen.dart';
 import 'package:siapprint/screen/status_page.dart';
+import 'package:siapprint/screen/waiting_payment_page.dart';
 
 
 // void main() {
@@ -72,6 +73,9 @@ class MyApp extends StatelessWidget {
           transactionModel: arguments as TransactionModel
       ),
       StatusPage.tag: (context) => const StatusPage(),
+      WaitingPaymentPage.tag: (context) => WaitingPaymentPage(
+        data: arguments as String,
+      ),
       SingleNavigationPage.tag: (context) => const SingleNavigationPage(),
     };
   }

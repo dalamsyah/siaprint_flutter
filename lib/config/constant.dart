@@ -2,7 +2,8 @@
 class Constant {
   // static String baseUrl = "http://siapprint.com/";
   // static String baseUrl = "http://192.168.1.8/siaprint/public/";
-  static String baseUrl = "http://192.168.56.1/siaprint/public/";
+  static String baseUrl = "http://192.168.56.1/siaprint2/public/";
+  // static String baseUrl = "https://dev.siapprint.com/";
   // static String baseUrl = "http://192.168.128.72/siaprint/public/";
 
   static String apitoken = 'siaprint98765';
@@ -18,6 +19,8 @@ class Constant {
   static String apicompanyfromprovince = '${baseUrl}apicompanyfromprovince';
   static String apideletefilebasket = '${baseUrl}apideletefilebasket';
   static String apilisttransaction = '${baseUrl}apilisttransaction';
+  static String apistatuscancel = '${baseUrl}apistatuscancel';
+  static String apipayment = '${baseUrl}apipayment';
 
   static String INK_LASER = 'INK001';
   static String INK_TINTA = 'INK002';
