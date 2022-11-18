@@ -10,7 +10,7 @@ import 'package:siapprint/model/status_detail_date_model.dart';
 import 'package:siapprint/model/status_detail_model.dart';
 import 'package:siapprint/model/status_model.dart';
 import 'package:siapprint/repository/status_service.dart';
-import 'package:siapprint/screen/naivgation/toolbar_widget.dart';
+import 'package:siapprint/screen/navigation/toolbar_widget.dart';
 import 'package:siapprint/screen/waiting_payment_page.dart';
 
 class StatusPage extends StatefulWidget {

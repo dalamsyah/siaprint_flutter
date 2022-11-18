@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:siapprint/screen/naivgation/app_navigation.dart';
+import 'package:siapprint/screen/navigation/app_navigation.dart';
 
 class BottomNavigation extends StatelessWidget {
   const BottomNavigation(

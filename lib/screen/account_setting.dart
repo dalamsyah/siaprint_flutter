@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/model/user_model.dart';
 import 'package:siapprint/screen/login_page.dart';
-import 'package:siapprint/screen/naivgation/toolbar_widget.dart';
+import 'package:siapprint/screen/navigation/toolbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 typedef StringValue2 = Function();

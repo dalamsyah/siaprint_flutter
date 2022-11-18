@@ -12,7 +12,7 @@ import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/basket_service.dart';
 import 'package:siapprint/repository/company_serive.dart';
 import 'package:siapprint/screen/checkout_page.dart';
-import 'package:siapprint/screen/naivgation/toolbar_widget.dart';
+import 'package:siapprint/screen/navigation/toolbar_widget.dart';
 import 'package:siapprint/screen/utils/custom_widget.dart';
 
 class Basket3Page extends StatefulWidget {

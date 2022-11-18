@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/repository/login_service.dart';
-import 'package:siapprint/screen/naivgation/toolbar_widget.dart';
+import 'package:siapprint/screen/navigation/toolbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RegisterPage extends StatefulWidget {

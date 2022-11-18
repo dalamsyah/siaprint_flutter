@@ -4,7 +4,7 @@ import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/checkout_page.dart';
 import 'package:siapprint/screen/form_print_page.dart';
-import 'package:siapprint/screen/naivgation/app_navigation.dart';
+import 'package:siapprint/screen/navigation/app_navigation.dart';
 import 'package:siapprint/screen/upload_page.dart';
 
 class TabNavigatorRoutes {
