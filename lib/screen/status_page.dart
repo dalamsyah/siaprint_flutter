@@ -4,22 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/format_number.dart';
 import 'package:siapprint/model/payment_type_model.dart';
 import 'package:siapprint/model/status_detail_date_model.dart';
 import 'package:siapprint/model/status_detail_model.dart';
 import 'package:siapprint/model/status_model.dart';
-import 'package:siapprint/model/user_model.dart';
-import 'package:siapprint/repository/login_service.dart';
 import 'package:siapprint/repository/status_service.dart';
-import 'package:siapprint/screen/account_setting.dart';
-import 'package:siapprint/screen/basket3_page.dart';
-import 'package:siapprint/screen/home_page.dart';
-import 'package:siapprint/screen/naivgation/app_navigation.dart';
-import 'package:siapprint/screen/naivgation/bottom_bar.dart';
-import 'package:siapprint/screen/naivgation/single_navigation.dart';
-import 'package:siapprint/screen/upload_page.dart';
 import 'package:siapprint/screen/waiting_payment_page.dart';
 
 class StatusPage extends StatefulWidget {
@@ -35,10 +25,10 @@ class StatusPage extends StatefulWidget {
 
 class _StatusPage extends State<StatusPage> {
 
-  StatusService _statusService = StatusService();
+  final StatusService _statusService = StatusService();
   String _statuscode = 'Sedang berjalan';
-  bool _isLoading = false;
-  TextEditingController _controllerNoHp = TextEditingController();
+  final bool _isLoading = false;
+  final TextEditingController _controllerNoHp = TextEditingController();
 
   List<StatusModel> _listStatus = [];
 
@@ -230,10 +220,8 @@ class _StatusPage extends State<StatusPage> {
                           );
                         }
                         case ConnectionState.none:
-                          // TODO: Handle this case.
                           break;
                         case ConnectionState.waiting:
-                          // TODO: Handle this case.
                           break;
                       }
 
@@ -473,7 +461,7 @@ class _StatusPage extends State<StatusPage> {
     }
   }
 
-  btnPayment(PaymentTypeModel paymentTypeModel, String  payment_no, String total_amount) {
+  btnPayment(PaymentTypeModel paymentTypeModel, String  paymentNo, String totalAmount) {
 
     var logoPayment = Container();
     if (paymentTypeModel.payment_type_name!.contains('OVO')){
@@ -493,21 +481,21 @@ class _StatusPage extends State<StatusPage> {
       width: double.infinity,
       child: OutlinedButton(
         style: ButtonStyle(
-            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+            padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(15)),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.black.withOpacity(0.7)),
             backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
-                    side: BorderSide(color: Colors.transparent)
+                    side: const BorderSide(color: Colors.transparent)
                 )
             )
         ),
         onPressed: () {
 
           final data = {
-            'payment_no': payment_no,
-            'total_amount': total_amount,
+            'payment_no': paymentNo,
+            'total_amount': totalAmount,
             'phone_no': _controllerNoHp.text,
             'paymentTypeModel': paymentTypeModel.toJson(),
           };
@@ -538,7 +526,7 @@ class _StatusPage extends State<StatusPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('${paymentTypeModel.payment_type_text}'),
-              SizedBox(width: 20,),
+              const SizedBox(width: 20,),
               logoPayment
             ],
           ),
@@ -548,7 +536,7 @@ class _StatusPage extends State<StatusPage> {
     );
   }
 
-  buttonPayment(String status, String print_h_code, String total){
+  buttonPayment(String status, String printHCode, String total){
 
     final noHp = TextFormField(
       controller: _controllerNoHp,
@@ -556,7 +544,7 @@ class _StatusPage extends State<StatusPage> {
       autofocus: false,
       decoration: InputDecoration(
         hintText: 'No Hp',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        contentPadding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
     );
@@ -600,21 +588,21 @@ class _StatusPage extends State<StatusPage> {
                               )),
 
                           Container(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             child: SingleChildScrollView(
                               child:  Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Pembayaran $print_h_code', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold) ),
-                                  Text('Total ${MyNumber.convertToIdr(double.parse(total))}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                  Text('Pembayaran $printHCode', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold) ),
+                                  Text('Total ${MyNumber.convertToIdr(double.parse(total))}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
-                                  SizedBox(height: 10,),
+                                  const SizedBox(height: 10,),
                                   noHp,
-                                  SizedBox(height: 10,),
+                                  const SizedBox(height: 10,),
 
                                   Column(
                                     children: List.generate(_statusService.paymentTypeList.length, (index) {
-                                      return btnPayment(_statusService.paymentTypeList[index], print_h_code, total);
+                                      return btnPayment(_statusService.paymentTypeList[index], printHCode, total);
                                     }),
                                   ),
 
@@ -637,7 +625,7 @@ class _StatusPage extends State<StatusPage> {
 
                 Dialogs.materialDialog(
                     context: context,
-                    msg: 'Batalkan transaksi $print_h_code?',
+                    msg: 'Batalkan transaksi $printHCode?',
                     title: 'Transaksi',
                     color: Colors.white,
                     actions: [
@@ -654,7 +642,7 @@ class _StatusPage extends State<StatusPage> {
 
                           progressDialog(true, context);
 
-                          _statusService.cancelTransaction(print_h_code).then((value) {
+                          _statusService.cancelTransaction(printHCode).then((value) {
 
                             progressDialog(false, context);
 

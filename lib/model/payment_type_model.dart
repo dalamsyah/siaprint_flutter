@@ -1,9 +1,6 @@
 
 
-import 'dart:collection';
 
-import 'package:flutter/material.dart';
-import 'package:siapprint/model/address_model.dart';
 
 class PaymentTypeModel {
 

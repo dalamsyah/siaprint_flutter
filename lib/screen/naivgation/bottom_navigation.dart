@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:siapprint/screen/account_setting.dart';
-import 'package:siapprint/screen/basket2_page.dart';
-import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';
-import 'package:siapprint/screen/upload_page.dart';
 
 class BottomNavigation extends StatelessWidget {
   const BottomNavigation(
@@ -17,7 +13,7 @@ class BottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      items: [
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.upload),
           label: 'Upload',
@@ -41,7 +37,7 @@ class BottomNavigation extends StatelessWidget {
 
   BottomNavigationBarItem _buildItem(TabWidgetItem tabItem) {
     return BottomNavigationBarItem(
-      icon: Icon(
+      icon: const Icon(
         Icons.layers,
         color: Colors.redAccent,
       ),

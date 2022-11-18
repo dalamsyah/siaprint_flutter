@@ -2,13 +2,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:siapprint/model/user_model.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/repository/login_service.dart';
-import 'package:siapprint/screen/home_page.dart';
-import 'package:siapprint/screen/naivgation/app_navigation.dart';
-import 'package:siapprint/screen/naivgation/bottom_bar.dart';
 import 'package:siapprint/screen/naivgation/single_navigation.dart';
+import 'package:siapprint/screen/regsiter_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
 
@@ -23,16 +22,16 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPage extends State<LoginPage> {
 
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   final LoginService _service = LoginService();
-  TextEditingController _controllerLogin = TextEditingController();
-  TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerLogin = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
 
   @override
   void initState() {
-    _controllerLogin.text = 'raimunsuandi';
-    _controllerPassword.text = 'nowomennocry1234';
+    _controllerLogin.text = 'dimasdimas';
+    _controllerPassword.text = 'dimas123456';
     // _controllerLogin.text = 'test2';
     // _controllerPassword.text = 'dimas123456';
 
@@ -47,7 +46,7 @@ class _LoginPage extends State<LoginPage> {
       tag: 'hero',
       child: CircleAvatar(
         backgroundColor: Colors.transparent,
-        radius: 48.0,
+        radius: 60.0,
         child: Image.asset('assets/logo.png'),
       ),
     );
@@ -58,7 +57,7 @@ class _LoginPage extends State<LoginPage> {
       autofocus: false,
       decoration: InputDecoration(
         hintText: 'Email',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        contentPadding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
     );
@@ -69,7 +68,7 @@ class _LoginPage extends State<LoginPage> {
       obscureText: true,
       decoration: InputDecoration(
         hintText: 'Password',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        contentPadding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
     );
@@ -81,13 +80,13 @@ class _LoginPage extends State<LoginPage> {
       ) :
       ElevatedButton(
         style: ButtonStyle(
-            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+            padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(15)),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
             backgroundColor: MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
-                    side: BorderSide(color: Colors.transparent)
+                    side: const BorderSide(color: Colors.transparent)
                 )
             )
         ),
@@ -97,35 +96,124 @@ class _LoginPage extends State<LoginPage> {
             _service.is_loading = true;
           });
 
-          final response = await _service.login(_controllerLogin.text, _controllerPassword.text);
+          final response = await _service.login(_controllerLogin.text, _controllerPassword.text).then((value) {
 
-          setState((){
-            _service.is_loading = false;
-          });
+            setState((){
+              _service.is_loading = false;
+            });
 
-          if (!mounted) return;
-          final data = jsonDecode(response);
-          final snackBar = SnackBar(content: Text(data['message']));
+            final data = jsonDecode(value);
+            final snackBar = SnackBar(content: Text(data['message']));
 
-          if (data['status'] as int == 0) {
-            Navigator.of(context).pushNamedAndRemoveUntil(SingleNavigationPage.tag, (route) => false);
-          } else {
+            if (data['status'] as int == 0) {
+              Navigator.of(context).pushNamedAndRemoveUntil(SingleNavigationPage.tag, (route) => false);
+            } else {
+
+              String msg = data['message'];
+              if (data['message'].toString().contains('Akun pengguna ini belum diaktifkan.')){
+                msg = 'Akun pengguna ini belum diaktifkan, silahkan aktifasi melalu link yang kamu berikan melalui email.';
+              }
+
+              Dialogs.materialDialog(
+                  context: context,
+                  actions: [
+                    Container(
+                      child: Column(
+                        children: [
+                          const Text('Error'),
+                          const SizedBox(height: 8.0),
+                          Text(msg),
+                          TextButton(
+                            child: const Text(
+                              'Kirim ulang pesan aktifasi sekali lagi',
+                              style: const TextStyle(color: Colors.black54),
+                            ),
+                            onPressed: () {
+
+                              Navigator.pop(context);
+
+                              showProgress(true);
+
+                              _service.resendactivation(_controllerLogin.text).then((value) {
+
+                                Navigator.pop(context);
+
+                                Dialogs.materialDialog(
+                                    context: context,
+                                    actions: [
+                                      Container(
+                                        child: Column(
+                                          children: [
+                                            const Text('Pesan'),
+                                            const SizedBox(height: 8.0),
+                                            Text('$value'),
+                                            TextButton(
+                                              child: const Text(
+                                                'Tutup',
+                                                style: TextStyle(color: Colors.black54),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ]
+                                );
+
+
+                              }).onError((error, stackTrace) {
+                                Navigator.pop(context);
+                              });
+                            },
+                          ),
+
+                        ],
+                      ),
+                    )
+                  ]
+              );
+
+              // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+
+          }).onError((error, stackTrace){
+
+            final snackBar = SnackBar(content: Text(error.toString()));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
+
+            setState((){
+              _service.is_loading = false;
+            });
+
+          });
 
 
         },
-        child: const Text('Log In'),
+        child: const Text('Masuk'),
         // child: _isLoading ? const CircularProgressIndicator() : const Text('Log In'),
       ),
     );
 
     final forgotLabel = TextButton(
-      child: Text(
-        'Forgot password?',
+      child: const Text(
+        'Lupa password?',
         style: TextStyle(color: Colors.black54),
       ),
-      onPressed: () {},
+      onPressed: () {
+        _launchURLForgot();
+      },
+    );
+
+    final createAccountLabel = TextButton(
+      child: const Text(
+        'Butuh akun?',
+        style: TextStyle(color: Colors.black54),
+      ),
+      onPressed: () {
+        Navigator.of(context).pushNamed(RegisterPage.tag);
+      },
     );
 
     return Scaffold(
@@ -133,24 +221,58 @@ class _LoginPage extends State<LoginPage> {
       body:  Center(
         child: ListView(
           shrinkWrap: true,
-          padding: EdgeInsets.only(left: 24.0, right: 24.0),
+          padding: const EdgeInsets.only(left: 24.0, right: 24.0),
           children: <Widget>[
             logo,
-            SizedBox(height: 48.0),
+            const SizedBox(height: 48.0),
             email,
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             password,
-            SizedBox(height: 24.0),
+            const SizedBox(height: 20.0),
             loginButton,
+            createAccountLabel,
             forgotLabel,
 
-
-
+            // showProgress(_service.is_loading)
           ],
         ),
       )
     );
 
+  }
+
+  _launchURLForgot() async {
+    if (!await launchUrl(Uri.parse(Constant.web_forgot), mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch ${Constant.web_forgot}';
+    }
+  }
+
+  _launchURLAktifasi(String username) async {
+    if (!await launchUrl(Uri.parse('${Constant.web_aktifasi}$username'), mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch ${Constant.web_aktifasi}';
+    }
+  }
+
+  showProgress(bool loading) {
+    if (loading){
+      return Dialogs.materialDialog(
+          context: context,
+          barrierDismissible: false,
+          actions: [
+            Container(
+              child: Column(
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10,),
+                  Text('Mohon tunggu'),
+                ],
+              ),
+            )
+          ]
+      );
+    } else {
+      return Container();
+    }
   }
 
 }

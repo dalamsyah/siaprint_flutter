@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/screen/account_setting.dart';
-import 'package:siapprint/screen/basket2_page.dart';
 import 'package:siapprint/screen/checkout_page.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';

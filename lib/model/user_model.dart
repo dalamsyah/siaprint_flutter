@@ -1,8 +1,5 @@
 
-import 'dart:collection';
 
-import 'package:flutter/material.dart';
-import 'package:siapprint/model/address_model.dart';
 
 class UserModel {
 
@@ -81,4 +78,32 @@ class UserModel {
       address: json['address'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'username': username,
+      'password_hash': password_hash,
+      'reset_hash': reset_hash,
+      'reset_at': reset_at,
+      'reset_expires': reset_expires,
+      'activate_hash': activate_hash,
+      'status': status,
+      'status_message': status_message,
+      'active': active,
+      'force_pass_reset': force_pass_reset,
+      'created_at': created_at,
+      'updated_at': updated_at,
+      'deleted_at': deleted_at,
+      'balance': balance,
+      'phone': phone,
+      'first_name': first_name,
+      'last_name': last_name,
+      'admin_comp': admin_comp,
+      'owner': owner,
+      'address': address,
+    };
+  }
+
 }

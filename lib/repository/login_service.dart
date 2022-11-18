@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
-import 'package:siapprint/model/user_model.dart';
 
 class LoginService {
 
@@ -33,28 +31,61 @@ class LoginService {
         localStorage.setString('user', jsonEncode(data['result']['user']));
       }
 
-      // if (response.statusCode == 200) {
-      //
-      //   if (data['status'] as int == 0) {
-      //     localStorage.setString('user', jsonEncode(data['result']['user']));
-      //
-      //     Navigator.of(context).pushNamedAndRemoveUntil(SingleNavigationPage.tag, (route) => false);
-      //   } else {
-      //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      //   }
-      //
-      // } else {
-      //
-      //   if (!mounted) return;
-      //
-      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      // }
+      return response.body;
+    } else {
+      is_loading = false;
+      throw Exception('Failed to login.');
+    }
+
+  }
+
+  Future<String> register(String username, String email, String password, String passConfirm) async {
+
+    is_loading = true;
+
+    final response = await http.post(Uri.parse(Constant.register), body: {
+      'username': username,
+      'email': email,
+      'password': password,
+      'pass_confirm': passConfirm,
+    });
+
+    var data = jsonDecode(response.body);
+    print(data);
+
+    if (response.statusCode == 200) {
 
       return response.body;
     } else {
-      // is_loading = false;
-      // If the server did not return a 201 CREATED response,
-      // then throw an exception.
+      is_loading = false;
+      throw Exception('Failed to register.');
+    }
+
+  }
+
+  Future<String> resendactivation(String login) async {
+
+    is_loading = true;
+
+    // await Future.delayed(const Duration(seconds: 5), () {
+    //   print("Future.delayed");
+    // });
+
+    final response = await http.post(Uri.parse(Constant.apiresendactivation), body: {
+      'login': login,
+    });
+
+    is_loading = false;
+
+    var data = jsonDecode(response.body);
+    print(data);
+
+    if (response.statusCode == 200) {
+
+
+      return data['message'];
+    } else {
+      is_loading = false;
       throw Exception('Failed to login.');
     }
 

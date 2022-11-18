@@ -1,21 +1,8 @@
 import 'dart:convert';
-import 'dart:ffi';
 
-import 'package:flutter/services.dart';
-import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:siapprint/model/basket_model.dart';
-import 'package:siapprint/model/delivery_model.dart';
-import 'package:siapprint/model/finishing_model.dart';
-import 'package:siapprint/model/inks_model.dart';
 import 'package:siapprint/model/payment_type_model.dart';
-import 'package:siapprint/model/price_model.dart';
-import 'package:siapprint/model/size_model.dart';
-import 'package:siapprint/model/transaction_model.dart';
-import 'package:siapprint/repository/checkout_service.dart';
-import 'package:siapprint/repository/form_service.dart';
 import 'package:siapprint/repository/status_service.dart';
-import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/config/format_number.dart';
 
 class WaitingPaymentPage extends StatefulWidget {
@@ -38,7 +25,7 @@ class _WaitingPaymentPage extends State<WaitingPaymentPage> {
   PaymentTypeModel? paymentTypeModel;
   bool _isLoading = false;
 
-  StatusService _statusService = StatusService();
+  final StatusService _statusService = StatusService();
 
   @override
   void initState() {
@@ -68,13 +55,13 @@ class _WaitingPaymentPage extends State<WaitingPaymentPage> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               Container(
                   child: Column(
                     children: [
-                      Text('Pembayaran $payment_no dengan Total ${MyNumber.convertToIdr(double.parse(total_amount))} telah dikirim ke ${paymentTypeModel!.payment_type_name} dengan nomor $phone_no', style: TextStyle(fontSize: 20),),
+                      Text('Pembayaran $payment_no dengan Total ${MyNumber.convertToIdr(double.parse(total_amount))} telah dikirim ke ${paymentTypeModel!.payment_type_name} dengan nomor $phone_no', style: const TextStyle(fontSize: 20),),
                     ],
                   )
               ),
@@ -91,21 +78,21 @@ class _WaitingPaymentPage extends State<WaitingPaymentPage> {
                   Container(
                     child: Image.asset('assets/ic_thankyou_payment.png'),
                   ),
-                  SizedBox(height: 10,),
-                  Text('Pembayaran berhasil', style: TextStyle(fontSize: 20))
+                  const SizedBox(height: 10,),
+                  const Text('Pembayaran berhasil', style: TextStyle(fontSize: 20))
                 ],
               )),
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+                      padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(15)),
                       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.lightBlueAccent),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
-                              side: BorderSide(color: Colors.transparent)
+                              side: const BorderSide(color: Colors.transparent)
                           )
                       )
                   ),

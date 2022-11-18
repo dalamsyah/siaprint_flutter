@@ -1,14 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:siapprint/model/user_model.dart';
-import 'package:siapprint/repository/login_service.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket3_page.dart';
-import 'package:siapprint/screen/home_page.dart';
-import 'package:siapprint/screen/naivgation/app_navigation.dart';
-import 'package:siapprint/screen/naivgation/bottom_bar.dart';
 import 'package:siapprint/screen/status_page.dart';
 import 'package:siapprint/screen/upload_page.dart';
 
@@ -32,7 +25,7 @@ class _SingleNavigationPage extends State<SingleNavigationPage> {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,

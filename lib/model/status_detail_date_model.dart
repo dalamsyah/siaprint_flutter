@@ -1,9 +1,5 @@
 
-import 'dart:collection';
 
-import 'package:flutter/material.dart';
-import 'package:siapprint/model/address_model.dart';
-import 'package:siapprint/model/status_detail_model.dart';
 
 class StatusDetailDateModel {
 

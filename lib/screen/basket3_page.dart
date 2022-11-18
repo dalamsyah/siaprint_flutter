@@ -1,5 +1,4 @@
 
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -13,8 +12,6 @@ import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/basket_service.dart';
 import 'package:siapprint/repository/company_serive.dart';
 import 'package:siapprint/screen/checkout_page.dart';
-import 'package:siapprint/screen/form_print_page.dart';
-import 'package:siapprint/screen/naivgation/tab_navigator.dart';
 import 'package:siapprint/screen/utils/custom_widget.dart';
 
 class Basket3Page extends StatefulWidget {
@@ -55,22 +52,22 @@ class _Basket3Page extends State<Basket3Page> {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: Colors.white,
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(color: Colors.lightBlue, spreadRadius: 1),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(selectedCompanyModel.comp_name != null ? selectedCompanyModel.comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(selectedCompanyModel.comp_name != null ? selectedCompanyModel.comp_name! : '-', style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(selectedCompanyModel.comp_address != null ? '${selectedCompanyModel.comp_address!}, ${selectedCompanyModel.regencies_name!}, ${selectedCompanyModel.provinces_name!}' : '-'),
 
           selectedCompanyModel.price_status == null && selectedCompanyModel.price_finish_status == null ?
-              Text('Coming soon')
+              const Text('Coming soon')
           :
           companyModel == null ? ElevatedButton(
               style: ElevatedButton.styleFrom(elevation: 2),
@@ -79,7 +76,7 @@ class _Basket3Page extends State<Basket3Page> {
                   companyModel = selectedCompanyModel;
                 });
               },
-              child: Text('Pilih'),
+              child: const Text('Pilih'),
             ) : OutlinedButton(
               onPressed: () {
                 setState((){
@@ -87,7 +84,7 @@ class _Basket3Page extends State<Basket3Page> {
                 });
               },
             style: ElevatedButton.styleFrom(primary: Colors.white38),
-              child: Text('Batal'),
+              child: const Text('Batal'),
             ),
 
         ],
@@ -116,7 +113,7 @@ class _Basket3Page extends State<Basket3Page> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(_basketService.listBasket[index].filename != null ? _basketService.listBasket[index].filename! : '-',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     Text(_basketService.listBasket[index].pages_tot != null ? 'Total halaman: ${_basketService.listBasket[index].pages_tot!}' : '-'),
                   ],
                 ),
@@ -167,7 +164,7 @@ class _Basket3Page extends State<Basket3Page> {
     return Scaffold(
       body: Container(
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           alignment: Alignment.center,
           child:
 
@@ -175,11 +172,11 @@ class _Basket3Page extends State<Basket3Page> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
                   width: double.infinity,
-                  child: Text('Tempat print yang kami rekomendasikan')
+                  child: const Text('Tempat print yang kami rekomendasikan')
               ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
 
               Container(
                 child: FutureBuilder(
@@ -187,7 +184,13 @@ class _Basket3Page extends State<Basket3Page> {
                     builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
 
                       if (snapshot.hasData){
-                        return currentAddress(_companyService.allListCompany);
+                        if (_companyService.allListCompany.isNotEmpty){
+                          return currentAddress(_companyService.allListCompany);
+                        }
+                        return Container(
+                            alignment: Alignment.center,
+                            child: Text(_companyService.msg)
+                        );
                       } else if (snapshot.hasError) {
                         return Container(
                             alignment: Alignment.center,
@@ -200,10 +203,10 @@ class _Basket3Page extends State<Basket3Page> {
                           children: [
                             Transform.scale(
                               scale: 0.5,
-                              child: CircularProgressIndicator(),
+                              child: const CircularProgressIndicator(),
                             ),
-                            SizedBox(height: 10,),
-                            Text('Please wait...')
+                            const SizedBox(height: 10,),
+                            const Text('Please wait...')
                           ],
                         ),
                       );
@@ -212,9 +215,9 @@ class _Basket3Page extends State<Basket3Page> {
                 ),
               ),
 
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
 
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () {
@@ -256,11 +259,11 @@ class _Basket3Page extends State<Basket3Page> {
                                     )),
 
                                 Container(
-                                  padding: EdgeInsets.all(20),
+                                  padding: const EdgeInsets.all(20),
                                   width: double.infinity,
                                   child: DropdownButton<String>(
                                     value: _dropDownProvinsi,
-                                    hint: Text('Pilih'),
+                                    hint: const Text('Pilih'),
                                     icon: const Icon(Icons.arrow_downward),
                                     elevation: 16,
                                     style: const TextStyle(color: Colors.deepPurple),
@@ -304,7 +307,7 @@ class _Basket3Page extends State<Basket3Page> {
                                           if(list.data == null) {
                                             return Container(
                                               alignment: Alignment.center,
-                                              child: Text('data not found'),
+                                              child: const Text('data not found'),
                                             );
                                           }
                                           return StatefulBuilder(builder: (BuildContext context, setState) {
@@ -314,27 +317,27 @@ class _Basket3Page extends State<Basket3Page> {
                                                   children: [
                                                     Container(
                                                       child: Container(
-                                                        padding: EdgeInsets.all(20),
+                                                        padding: const EdgeInsets.all(20),
                                                         child: Row(
                                                           children: [
                                                             Expanded(child: Column(
                                                               crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
-                                                                Text(list.data![index].comp_name != null ? list.data![index].comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                                Text(list.data![index].comp_name != null ? list.data![index].comp_name! : '-', style: const TextStyle(fontWeight: FontWeight.bold)),
                                                                 Text(list.data![index].comp_address != null ? '${list.data![index].comp_address!}, ${list.data![index].regencies_name!}, ${list.data![index].provinces_name!}' : '-'),
                                                               ],
                                                             )),
 
-                                                            SizedBox(width: 10),
+                                                            const SizedBox(width: 10),
 
                                                             list.data![index].price_status == null && list.data![index].price_finish_status == null ?
-                                                            Text('Coming soon') : ElevatedButton(
+                                                            const Text('Coming soon') : ElevatedButton(
                                                               style: ElevatedButton.styleFrom(elevation: 2),
                                                               onPressed: () {
                                                                 setCompanySelected(list.data![index]);
                                                                 Navigator.pop(context);
                                                               },
-                                                              child: Text('Pilih'),
+                                                              child: const Text('Pilih'),
                                                             )
                                                           ],
                                                         ),
@@ -348,7 +351,7 @@ class _Basket3Page extends State<Basket3Page> {
                                         } else if (list.hasError) {
                                           return Container(
                                             alignment: Alignment.center,
-                                            child: Text('something wrong'),
+                                            child: const Text('something wrong'),
                                           );
                                         }
 
@@ -376,16 +379,16 @@ class _Basket3Page extends State<Basket3Page> {
 
                     });
                   },
-                  child: Text('Pilih tempat lain'),
+                  child: const Text('Pilih tempat lain'),
                 ),
               ),
 
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
 
               Container(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                   width: double.infinity,
-                  child: Text('List dokumen')
+                  child: const Text('List dokumen')
               ),
 
               Expanded(
@@ -400,7 +403,7 @@ class _Basket3Page extends State<Basket3Page> {
                             if (_basketService.listBasket.isEmpty){
                               return Container(
                                 alignment: Alignment.center,
-                                child: Text('List dokumen kosong'),
+                                child: const Text('List dokumen kosong'),
                               );
                             }
 
@@ -415,7 +418,7 @@ class _Basket3Page extends State<Basket3Page> {
                           } else if (snapshot.hasError) {
                             return Container(
                               alignment: Alignment.center,
-                              child: Text('something wrong'),
+                              child: const Text('something wrong'),
                             );
                           }
 
@@ -437,7 +440,7 @@ class _Basket3Page extends State<Basket3Page> {
                   )
               ),
 
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
 
               Row(
                 children: [
@@ -459,7 +462,7 @@ class _Basket3Page extends State<Basket3Page> {
                               Navigator.of(context).pop();
                             },
                             text: 'Cancel',
-                            textStyle: TextStyle(color: Colors.grey),
+                            textStyle: const TextStyle(color: Colors.grey),
                           ),
                           IconsButton(
                             onPressed: () {
@@ -472,17 +475,17 @@ class _Basket3Page extends State<Basket3Page> {
                             },
                             text: 'Delete',
                             color: Colors.red,
-                            textStyle: TextStyle(color: Colors.white),
+                            textStyle: const TextStyle(color: Colors.white),
                           ),
                         ]
                       );
 
 
                     },
-                    child: Text('Hapus'),
+                    child: const Text('Hapus'),
                   ),
 
-                  SizedBox(width: 10,),
+                  const SizedBox(width: 10,),
 
                   Expanded(child: Container(
                     child: ElevatedButton(
@@ -501,6 +504,12 @@ class _Basket3Page extends State<Basket3Page> {
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                             content: Text('Mohon pilih dokumen yang akan di print'),
                           ));
+                        } else if (_companyService.msg != ''){
+
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text('Mohon untuk lengkapi alamat utama'),
+                          ));
+
                         } else {
                           TransactionModel transactionModel = TransactionModel(
                               listBasketModel: basketListSelected,
@@ -515,7 +524,7 @@ class _Basket3Page extends State<Basket3Page> {
 
 
                       },
-                      child: Text('Proses'),
+                      child: const Text('Proses'),
                     ),
                   ))
                 ],

@@ -16,13 +16,13 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateMixin {
-  String _image = 'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
+  final String _image = 'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
   late AnimationController loadingController;
 
   final UploadService _uploadService = UploadService();
 
   File? _file;
-  List<File> _files = [];
+  final List<File> _files = [];
   List<PlatformFile> _platformFiles = [];
 
   bool _isLoading = false;
@@ -75,7 +75,7 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: const Radius.circular(10),
-                    dashPattern: [10, 4],
+                    dashPattern: const [10, 4],
                     strokeCap: StrokeCap.round,
                     color: Colors.blue.shade400,
                     child: Container(
@@ -202,6 +202,7 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                             });
 
                             final data = jsonDecode(value);
+                            print(data);
 
                             if (data['status'] == 0) {
 
@@ -215,6 +216,13 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                               ));
                             }
 
+                          }).onError((error, stackTrace) {
+                            setState((){
+                              _isLoading = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(error.toString()),
+                            ));
                           });
                         },
                       ),

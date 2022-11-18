@@ -1,12 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/model/address_model.dart';
-import 'package:siapprint/model/basket_model.dart';
-import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/model/user_model.dart';
 
@@ -16,9 +12,9 @@ class CheckoutService {
 
   Future<http.Response> saveTransaction(TransactionModel transactionModel) async {
 
-    await Future.delayed(Duration(seconds: 3), () {
-      print("Future.delayed");
-    });
+    // await Future.delayed(const Duration(seconds: 3), () {
+    //   print("Future.delayed");
+    // });
 
     is_loading = true;
 
@@ -128,10 +124,10 @@ class CheckoutService {
   }
 
   Future<http.Response> getDeliveryJNE(
-  String delv_code,
-  String provinces_id_from,
-  String regencies_id_from,
-  String total_weigth,
+  String delvCode,
+  String provincesIdFrom,
+  String regenciesIdFrom,
+  String totalWeigth,
       ) async {
 
     is_loading = true;
@@ -143,12 +139,12 @@ class CheckoutService {
     final response = await http.post(Uri.parse(Constant.apijne), body: {
       'apitoken': Constant.apitoken,
       'userid': userModel.id,
-      'delv_code':delv_code,
-      'provinces_id_from': provinces_id_from,
-      'regencies_id_from': regencies_id_from,
+      'delv_code':delvCode,
+      'provinces_id_from': provincesIdFrom,
+      'regencies_id_from': regenciesIdFrom,
       'provinces_id_to': addressModel.province_id,
       'regencies_id_to': addressModel.regencies_id,
-      'total_weigth':total_weigth,
+      'total_weigth':totalWeigth,
     });
 
     if (response.statusCode == 200) {

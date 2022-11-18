@@ -28,24 +28,24 @@ class _BasketPage extends State<BasketPage> {
   Widget currentAddress(CompanyModel companyModel) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: Colors.white,
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(color: Colors.lightBlue, spreadRadius: 1),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(companyModel.comp_name != null ? companyModel.comp_name! : '-', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(companyModel.comp_name != null ? companyModel.comp_name! : '-', style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(companyModel.comp_address != null ? '${companyModel.comp_address!}, ${companyModel.regencies_name!}, ${companyModel.provinces_name!}' : '-'),
 
           ElevatedButton(
             style: ElevatedButton.styleFrom(elevation: 2),
             onPressed: () { },
-            child: Text('Pilih'),
+            child: const Text('Pilih'),
           ),
 
         ],
@@ -74,7 +74,7 @@ class _BasketPage extends State<BasketPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(basketModel.filename != null ? basketModel.filename! : '-',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     Text(basketModel.pages_tot != null ? 'Total halaman: ${basketModel.pages_tot!}' : '-'),
                   ],
                 ),
@@ -112,7 +112,7 @@ class _BasketPage extends State<BasketPage> {
           return Scaffold(
             body: SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 alignment: Alignment.center,
                 child:
 
@@ -120,33 +120,33 @@ class _BasketPage extends State<BasketPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
                       width: double.infinity,
-                      child: Text('Tempat print yang kami rekomendasikan')
+                      child: const Text('Tempat print yang kami rekomendasikan')
                     ),
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
 
                     currentAddress(listCompany.first),
 
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
 
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: () { },
-                        child: Text('Pilih tempat lain'),
+                        child: const Text('Pilih tempat lain'),
                       ),
                     ),
 
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
 
                     Container(
-                        padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                         width: double.infinity,
-                        child: Text('List dokumen')
+                        child: const Text('List dokumen')
                     ),
 
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
 
                     Container(
                       child: Column(

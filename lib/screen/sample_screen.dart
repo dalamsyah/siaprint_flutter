@@ -1,10 +1,5 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:siapprint/model/inks_model.dart';
-import 'package:siapprint/model/price_model.dart';
-import 'package:siapprint/model/size_model.dart';
-import 'package:siapprint/screen/form_print_page.dart';
 
 
 class SamplePage extends StatefulWidget {
@@ -19,7 +14,6 @@ class _SamplePageState extends State<SamplePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     throw UnimplementedError();
   }
 //   Repository repo = Repository();
@@ -272,7 +266,7 @@ class RepoSampel {
   //   // .toList());
   // }
 
-  List _data = [
+  final List _data = [
     {
       "ink_code": "INK001",
       "ink_name": "Print Laser",
@@ -2429,7 +2423,7 @@ class Repository {
       .toList();*/
 
   Future<List<String>> getLocalByState(String state) async {
-    await Future.delayed(Duration(seconds: 5), () {
+    await Future.delayed(const Duration(seconds: 5), () {
       print("Future.delayed");
     });
 
@@ -2448,7 +2442,7 @@ class Repository {
       .toList();
   // _nigeria.map((item) => item['state'].toString()).toList();
 
-  List _nigeria = [
+  final List _nigeria = [
     {
       "state": "Adamawa",
       "alias": "adamawa",
@@ -3461,10 +3455,10 @@ class StateModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['state'] = this.state;
-    data['alias'] = this.alias;
-    data['lgas'] = this.lgas;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['state'] = state;
+    data['alias'] = alias;
+    data['lgas'] = lgas;
     return data;
   }
 }

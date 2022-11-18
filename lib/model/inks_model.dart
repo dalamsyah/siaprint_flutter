@@ -1,6 +1,4 @@
 
-import 'package:siapprint/model/price_model.dart';
-import 'package:siapprint/model/size_model.dart';
 
 class InkModel {
 

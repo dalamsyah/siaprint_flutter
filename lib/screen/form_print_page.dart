@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/config/format_number.dart';
@@ -11,7 +10,6 @@ import 'package:siapprint/model/finishing_model.dart';
 import 'package:siapprint/model/inks_model.dart';
 import 'package:siapprint/model/price_model.dart';
 import 'package:siapprint/model/size_model.dart';
-import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/form_service.dart';
 
 typedef StringValue = Function(BasketModel);
@@ -42,8 +40,8 @@ class _FormPrintPage extends State<FormPrintPage> {
   double _totalWeight = 0;
   double _weightJenisKertas = 0;
   double _weightFinishing = 0;
-  int _totalDelivery = 0;
-  int _total = 0;
+  final int _totalDelivery = 0;
+  final int _total = 0;
 
   List<String> _ukuranKertas = ['Silahkan pilih'];
   List<String> _jenisKertas =  ['Silahkan pilih'];
@@ -53,10 +51,10 @@ class _FormPrintPage extends State<FormPrintPage> {
   List<FinishingModel> _finishingAll = [];
 
   int _pages = 0;
-  TextEditingController _pagesRange = TextEditingController();
-  TextEditingController _copyPage = TextEditingController();
-  List<String> _finishingDocument = <String>['Jilid', 'Polos'];
-  TextEditingController _notesDocument = TextEditingController();
+  final TextEditingController _pagesRange = TextEditingController();
+  final TextEditingController _copyPage = TextEditingController();
+  final List<String> _finishingDocument = <String>['Jilid', 'Polos'];
+  final TextEditingController _notesDocument = TextEditingController();
 
   String _dropDownUkuranKertas = 'Silahkan pilih';
   String _dropDownJenisKertas = 'Silahkan pilih';
@@ -210,6 +208,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
     _totalPrint = _priceJenisKertas + _priceFinishing;
     _totalWeight = _weightJenisKertas + _weightFinishing;
+    print('total : $_weightJenisKertas + $_weightFinishing');
     _totalWeight = double.parse(_totalWeight.toStringAsFixed(3));
 
     var option = Row(
@@ -226,7 +225,7 @@ class _FormPrintPage extends State<FormPrintPage> {
           },
         ),
 
-        Text(
+        const Text(
           "Print Laser",
         ),
 
@@ -241,7 +240,7 @@ class _FormPrintPage extends State<FormPrintPage> {
           },
         ),
 
-        Text(
+        const Text(
           "Print Tinta",
         ),
 
@@ -271,27 +270,27 @@ class _FormPrintPage extends State<FormPrintPage> {
               children: [
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: Text('Print',),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Print',),
                 ),
                 option,
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: Text('Ukuran Kertas'),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Ukuran Kertas'),
                 ),
 
-                _isLoading ? CircularProgressIndicator() :
+                _isLoading ? const CircularProgressIndicator() :
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
                   child: DropdownButton<String>(
                     value: _dropDownUkuranKertas,
-                    hint: Text('Pilih'),
+                    hint: const Text('Pilih'),
                     icon: const Icon(Icons.arrow_downward),
                     elevation: 16,
                     style: const TextStyle(color: Colors.deepPurple),
@@ -327,13 +326,13 @@ class _FormPrintPage extends State<FormPrintPage> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: Text('Jenis Kertas'),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Jenis Kertas'),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
                   child: DropdownButton<String>(
                     value: _dropDownJenisKertas,
@@ -352,6 +351,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                         _dropDownJenisKertas = value!;
                         _priceJenisKertas = int.parse(list.first.price ?? '0');
                         _weightJenisKertas = double.parse(list.first.weight ?? '0');
+                        print('weight finishing: ${list.first.weight}');
 
                         basketModel.priceJenisKertas = _priceJenisKertas;
                         basketModel.weightJenisKertas = _weightJenisKertas;
@@ -375,13 +375,13 @@ class _FormPrintPage extends State<FormPrintPage> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: Text('Halaman'),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Halaman'),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Row(
                     children: [
                       Radio(
@@ -394,7 +394,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                         },
                       ),
 
-                      Text(
+                      const Text(
                         "All",
                       ),
 
@@ -408,19 +408,19 @@ class _FormPrintPage extends State<FormPrintPage> {
                         },
                       ),
 
-                      Text(
+                      const Text(
                         "Page",
                       ),
 
-                      SizedBox(width: 10,),
+                      const SizedBox(width: 10,),
 
-                      Container(
+                      SizedBox(
                         width: 100,
                         child: TextFormField(
                           controller: _pagesRange,
                           onChanged: (String? value) {
                           },
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Page range',
                           ),
                         ),
@@ -431,20 +431,20 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(20, 0, 0, 20),
-                  child: Text('** masukkan range halaman atau per halaman cnth : 1-7 atau 1,2,6,7'),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 0, 20),
+                  child: const Text('** masukkan range halaman atau per halaman cnth : 1-7 atau 1,2,6,7'),
                 ),
 
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: Text('Copy'),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Copy'),
                 ),
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: TextFormField(
                     controller: _copyPage,
                     keyboardType: TextInputType.number,
@@ -458,13 +458,13 @@ class _FormPrintPage extends State<FormPrintPage> {
                 ),
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: Text('Finishing'),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Finishing'),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
                   child: DropdownButton<String>(
                     value: _dropDownFinishing,
@@ -483,6 +483,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                         _priceFinishing = int.parse(list.first.price ?? '0');
                         _weightFinishing = double.parse(list.first.weight ?? '0');
+                        print('weight finishing: ${list.first.weight}');
 
                         basketModel.priceFinishing = _priceFinishing;
                         basketModel.weightFinishing = _weightFinishing;
@@ -508,41 +509,41 @@ class _FormPrintPage extends State<FormPrintPage> {
                 ),
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: Text('Catatan'),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Catatan'),
                 ),
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: TextFormField(
                     controller: _notesDocument,
                     onChanged: (String? value) {
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Catatan untuk dokumen ini',
                     ),
                   ),
                 ),
 
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   color: Colors.grey.withAlpha(50),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Total print: '),
+                          const Text('Total print: '),
                           Text(MyNumber.convertToIdr(_totalPrint))
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Total weight: '),
-                          Text('${_totalWeight} kg')
+                          const Text('Total weight: '),
+                          Text('$_totalWeight kg')
                         ],
                       ),
                     ],
@@ -551,7 +552,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         elevation: 2
@@ -609,7 +610,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                     },
                     // onPressed: _onSelectCheckBox(),
-                    child: Text('Simpan'),
+                    child: const Text('Simpan'),
                   ),
                 ),
 

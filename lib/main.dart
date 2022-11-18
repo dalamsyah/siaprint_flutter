@@ -4,13 +4,12 @@ import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket3_page.dart';
 import 'package:siapprint/screen/checkout_page.dart';
-import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/screen/home_page.dart';
 import 'package:siapprint/screen/login_page.dart';
 import 'package:siapprint/screen/naivgation/app_navigation.dart';
 import 'package:siapprint/screen/naivgation/bottom_bar.dart';
 import 'package:siapprint/screen/naivgation/single_navigation.dart';
-import 'package:siapprint/screen/sample_screen.dart';
+import 'package:siapprint/screen/regsiter_page.dart';
 import 'package:siapprint/screen/status_page.dart';
 import 'package:siapprint/screen/waiting_payment_page.dart';
 
@@ -24,7 +23,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getString('user') != null;
 
-  runApp(MyApp(home: status == true ? SingleNavigationPage() : const LoginPage()));
+  runApp(MyApp(home: status == true ? const SingleNavigationPage() : const LoginPage()));
 }
 
 // void main() => runApp(AppWidget());
@@ -58,15 +57,16 @@ class MyApp extends StatelessWidget {
     StatusPage.tag: (context) => const StatusPage(),
     SingleNavigationPage.tag: (context) => const SingleNavigationPage(),
 
-    AppNavigation.tag: (context) => AppNavigation(),
+    AppNavigation.tag: (context) => const AppNavigation(),
     HomePage.tag: (context) => HomePage(),
     BottomBar.tag: (context) => BottomBar(),
-    BottomPage2.tag: (context) => BottomPage2(),
+    BottomPage2.tag: (context) => const BottomPage2(),
   };
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext buildContext, Object? arguments) {
     return {
       LoginPage.tag: (context) => const LoginPage(),
+      RegisterPage.tag: (context) => const RegisterPage(),
       Basket3Page.tag: (context) => const Basket3Page(),
       AccountSettingPage.tag: (context) => const AccountSettingPage(),
       CheckoutPage.tag: (context) => CheckoutPage(

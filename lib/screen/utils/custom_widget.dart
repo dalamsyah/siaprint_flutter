@@ -10,7 +10,7 @@ class CustomWidget {
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: Stack(
-        children: <Widget>[
+        children: const <Widget>[
           Text('dialog'),
           Text('text'),
         ],

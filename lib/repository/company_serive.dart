@@ -1,11 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/model/address_model.dart';
-import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/model/provinsi_model.dart';
 import 'package:siapprint/model/user_model.dart';
@@ -18,6 +15,7 @@ class CompanyService {
   List<ProvinsiModel> listProvince = [];
 
   bool is_loading = false;
+  String msg = '';
 
   Future<http.Response> getCompany() async {
 
@@ -38,6 +36,7 @@ class CompanyService {
       var dataAllListCompany = data['result']['company'] as List;
       var dataListProvince = data['result']['provinces_regencies_existing'] as List;
 
+      msg = data['message'].toString();
       listCompany = dataListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
       allListCompany = dataAllListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
       listProvince = dataListProvince.map((data) => ProvinsiModel.fromJson2(data) ).toList();
@@ -57,13 +56,13 @@ class CompanyService {
   //   _provinsi = List.from(_provinsi)..addAll(await _companyService.getProvinsiByUser(data));
   // }
 
-  Future<List<CompanyModel>> getCompanyFilter(String provinces_id) async {
+  Future<List<CompanyModel>> getCompanyFilter(String provincesId) async {
 
     is_loading = true;
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
-    AddressModel addressModel = AddressModel.fromJson(userModel.address);
+    // AddressModel addressModel = AddressModel.fromJson(userModel.address);
 
     // if (provinces_id == '') {
     //   provinces_id = addressModel.province_id!;
@@ -72,7 +71,7 @@ class CompanyService {
     final response = await http.post(Uri.parse(Constant.apicompanyfromprovince), body: {
       'apitoken': Constant.apitoken,
       'userid': userModel.id,
-      'provinces_id': provinces_id,
+      'provinces_id': provincesId,
     });
 
     if (response.statusCode == 200) {

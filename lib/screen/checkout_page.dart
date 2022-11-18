@@ -1,19 +1,11 @@
 
 import 'dart:convert';
-import 'dart:ffi';
 
-import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:siapprint/model/basket_model.dart';
 import 'package:siapprint/model/delivery_model.dart';
-import 'package:siapprint/model/finishing_model.dart';
-import 'package:siapprint/model/inks_model.dart';
-import 'package:siapprint/model/price_model.dart';
-import 'package:siapprint/model/size_model.dart';
 import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/checkout_service.dart';
-import 'package:siapprint/repository/form_service.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/config/format_number.dart';
 
@@ -109,7 +101,7 @@ class _CheckoutPage extends State<CheckoutPage> {
                                   int ongkir = a.toInt();
 
                                   return Container(
-                                    padding: EdgeInsets.all(20),
+                                    padding: const EdgeInsets.all(20),
                                     child: Row(
                                       children: [
                                         Expanded(child:
@@ -207,7 +199,7 @@ class _CheckoutPage extends State<CheckoutPage> {
                               backgroundColor: Colors.transparent,
                               isScrollControlled: true,
                               context: context, builder: (BuildContext context) {
-                            return Container(
+                            return SizedBox(
                               height: MediaQuery.of(context).size.height * 0.75,
                               child: Container(
                                 decoration: const BoxDecoration(
@@ -287,8 +279,8 @@ class _CheckoutPage extends State<CheckoutPage> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   width: double.infinity,
-                  child: const Text('Pilih pengiriman'),
                   color: Colors.grey.withAlpha(50),
+                  child: const Text('Pilih pengiriman'),
                 ),
                 Row(
                   children: [
@@ -405,7 +397,6 @@ class _CheckoutPage extends State<CheckoutPage> {
                       setState((){
                         _isLoading = false;
                       });
-                      //TODO: goto payment
                     });
 
                   }

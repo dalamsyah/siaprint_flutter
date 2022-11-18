@@ -3,9 +3,6 @@ import 'package:fluid_bottom_nav_bar/fluid_bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket2_page.dart';
-import 'package:siapprint/screen/basket_page.dart';
-import 'package:siapprint/screen/form_print_page.dart';
-import 'package:siapprint/screen/login_page.dart';
 import 'package:siapprint/screen/upload_page.dart';
 
 
@@ -33,7 +30,7 @@ class _BottomBar extends State {
     // Build a simple container that switches content based of off the selected navigation item
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Color(0xFFEAC0DC),
+        backgroundColor: const Color(0xFFEAC0DC),
         extendBody: true,
         body: _child,
         bottomNavigationBar: FluidNavBar(
@@ -53,7 +50,7 @@ class _BottomBar extends State {
                 extras: {"label": "settings"}),
           ],
           onChange: _handleNavigationChange,
-          style: FluidNavBarStyle(
+          style: const FluidNavBarStyle(
               iconSelectedForegroundColor: Colors.white,
               iconUnselectedForegroundColor: Colors.white60),
           scaleFactor: 1.2,
@@ -83,7 +80,7 @@ class _BottomBar extends State {
       _child = AnimatedSwitcher(
         switchInCurve: Curves.easeOut,
         switchOutCurve: Curves.easeIn,
-        duration: Duration(milliseconds: 0),
+        duration: const Duration(milliseconds: 0),
         child: _child,
       );
     });
@@ -98,7 +95,7 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text("Home Screen"),
     );
   }
@@ -112,7 +109,7 @@ class AccountContent extends StatefulWidget {
 class _AccountContentState extends State<AccountContent> {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text("Account Screen"),
     );
   }
@@ -126,7 +123,7 @@ class SettingsContent extends StatefulWidget {
 class _SettingsContentState extends State<SettingsContent> {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text("Setting Screen"),
     );
   }
@@ -140,7 +137,7 @@ class UploadContent extends StatefulWidget {
 class _UploadContentState extends State<UploadContent> {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text("Upload Screen"),
     );
   }
@@ -163,7 +160,7 @@ class _MyStatefulWidgetState extends State<BottomPage2> {
     const Basket2Page(
       onSubmit: null,
     ),
-    AccountSettingPage()
+    const AccountSettingPage()
   ];
 
   void _onItemTapped(int index) {

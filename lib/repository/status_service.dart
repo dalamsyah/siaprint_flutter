@@ -1,15 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
-import 'package:siapprint/model/address_model.dart';
-import 'package:siapprint/model/basket_model.dart';
-import 'package:siapprint/model/company_model.dart';
 import 'package:siapprint/model/payment_type_model.dart';
 import 'package:siapprint/model/status_model.dart';
-import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/model/user_model.dart';
 
 class StatusService {
@@ -58,7 +52,7 @@ class StatusService {
 
   }
 
-  Future<String> cancelTransaction(String trans_code) async {
+  Future<String> cancelTransaction(String transCode) async {
 
     // await Future.delayed(Duration(seconds: 5), () {
     //   print("Future.delayed");
@@ -72,7 +66,7 @@ class StatusService {
     final response = await http.post(Uri.parse(Constant.apistatuscancel), body: {
       'apitoken': Constant.apitoken,
       'userid': userModel.id,
-      'trsc_no': trans_code,
+      'trsc_no': transCode,
     });
 
     if (response.statusCode == 200) {
@@ -88,7 +82,7 @@ class StatusService {
   }
 
 
-  Future<String> payment(PaymentTypeModel paymentTypeModel, String payment_no, String total_amount, String phone_no) async {
+  Future<String> payment(PaymentTypeModel paymentTypeModel, String paymentNo, String totalAmount, String phoneNo) async {
 
     // await Future.delayed(Duration(seconds: 3), () {
     //   print("Future.delayed");
@@ -119,11 +113,11 @@ class StatusService {
     final data = {
       'apitoken': Constant.apitoken,
       'userid': userModel.id,
-      'payment_no': payment_no,
-      'total_amount': total_amount,
+      'payment_no': paymentNo,
+      'total_amount': totalAmount,
       'payment_type': paymentTypeModel.payment_type_code,
       'payment_name': paymentTypeModel.payment_type_name,
-      'phone_no': phone_no,
+      'phone_no': phoneNo,
       'vendor_code': paymentTypeModel.vendor_code,
     };
     print(data);
@@ -131,11 +125,11 @@ class StatusService {
     final response = await http.post(Uri.parse(Constant.apipayment), body: {
       'apitoken': Constant.apitoken,
       'userid': userModel.id,
-      'payment_no': payment_no,
-      'total_amount': total_amount,
+      'payment_no': paymentNo,
+      'total_amount': totalAmount,
       'payment_type': paymentTypeModel.payment_type_code,
       'payment_name': paymentTypeModel.payment_type_name,
-      'phone_no': phone_no,
+      'phone_no': phoneNo,
       'vendor_code': paymentTypeModel.vendor_code,
     });
 
