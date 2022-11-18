@@ -8,6 +8,7 @@ import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/checkout_service.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/config/format_number.dart';
+import 'package:siapprint/screen/status_page.dart';
 
 class CheckoutPage extends StatefulWidget {
 
@@ -355,7 +356,6 @@ class _CheckoutPage extends State<CheckoutPage> {
                 ),
                 onPressed: () {
 
-
                   String errorMsg = '';
                   if (_delivery == 0) {
                     errorMsg = 'Pengiriman harus dipilih';
@@ -394,6 +394,18 @@ class _CheckoutPage extends State<CheckoutPage> {
                     });
 
                     _checkoutService.saveTransaction(transactionModel).then((value) {
+                      setState((){
+                        _isLoading = false;
+                      });
+
+                      Navigator.of(context).pushNamedAndRemoveUntil(StatusPage.tag, (route) => route.isFirst);
+
+                    }).onError((error, stackTrace) {
+
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(error.toString()),
+                      ));
+
                       setState((){
                         _isLoading = false;
                       });

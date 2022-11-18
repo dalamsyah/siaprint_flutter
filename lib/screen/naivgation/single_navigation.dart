@@ -27,29 +27,49 @@ class _SingleNavigationPage extends State<SingleNavigationPage> {
             Container(
               padding: const EdgeInsets.all(10),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  IconButton(
-                      onPressed: (){
-                        Navigator.of(context).pushNamed(StatusPage.tag);
-                      },
-                      color: Colors.blueAccent.withOpacity(0.9),
-                      icon: const Icon(Icons.checklist)
-                  ),
-                  IconButton(
-                      onPressed: (){
-                        Navigator.of(context).pushNamed(Basket3Page.tag);
-                      },
-                      color: Colors.blueAccent.withOpacity(0.9),
-                      icon: const Icon(Icons.shopping_cart)
-                  ),
-                  IconButton(
-                      onPressed: (){
-                        Navigator.of(context).pushNamed(AccountSettingPage.tag);
-                      },
-                      color: Colors.blueAccent.withOpacity(0.9),
-                      icon: const Icon(Icons.account_circle)
+
+                  // Expanded(child: Container(
+                  //   padding: EdgeInsets.all(10),
+                  //   child: Text('SIAPrint', style: TextStyle(color: Colors.blueAccent.withOpacity(0.9), fontSize: 18, fontWeight: FontWeight.w500),),
+                  // )),
+
+                  Expanded(child: Container(
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: 20.0,
+                      child: Image.asset('assets/logo_text.png'),
+                    ),
+                  )),
+
+                  Expanded(child: Container()),
+
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: (){
+                            Navigator.of(context).pushNamed(StatusPage.tag);
+                          },
+                          color: Colors.blueAccent.withOpacity(0.9),
+                          icon: const Icon(Icons.checklist)
+                      ),
+                      IconButton(
+                          onPressed: (){
+                            Navigator.of(context).pushNamed(Basket3Page.tag);
+                          },
+                          color: Colors.blueAccent.withOpacity(0.9),
+                          icon: const Icon(Icons.shopping_cart)
+                      ),
+                      IconButton(
+                          onPressed: (){
+                            Navigator.of(context).pushNamed(AccountSettingPage.tag);
+                          },
+                          color: Colors.blueAccent.withOpacity(0.9),
+                          icon: const Icon(Icons.account_circle)
+                      )
+                    ],
                   )
                 ],
               ),

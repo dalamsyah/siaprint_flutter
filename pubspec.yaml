@@ -78,6 +78,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo.png
+    - assets/logo_text.png
     - assets/ic_gopay.png
     - assets/ic_ovo.png
     - assets/ic_thankyou_payment.png

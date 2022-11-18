@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
+import 'package:siapprint/model/user_model.dart';
 import 'package:siapprint/screen/login_page.dart';
+import 'package:siapprint/screen/naivgation/toolbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 typedef StringValue2 = Function();
@@ -35,6 +39,16 @@ class _AccountSettingPage extends State<AccountSettingPage> {
   );
   TextStyle descStyleIOS = const TextStyle(color: CupertinoColors.inactiveGray);
 
+  late SharedPreferences localStorage;
+  late UserModel userModel;
+  String login = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -46,8 +60,11 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
+                    ToolbarWidget.addToolbar(context, 'Akun'),
+
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -72,12 +89,12 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                     const Divider(),
 
                     InkWell(
-                      child: const ListTile(
+                      child: ListTile(
                         leading: Icon(Icons.logout),
                         title: Text("Logout"),
+                        subtitle: Text(login),
                       ),
                       onTap: () async {
-                        SharedPreferences localStorage = await SharedPreferences.getInstance();
                         localStorage.remove('user');
 
                         if (!mounted) return;
@@ -91,28 +108,6 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                               (route) => false,
                         );
 
-                        // widget.callback;
-
-                        // Navigator.pushReplacementNamed(context, 'login-page');
-                        // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                        //         builder: (BuildContext context) => LoginPage(),
-                        //       ), (route) => false);
-
-
-                        // runApp( MyApp(home: LoginPage()) );
-
-                        // Navigator.of(context).pushNamedAndRemoveUntil(
-                        //     'login-page', (Route<dynamic> route) => false);
-
-                        // Navigator.of(context).push(
-                        //   MaterialPageRoute(
-                        //     builder: (_) => LoginPage(),
-                        //   ),
-                        // );
-
-                        // Navigator.of(context).pushNamedAndRemoveUntil(TabNavigatorRoutes.root, (route) => false);
-                        // Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
-
                       },
                     ),
 
@@ -125,6 +120,15 @@ class _AccountSettingPage extends State<AccountSettingPage> {
         )
     );
 
+  }
+
+  getUser() async {
+    localStorage  = await SharedPreferences.getInstance();
+    userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
+
+    setState((){
+      login = userModel.username!;
+    });
   }
 
   _launchURLEditProfile() async {

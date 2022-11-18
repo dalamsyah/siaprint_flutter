@@ -35,6 +35,14 @@ class CompanyService {
       var dataListCompany = data['result']['company_selected'] as List;
       var dataAllListCompany = data['result']['company'] as List;
       var dataListProvince = data['result']['provinces_regencies_existing'] as List;
+      var address = data['result']['address'];
+
+      if (address != null) {
+        AddressModel addressModel = AddressModel.fromJson(address);
+
+        localStorage.setString('address', jsonEncode(address));
+
+      }
 
       msg = data['message'].toString();
       listCompany = dataListCompany.map((data) => CompanyModel.fromJson2(data) ).toList();
@@ -102,19 +110,6 @@ class CompanyService {
 
     return data.where((element) => element.provinces_id == s).map((e) => e.provinces_name!).toList();
 
-  }
-
-  Future<String> getProvinsiId(String provinsiId) async {
-
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
-    AddressModel addressModel = AddressModel.fromJson(userModel.address);
-
-    if( provinsiId == 'Silahkan pilih') {
-      provinsiId = addressModel.province_id!;
-    }
-
-    return provinsiId;
   }
 
 }

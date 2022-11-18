@@ -29,6 +29,7 @@ class LoginService {
 
       if (data['status'] as int == 0) {
         localStorage.setString('user', jsonEncode(data['result']['user']));
+        localStorage.setString('address', '');
       }
 
       return response.body;

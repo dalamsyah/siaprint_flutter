@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/repository/login_service.dart';
+import 'package:siapprint/screen/naivgation/toolbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -40,15 +41,6 @@ class _RegisterPage extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    final logo = Hero(
-      tag: 'hero',
-      child: CircleAvatar(
-        backgroundColor: Colors.transparent,
-        radius: 48.0,
-        child: Image.asset('assets/logo.png'),
-      ),
-    );
 
     final email = TextFormField(
       controller: _controllerEmail,
@@ -123,35 +115,6 @@ class _RegisterPage extends State<RegisterPage> {
           } else if (_controllerRePassword.text.isEmpty) {
             msg = 'Ulangi password wajib diisi';
           }
-
-          // Dialogs.materialDialog(
-          //     context: context,
-          //     barrierDismissible: false,
-          //     actions: [
-          //
-          //       WillPopScope(
-          //         onWillPop: () async => false,
-          //         child: Container(
-          //           child: Column(
-          //             children: [
-          //               Text('Akun berhasil dibuat, silahkan login ulang.'),
-          //               TextButton(
-          //                 child: const Text(
-          //                   'Masuk',
-          //                   style: const TextStyle(color: Colors.black54),
-          //                 ),
-          //                 onPressed: () {
-          //                   Navigator.popUntil(context, (Route<dynamic> route) => route.isFirst);
-          //                 },
-          //               )
-          //             ],
-          //           ),
-          //         ),
-          //
-          //       )
-          //
-          //     ]
-          // );
 
           if (msg.isEmpty) {
 
@@ -236,25 +199,32 @@ class _RegisterPage extends State<RegisterPage> {
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Container(
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(24),
-              children: <Widget>[
+            child: Column(
+              children: [
 
-                email,
-                const SizedBox(height: 8.0),
+                ToolbarWidget.addToolbar(context, 'Register'),
 
-                username,
-                const SizedBox(height: 8.0),
+                Expanded(child: ListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(left: 23, right: 24, top: 10),
+                  children: <Widget>[
 
-                password,
-                const SizedBox(height: 8.0),
+                    email,
+                    const SizedBox(height: 8.0),
 
-                rePassword,
-                const SizedBox(height: 10.0),
+                    username,
+                    const SizedBox(height: 8.0),
 
-                loginButton,
-                signLabel,
+                    password,
+                    const SizedBox(height: 8.0),
+
+                    rePassword,
+                    const SizedBox(height: 10.0),
+
+                    loginButton,
+                    signLabel,
+                  ],
+                ))
               ],
             ),
           ),
