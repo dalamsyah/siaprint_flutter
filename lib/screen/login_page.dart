@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:material_dialogs/material_dialogs.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/repository/login_service.dart';
 import 'package:siapprint/screen/navigation/single_navigation.dart';
@@ -23,6 +24,10 @@ class LoginPage extends StatefulWidget {
 class _LoginPage extends State<LoginPage> {
 
   final bool _isLoading = false;
+  String appName = '';
+  String packageName = '';
+  String version = '';
+  String buildNumber = '';
 
   final LoginService _service = LoginService();
   final TextEditingController _controllerLogin = TextEditingController();
@@ -30,11 +35,23 @@ class _LoginPage extends State<LoginPage> {
 
   @override
   void initState() {
-    _controllerLogin.text = 'dimasdimas';
-    _controllerPassword.text = 'dimas123456';
+    _controllerLogin.text = 'raimunsuandi';
+    _controllerPassword.text = 'nowomennocry1234';
     // _controllerLogin.text = 'test2';
     // _controllerPassword.text = 'dimas123456';
 
+    PackageInfo.fromPlatform().then((packageInfo) {
+
+      print(packageInfo);
+
+      setState((){
+        print(packageInfo);
+        appName = packageInfo.appName;
+        packageName = packageInfo.packageName;
+        version = packageInfo.version;
+        buildNumber = packageInfo.buildNumber;
+      });
+    });
 
     super.initState();
   }
@@ -218,24 +235,32 @@ class _LoginPage extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body:  Center(
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-          children: <Widget>[
-            logo,
-            const SizedBox(height: 48.0),
-            email,
-            const SizedBox(height: 8.0),
-            password,
-            const SizedBox(height: 20.0),
-            loginButton,
-            createAccountLabel,
-            forgotLabel,
+      body:  Column(
+        children: [
+          Expanded(child: Center(
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+              children: <Widget>[
+                logo,
+                const SizedBox(height: 48.0),
+                email,
+                const SizedBox(height: 8.0),
+                password,
+                const SizedBox(height: 20.0),
+                loginButton,
+                createAccountLabel,
+                forgotLabel,
 
-            // showProgress(_service.is_loading)
-          ],
-        ),
+                // showProgress(_service.is_loading)
+              ],
+            ),
+          )),
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Text('SIAPrint v$version-$buildNumber'),
+          )
+        ],
       )
     );
 

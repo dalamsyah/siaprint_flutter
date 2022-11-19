@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
 import 'package:siapprint/model/user_model.dart';
@@ -43,10 +44,29 @@ class _AccountSettingPage extends State<AccountSettingPage> {
   late UserModel userModel;
   String login = '';
 
+  String appName = '';
+  String packageName = '';
+  String version = '';
+  String buildNumber = '';
+
   @override
   void initState() {
     super.initState();
     getUser();
+
+    PackageInfo.fromPlatform().then((packageInfo) {
+
+      print(packageInfo);
+
+      setState((){
+        print(packageInfo);
+        appName = packageInfo.appName;
+        packageName = packageInfo.packageName;
+        version = packageInfo.version;
+        buildNumber = packageInfo.buildNumber;
+      });
+    });
+
   }
 
   @override
@@ -54,68 +74,76 @@ class _AccountSettingPage extends State<AccountSettingPage> {
 
     return Scaffold(
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-                alignment: Alignment.center,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          child: Column(
+            children: [
+              Expanded(child: SingleChildScrollView(
+                child: Container(
+                    alignment: Alignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
 
-                    ToolbarWidget.addToolbar(context, 'Akun'),
+                        ToolbarWidget.addToolbar(context, 'Akun'),
 
-                    Container(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Account",
-                            style: headingStyleIOS,
+                        Container(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Account",
+                                style: headingStyleIOS,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
 
-                    InkWell(
-                      child: const ListTile(
-                        leading: Icon(Icons.account_circle),
-                        title: Text("Edit profile"),
-                      ),
-                      onTap: () {
-                        _launchURLEditProfile();
-                      },
-                    ),
-
-                    const Divider(),
-
-                    InkWell(
-                      child: ListTile(
-                        leading: Icon(Icons.logout),
-                        title: Text("Logout"),
-                        subtitle: Text(login),
-                      ),
-                      onTap: () async {
-                        localStorage.remove('user');
-
-                        if (!mounted) return;
-                        // Navigator.of(context).pushNamed(LoginPage.tag);
-
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => const LoginPage(),
+                        InkWell(
+                          child: const ListTile(
+                            leading: Icon(Icons.account_circle),
+                            title: Text("Edit profile"),
                           ),
-                              (route) => false,
-                        );
+                          onTap: () {
+                            _launchURLEditProfile();
+                          },
+                        ),
 
-                      },
-                    ),
+                        const Divider(),
+
+                        InkWell(
+                          child: ListTile(
+                            leading: Icon(Icons.logout),
+                            title: Text("Logout"),
+                            subtitle: Text(login),
+                          ),
+                          onTap: () async {
+                            localStorage.remove('user');
+
+                            if (!mounted) return;
+                            // Navigator.of(context).pushNamed(LoginPage.tag);
+
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => const LoginPage(),
+                              ),
+                                  (route) => false,
+                            );
+
+                          },
+                        ),
 
 
 
-                  ],
-                )
-            ),
+                      ],
+                    )
+                ),
+              )),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Text('SIAPrint v$version-$buildNumber'),
+              )
+            ],
           ),
         )
     );
