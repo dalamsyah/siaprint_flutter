@@ -221,9 +221,9 @@ class _FormPrintPage extends State<FormPrintPage> {
   @override
   Widget build(BuildContext context) {
 
-    _totalPrint = _priceJenisKertas + _priceFinishing;
+    _totalPrint = (_priceJenisKertas + _priceFinishing) * (_copyPage.text == '' ? 1 : int.parse(_copyPage.text));
     _totalWeight = _weightJenisKertas + _weightFinishing;
-    print('total : $_weightJenisKertas + $_weightFinishing');
+    print('total : $_totalPrint');
     _totalWeight = double.parse(_totalWeight.toStringAsFixed(3));
 
     var option = Row(
