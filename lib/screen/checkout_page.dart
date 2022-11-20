@@ -184,14 +184,14 @@ class _CheckoutPage extends State<CheckoutPage> {
                           child: Row(
                             children: [
                               Expanded(child: Text('${transactionModel.listBasketModel[index].filename}')),
-                              IconButton(onPressed: (){
+                              /*IconButton(onPressed: (){
                                 setState((){
                                   transactionModel.listBasketModel.remove(transactionModel.listBasketModel[index]);
                                 });
                                 // widget.transactionModel.listBasketModel
                                 print(transactionModel.listBasketModel.length);
                                 print(transactionModel.listBasketModel);
-                              }, icon: const Icon(Icons.delete))
+                              }, icon: const Icon(Icons.delete))*/
                             ],
                           ),
                         ),
@@ -398,7 +398,13 @@ class _CheckoutPage extends State<CheckoutPage> {
                         _isLoading = false;
                       });
 
-                      Navigator.of(context).pushNamedAndRemoveUntil(StatusPage.tag, (route) => route.isFirst);
+                      if (value.statusCode == 200){
+                        Navigator.of(context).pushNamedAndRemoveUntil(StatusPage.tag, (route) => route.isFirst);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(value.body.toString()),
+                        ));
+                      }
 
                     }).onError((error, stackTrace) {
 

@@ -7,7 +7,7 @@ class Constant {
   // static String baseUrlDevelopment = "http://192.168.56.1/siaprint2/public/";
   // static String baseUrl = "http://192.168.128.72/siaprint/public/";
 
-  static String baseUrl = kReleaseMode ? baseUrlProduction : baseUrlDevelopment;
+  static String baseUrl = baseUrlDevelopment; //kReleaseMode ? baseUrlProduction : baseUrlDevelopment;
 
   static String apitoken = 'siaprint98765';
 
