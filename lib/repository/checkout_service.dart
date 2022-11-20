@@ -61,7 +61,7 @@ class CheckoutService {
 
     });
 
-    map['fn_total_amount2'] = transactionModel.total; //grand total
+    map['fn_total_amount2'] = transactionModel.total_print + (transactionModel.deliveryModel?.total ?? 0); //grand total
     map['fn_total_amount'] = transactionModel.total_print;
     map['fn_total_weigth'] = transactionModel.total_weight;
 
@@ -74,7 +74,8 @@ class CheckoutService {
     map['fn_delv'] = transactionModel.deliveryModel?.delv_code;
     map['delv'] = transactionModel.deliveryModel?.delv_code;
 
-    // return http.Response('', 200);
+    print(map);
+    // return http.Response('error...', 400);
 
     final response = await http.post(Uri.parse(Constant.apisavetransaction), body: {
       'apitoken': Constant.apitoken,
