@@ -6,6 +6,7 @@ import 'package:siapprint/model/delivery_model.dart';
 class TransactionModel {
 
   List<BasketModel> listBasketModel;
+  List<BasketModel> listBasketFormModel;
   CompanyModel companyModel;
   DeliveryModel? deliveryModel;
   int total_print = 0;
@@ -16,6 +17,7 @@ class TransactionModel {
 
   TransactionModel({
     required this.listBasketModel,
+    required this.listBasketFormModel,
     required this.companyModel,
     this.deliveryModel,
     required this.total_print,
@@ -27,6 +29,7 @@ class TransactionModel {
   Map<String, dynamic> toJson(){
     return {
       "listBasketModel": listBasketModel,
+      "listBasketFormModel": listBasketFormModel,
       "companyModel": companyModel,
       "deliveryModel": deliveryModel,
       "total_print": total_print,
@@ -39,6 +42,7 @@ class TransactionModel {
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
       listBasketModel: json['listBasketModel'],
+      listBasketFormModel: json['listBasketFormModel'],
       companyModel: json['companyModel'],
       deliveryModel: json['deliveryModel'],
       total_print: json['total_print'],
@@ -51,6 +55,7 @@ class TransactionModel {
   factory TransactionModel.fromJson2(dynamic json) {
     return TransactionModel(
       listBasketModel: json['listBasketModel'],
+      listBasketFormModel: json['listBasketFormModel'],
       companyModel: json['companyModel'],
       deliveryModel: json['deliveryModel'],
       total_print: json['total_print'],

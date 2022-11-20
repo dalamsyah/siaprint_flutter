@@ -41,7 +41,15 @@ class _CheckoutPage extends State<CheckoutPage> {
     super.initState();
   }
 
-  void onSelectJNE(){
+  onSelectJNE(){
+
+    print(transactionModel.total_weight);
+    if (transactionModel.total_weight.toString() == '' || transactionModel.total_weight.toString() == '0.0') {
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Form detail print belum diisi'),
+      ));
+    }
+
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
@@ -183,7 +191,18 @@ class _CheckoutPage extends State<CheckoutPage> {
                           padding: const EdgeInsets.all(20),
                           child: Row(
                             children: [
-                              Expanded(child: Text('${transactionModel.listBasketModel[index].filename}')),
+                              Expanded(child:
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${transactionModel.listBasketModel[index].filename}', style: TextStyle(fontWeight: FontWeight.w500),),
+                                    SizedBox(height: 10,),
+                                    transactionModel.listBasketModel[index].printName != '' ?
+                                    Text('${transactionModel.listBasketModel[index].printName} | ${transactionModel.listBasketModel[index].ukuranName} | ${transactionModel.listBasketModel[index].jenisName} | ${transactionModel.listBasketModel[index].halamanName} | ${transactionModel.listBasketModel[index].copyName} | ${transactionModel.listBasketModel[index].finishingName} | ${transactionModel.listBasketModel[index].catatanName}') :
+                                    Text('Tap untuk mengisi form detail print', style: TextStyle(color: Colors.red),)
+                                  ],
+                                )
+                              ),
                               /*IconButton(onPressed: (){
                                 setState((){
                                   transactionModel.listBasketModel.remove(transactionModel.listBasketModel[index]);
