@@ -66,7 +66,7 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
             const SizedBox(height: 50,),
             Text('Upload your file', style: TextStyle(fontSize: 25, color: Colors.grey.shade800, fontWeight: FontWeight.bold),),
             const SizedBox(height: 10,),
-            Text('File should be jpg, png', style: TextStyle(fontSize: 15, color: Colors.grey.shade500),),
+            Text('File should be jpg, png, pdf', style: TextStyle(fontSize: 15, color: Colors.grey.shade500),),
             const SizedBox(height: 20,),
             GestureDetector(
               onTap: selectFile,
@@ -133,17 +133,19 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                                     // ),
                                     const SizedBox(width: 10,),
                                     Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                      child: Row(
                                         children: [
-                                          Text(basename(_files[index].path),
-                                            style: const TextStyle(fontSize: 13, color: Colors.black),),
-                                          const SizedBox(height: 5,),
-                                          Text('${(_platformFiles[index].size / 1024).ceil()} KB',
-                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                                          ),
-                                          const SizedBox(height: 5,),
-                                          /*Container(
+                                          Expanded(child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(basename(_files[index].path),
+                                                style: const TextStyle(fontSize: 13, color: Colors.black),),
+                                              const SizedBox(height: 5,),
+                                              Text('${(_platformFiles[index].size / 1024).ceil()} KB',
+                                                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                              ),
+                                              const SizedBox(height: 5,),
+                                              /*Container(
                                               height: 5,
                                               clipBehavior: Clip.hardEdge,
                                               decoration: BoxDecoration(
@@ -154,6 +156,15 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                                                 value: loadingController.value,
                                               )
                                           ),*/
+                                            ],
+                                          )),
+                                          IconButton(onPressed: (){
+                                            setState((){
+                                              // _platformFiles.add( file.files.first );
+
+                                              _files.remove(_files[index]);
+                                            });
+                                          }, icon: const Icon(Icons.highlight_remove_outlined))
                                         ],
                                       ),
                                     ),
@@ -202,7 +213,6 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
                             });
 
                             final data = jsonDecode(value);
-                            print(data);
 
                             if (data['status'] == 0) {
 

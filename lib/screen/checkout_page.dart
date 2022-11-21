@@ -8,6 +8,7 @@ import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/repository/checkout_service.dart';
 import 'package:siapprint/screen/form_print_page.dart';
 import 'package:siapprint/config/format_number.dart';
+import 'package:siapprint/screen/status_page.dart';
 
 class CheckoutPage extends StatefulWidget {
 
@@ -40,7 +41,15 @@ class _CheckoutPage extends State<CheckoutPage> {
     super.initState();
   }
 
-  void onSelectJNE(){
+  onSelectJNE(){
+
+    print(transactionModel.total_weight);
+    if (transactionModel.total_weight.toString() == '' || transactionModel.total_weight.toString() == '0.0') {
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Form detail print belum diisi'),
+      ));
+    }
+
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
@@ -182,15 +191,26 @@ class _CheckoutPage extends State<CheckoutPage> {
                           padding: const EdgeInsets.all(20),
                           child: Row(
                             children: [
-                              Expanded(child: Text('${transactionModel.listBasketModel[index].filename}')),
-                              IconButton(onPressed: (){
+                              Expanded(child:
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${transactionModel.listBasketModel[index].filename}', style: TextStyle(fontWeight: FontWeight.w500),),
+                                    SizedBox(height: 10,),
+                                    transactionModel.listBasketModel[index].printName != '' ?
+                                    Text('${transactionModel.listBasketModel[index].printName} | ${transactionModel.listBasketModel[index].ukuranName} | ${transactionModel.listBasketModel[index].jenisName} | ${transactionModel.listBasketModel[index].halamanName} | ${transactionModel.listBasketModel[index].copyName} | ${transactionModel.listBasketModel[index].finishingName} | ${transactionModel.listBasketModel[index].catatanName}') :
+                                    Text('Tap untuk mengisi form detail print', style: TextStyle(color: Colors.red),)
+                                  ],
+                                )
+                              ),
+                              /*IconButton(onPressed: (){
                                 setState((){
                                   transactionModel.listBasketModel.remove(transactionModel.listBasketModel[index]);
                                 });
                                 // widget.transactionModel.listBasketModel
                                 print(transactionModel.listBasketModel.length);
                                 print(transactionModel.listBasketModel);
-                              }, icon: const Icon(Icons.delete))
+                              }, icon: const Icon(Icons.delete))*/
                             ],
                           ),
                         ),
@@ -355,7 +375,6 @@ class _CheckoutPage extends State<CheckoutPage> {
                 ),
                 onPressed: () {
 
-
                   String errorMsg = '';
                   if (_delivery == 0) {
                     errorMsg = 'Pengiriman harus dipilih';
@@ -394,6 +413,24 @@ class _CheckoutPage extends State<CheckoutPage> {
                     });
 
                     _checkoutService.saveTransaction(transactionModel).then((value) {
+                      setState((){
+                        _isLoading = false;
+                      });
+
+                      if (value.statusCode == 200){
+                        Navigator.of(context).pushNamedAndRemoveUntil(StatusPage.tag, (route) => route.isFirst);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(value.body.toString()),
+                        ));
+                      }
+
+                    }).onError((error, stackTrace) {
+
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(error.toString()),
+                      ));
+
                       setState((){
                         _isLoading = false;
                       });

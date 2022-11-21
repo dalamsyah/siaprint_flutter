@@ -10,6 +10,7 @@ import 'package:siapprint/model/status_detail_date_model.dart';
 import 'package:siapprint/model/status_detail_model.dart';
 import 'package:siapprint/model/status_model.dart';
 import 'package:siapprint/repository/status_service.dart';
+import 'package:siapprint/screen/navigation/toolbar_widget.dart';
 import 'package:siapprint/screen/waiting_payment_page.dart';
 
 class StatusPage extends StatefulWidget {
@@ -62,6 +63,9 @@ class _StatusPage extends State<StatusPage> {
       body: SafeArea(
         child: Column(
           children: [
+
+            ToolbarWidget.addToolbar(context, 'Status'),
+
             Container(
               child: Row(
                 children: [
@@ -260,180 +264,185 @@ class _StatusPage extends State<StatusPage> {
                 topRight: Radius.circular(20.0),
               ),
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Container(
-                        height: 4,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.2),
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(25.0),
-                              topRight: Radius.circular(25.0),
-                              bottomLeft: Radius.circular(25.0),
-                              bottomRight: Radius.circular(25.0)
-                          ),
-                        ),
-                      )),
-
-
-                  model.delv_name!.contains('Pickup') ? Container() : Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        child: const Text('Alamat penerima', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
-                      ),
-
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('${model.shipp_receiver}'),
-                            Text('${model.shipp_phone}'),
-                            Text('${model.shipp_address}, ${model.shipp_postcode}'),
-                            Text('Resi: ${model.delv_text2 ?? '-'}'),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 20,),
-                    ],
-                  ),
-
-                  Container(
-                    width: double.infinity,
+            child: Column(
+              children: [
+                Container(
                     padding: const EdgeInsets.all(10),
-                    child: const Text('Keterangan', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
-                  ),
+                    child: Container(
+                      height: 4,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.2),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(25.0),
+                            topRight: Radius.circular(25.0),
+                            bottomLeft: Radius.circular(25.0),
+                            bottomRight: Radius.circular(25.0)
+                        ),
+                      ),
+                    )),
 
-                  Container(
-                    color: Colors.transparent,
-                    child: Column(
-                      children: List.generate(listDateDetail.length, (index) {
-                        return Container(
-                          padding: const EdgeInsets.all(10),
-                          color: index % 2 == 0 ? Colors.grey.withOpacity(0.2) : Colors.white,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          model.delv_name!.contains('Pickup') ? Container() : Column(
                             children: [
-                              Text('${listDateDetail[index].text}'),
-                              const SizedBox(width: 20,),
-                              Text(listDateDetail[index].date ?? '-')
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10),
+                                child: const Text('Alamat penerima', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                              ),
+
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${model.shipp_receiver}'),
+                                    Text('${model.shipp_phone}'),
+                                    Text('${model.shipp_address}, ${model.shipp_postcode}'),
+                                    Text('Resi: ${model.delv_text2 ?? '-'}'),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 20,),
                             ],
                           ),
-                        );
-                      }),
-                    ),
-                  ),
 
-                  const SizedBox(height: 20,),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            child: const Text('Keterangan', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                          ),
 
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    child: const Text('Files', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
-                  ),
-
-                  Container(
-                    color: Colors.transparent,
-                    child: Column(
-                      children: List.generate(listDetail.length, (index) {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              color: Colors.grey.withOpacity(0.2),
-                              padding: const EdgeInsets.all(10),
-                              child: Row(
-                                children: [
-                                  Expanded(child: Text('${listDetail[index].filename}'))
-                                ],
-                              ),
+                          Container(
+                            color: Colors.transparent,
+                            child: Column(
+                              children: List.generate(listDateDetail.length, (index) {
+                                return Container(
+                                  padding: const EdgeInsets.all(10),
+                                  color: index % 2 == 0 ? Colors.grey.withOpacity(0.2) : Colors.white,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('${listDateDetail[index].text}'),
+                                      const SizedBox(width: 20,),
+                                      Text(listDateDetail[index].date ?? '-')
+                                    ],
+                                  ),
+                                );
+                              }),
                             ),
-                            Padding(padding: const EdgeInsets.all(10), child:
-                            Table(
-                              columnWidths: const {
-                                0: FlexColumnWidth(10),
-                                1: FlexColumnWidth(20),
-                              },
-                              children: [
-                                TableRow(
-                                    children: [
-                                      const Text('Tipe printer'),
-                                      Text(': ${listDetail[index].ink_name}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Jenis kertas'),
-                                      Text(': ${listDetail[index].size_name}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Ukuran kertas'),
-                                      Text(': ${listDetail[index].type_paper_name}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Finishing'),
-                                      Text(': ${listDetail[index].finish_text}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Copy'),
-                                      Text(': ${listDetail[index].copy}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Total halaman'),
-                                      Text(': ${listDetail[index].total_pages}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Print halaman'),
-                                      Text(': ${listDetail[index].pages_remarks}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Total berat:'),
-                                      Text(': ${listDetail[index].ntgew_d}kg')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Total harga'),
-                                      Text(': ${MyNumber.convertToIdr(double.parse(listDetail[index].amount_d!))}')
-                                    ]
-                                ),
-                                TableRow(
-                                    children: [
-                                      const Text('Catatan'),
-                                      Text(': ${listDetail[index].remarks_d != '' ? listDetail[index].remarks_d : '-'}')
-                                    ]
-                                ),
-                              ],
-                            ),),
-                          ],
-                        );
-                      }),
-                    ),
-                  ),
+                          ),
 
-                ],
-              ),
+                          const SizedBox(height: 20,),
+
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            child: const Text('Files', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                          ),
+
+                          Container(
+                            color: Colors.transparent,
+                            child: Column(
+                              children: List.generate(listDetail.length, (index) {
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      padding: const EdgeInsets.all(10),
+                                      child: Row(
+                                        children: [
+                                          Expanded(child: Text('${listDetail[index].filename}'))
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(padding: const EdgeInsets.all(10), child:
+                                    Table(
+                                      columnWidths: const {
+                                        0: FlexColumnWidth(10),
+                                        1: FlexColumnWidth(20),
+                                      },
+                                      children: [
+                                        TableRow(
+                                            children: [
+                                              const Text('Tipe printer'),
+                                              Text(': ${listDetail[index].ink_name}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Jenis kertas'),
+                                              Text(': ${listDetail[index].size_name}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Ukuran kertas'),
+                                              Text(': ${listDetail[index].type_paper_name}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Finishing'),
+                                              Text(': ${listDetail[index].finish_text}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Copy'),
+                                              Text(': ${listDetail[index].copy}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Total halaman'),
+                                              Text(': ${listDetail[index].total_pages}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Print halaman'),
+                                              Text(': ${listDetail[index].pages_remarks}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Total berat:'),
+                                              Text(': ${listDetail[index].ntgew_d}kg')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Total harga'),
+                                              Text(': ${MyNumber.convertToIdr(double.parse(listDetail[index].amount_d!))}')
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              const Text('Catatan'),
+                                              Text(': ${listDetail[index].remarks_d != '' ? listDetail[index].remarks_d : '-'}')
+                                            ]
+                                        ),
+                                      ],
+                                    ),),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                ),
+
+              ],
             ),
           ),
         );

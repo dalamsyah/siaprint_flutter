@@ -9,6 +9,7 @@ import 'package:siapprint/model/user_model.dart';
 class CheckoutService {
 
   bool is_loading = false;
+  String msg = '';
 
   Future<http.Response> saveTransaction(TransactionModel transactionModel) async {
 
@@ -21,7 +22,7 @@ class CheckoutService {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
 
-    AddressModel addressModel = AddressModel.fromJson(userModel.address);
+    AddressModel addressModel = AddressModel.fromJson(jsonDecode(localStorage.getString('address')!));
 
     Map<String, dynamic> map = {};
     map['fn_addr_default_regencies_id'] = addressModel.regencies_id;
@@ -42,7 +43,7 @@ class CheckoutService {
       map['count_print_$i'] = value.copyPage;
       map['finishing_$i'] = value.finishing;
       map['remarks_$i'] = value.notes;
-      map['fn_temp_$i'] = "0";
+      map['fn_temp_$i'] = value.id;
       map['fn_filename_$i'] = value.filename;
       map['fn_filename_random_$i'] = value.filename_random;
       map['fn_size_code_$i'] = value.ukuranKertas;
@@ -60,7 +61,7 @@ class CheckoutService {
 
     });
 
-    map['fn_total_amount2'] = transactionModel.total; //grand total
+    map['fn_total_amount2'] = transactionModel.total_print + (transactionModel.deliveryModel?.total ?? 0); //grand total
     map['fn_total_amount'] = transactionModel.total_print;
     map['fn_total_weigth'] = transactionModel.total_weight;
 
@@ -73,9 +74,8 @@ class CheckoutService {
     map['fn_delv'] = transactionModel.deliveryModel?.delv_code;
     map['delv'] = transactionModel.deliveryModel?.delv_code;
 
-    print(jsonEncode(map));
-
-    // return http.Response('', 200);
+    print(map);
+    // return http.Response('error...', 400);
 
     final response = await http.post(Uri.parse(Constant.apisavetransaction), body: {
       'apitoken': Constant.apitoken,
@@ -86,14 +86,14 @@ class CheckoutService {
     if (response.statusCode == 200) {
 
       final data = jsonDecode(response.body);
-
-      print(data);
-
       is_loading = false;
 
       return response;
     } else {
       is_loading = false;
+
+      msg = 'Failed to save basket.';
+
       throw Exception('Failed to save basket.');
     }
 
@@ -134,7 +134,7 @@ class CheckoutService {
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     UserModel userModel = UserModel.fromJson(jsonDecode(localStorage.getString('user')!));
-    AddressModel addressModel = AddressModel.fromJson(userModel.address);
+    AddressModel addressModel = AddressModel.fromJson(jsonDecode(localStorage.getString('address')!));
 
     final response = await http.post(Uri.parse(Constant.apijne), body: {
       'apitoken': Constant.apitoken,

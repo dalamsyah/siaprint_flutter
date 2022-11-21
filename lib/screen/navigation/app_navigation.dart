@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket3_page.dart';
-import 'package:siapprint/screen/naivgation/bottom_navigation.dart';
-import 'package:siapprint/screen/naivgation/tab_navigator.dart';
+import 'package:siapprint/screen/navigation/bottom_navigation.dart';
+import 'package:siapprint/screen/navigation/tab_navigator.dart';
 import 'package:siapprint/screen/upload_page.dart';
 
 enum TabItem {

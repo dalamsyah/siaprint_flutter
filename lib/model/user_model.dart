@@ -24,7 +24,7 @@ class UserModel {
   final String? last_name;
   final String? admin_comp;
   final String? owner;
-  final dynamic address;
+  dynamic address;
 
   UserModel({
     required this.id,
@@ -106,4 +106,8 @@ class UserModel {
     };
   }
 
+  @override
+  String toString() {
+    return 'UserModel{id: $id, email: $email, username: $username, password_hash: $password_hash, reset_hash: $reset_hash, reset_at: $reset_at, reset_expires: $reset_expires, activate_hash: $activate_hash, status: $status, status_message: $status_message, active: $active, force_pass_reset: $force_pass_reset, created_at: $created_at, updated_at: $updated_at, deleted_at: $deleted_at, balance: $balance, phone: $phone, first_name: $first_name, last_name: $last_name, admin_comp: $admin_comp, owner: $owner, address: $address}';
+  }
 }

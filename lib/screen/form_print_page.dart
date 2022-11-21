@@ -67,6 +67,14 @@ class _FormPrintPage extends State<FormPrintPage> {
 
   List<InkModel> _dataInk = [];
 
+  String _printName = '';
+  String _ukuranName = '';
+  String _jenisName = '';
+  String _halamanName = '';
+  String _copyName = '';
+  String _finishingName = '';
+  String _catatanName = '';
+
   @override
   void initState() {
 
@@ -126,6 +134,13 @@ class _FormPrintPage extends State<FormPrintPage> {
         _weightFinishing = basketModel.weightFinishing;
         // _totalPrint = basketModel.total;
 
+        _printName = basketModel.printName;
+        _ukuranName = basketModel.ukuranName;
+        _jenisName = basketModel.jenisName;
+        _halamanName = basketModel.halamanName;
+        basketModel.copyPage = basketModel.copyName;
+        _finishingName = basketModel.finishingName;
+        basketModel.notes = basketModel.catatanName;
 
       });
 
@@ -206,9 +221,9 @@ class _FormPrintPage extends State<FormPrintPage> {
   @override
   Widget build(BuildContext context) {
 
-    _totalPrint = _priceJenisKertas + _priceFinishing;
+    _totalPrint = (_priceJenisKertas + _priceFinishing) * (_copyPage.text == '' ? 1 : int.parse(_copyPage.text));
     _totalWeight = _weightJenisKertas + _weightFinishing;
-    print('total : $_weightJenisKertas + $_weightFinishing');
+    print('total : $_totalPrint');
     _totalWeight = double.parse(_totalWeight.toStringAsFixed(3));
 
     var option = Row(
@@ -220,6 +235,8 @@ class _FormPrintPage extends State<FormPrintPage> {
             setState(() {
               _printer = value as int;
               _onSelectedInk(value);
+
+              _printName = 'Print Laser';
             });
 
           },
@@ -236,6 +253,8 @@ class _FormPrintPage extends State<FormPrintPage> {
             setState(() {
               _printer = value as int;
               _onSelectedInk(value);
+
+              _printName = 'Print Tinta';
             });
           },
         ),
@@ -299,11 +318,15 @@ class _FormPrintPage extends State<FormPrintPage> {
                       color: Colors.deepPurpleAccent,
                     ),
                     onChanged: (String? value) async {
+                      List<SizeModel> list = _sizeAll.where((element) => element.size_code == value).map((e) => e).toList();
+
                       // This is called when the user selects an item.
                       setState(() {
                         _dropDownUkuranKertas = value!;
                         _dropDownJenisKertas = 'Silahkan pilih';
                         _dropDownFinishing = 'Silahkan pilih';
+
+                        _ukuranName = '${list.first.size_name}';
                       });
 
                       _onSelectedSize(_printer);
@@ -355,6 +378,8 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                         basketModel.priceJenisKertas = _priceJenisKertas;
                         basketModel.weightJenisKertas = _weightJenisKertas;
+
+                        _jenisName = '${list.first.type_paper_name}';
                       });
                     },
                     items: _jenisKertas.map<DropdownMenuItem<String>>((String value) {
@@ -390,6 +415,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                         onChanged: (value) {
                           setState(() {
                             _pages = value as int;
+                            _halamanName = 'All';
                           });
                         },
                       ),
@@ -419,6 +445,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                         child: TextFormField(
                           controller: _pagesRange,
                           onChanged: (String? value) {
+                            _halamanName = value ?? '';
                           },
                           decoration: const InputDecoration(
                             hintText: 'Page range',
@@ -487,6 +514,8 @@ class _FormPrintPage extends State<FormPrintPage> {
 
                         basketModel.priceFinishing = _priceFinishing;
                         basketModel.weightFinishing = _weightFinishing;
+
+                        _finishingName = '${list.first.finish_text}';
 
                       });
 
@@ -577,6 +606,14 @@ class _FormPrintPage extends State<FormPrintPage> {
                       basketModel.notes = _notesDocument.text;
                       basketModel.total = _totalPrint;
                       basketModel.totalWeight = _totalWeight;
+
+                      basketModel.printName = _printName;
+                      basketModel.ukuranName = _ukuranName;
+                      basketModel.jenisName = _jenisName;
+                      basketModel.halamanName = _halamanName;
+                      basketModel.copyName = _copyPage.text;
+                      basketModel.finishingName = _finishingName;
+                      basketModel.catatanName = _notesDocument.text.isEmpty ? '-' : _notesDocument.text;
 
                       String errorMsg = '';
                       if (basketModel.printer == 0) {

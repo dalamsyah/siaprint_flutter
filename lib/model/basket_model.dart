@@ -31,6 +31,15 @@ class BasketModel {
   String jenisKertas = 'Silahkan pilih';
   String finishing = 'Silahkan pilih';
 
+  /**name**/
+  String printName = '';
+  String ukuranName = '';
+  String jenisName = '';
+  String halamanName = '';
+  String copyName = '';
+  String finishingName = '';
+  String catatanName = '';
+
   BasketModel({
     required this.id,
     required this.user_id,
