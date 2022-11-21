@@ -42,8 +42,6 @@ class _CheckoutPage extends State<CheckoutPage> {
   }
 
   onSelectJNE(){
-
-    print(transactionModel.total_weight);
     if (transactionModel.total_weight.toString() == '' || transactionModel.total_weight.toString() == '0.0') {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Form detail print belum diisi'),

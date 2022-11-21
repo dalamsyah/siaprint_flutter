@@ -42,6 +42,7 @@ class _FormPrintPage extends State<FormPrintPage> {
   double _weightFinishing = 0;
   final int _totalDelivery = 0;
   final int _total = 0;
+  int _copyPage = 1;
 
   List<String> _ukuranKertas = ['Silahkan pilih'];
   List<String> _jenisKertas =  ['Silahkan pilih'];
@@ -52,7 +53,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
   int _pages = 0;
   final TextEditingController _pagesRange = TextEditingController();
-  final TextEditingController _copyPage = TextEditingController();
+  final TextEditingController _copyPageController = TextEditingController();
   final List<String> _finishingDocument = <String>['Jilid', 'Polos'];
   final TextEditingController _notesDocument = TextEditingController();
 
@@ -76,9 +77,17 @@ class _FormPrintPage extends State<FormPrintPage> {
   String _catatanName = '';
 
   @override
+  void dispose() {
+    super.dispose();
+    print('disposee');
+  }
+
+  @override
   void initState() {
 
     basketModel = widget.basketModel;
+
+    print(basketModel);
 
     setState((){
       _is_loading = true;
@@ -114,10 +123,20 @@ class _FormPrintPage extends State<FormPrintPage> {
           _onSelectedSize(_printer);
 
           _dropDownJenisKertas = basketModel.jenisKertas;
+          _priceJenisKertas = basketModel.priceJenisKertas;
+          _weightJenisKertas = basketModel.weightJenisKertas;
+        } else {
+          _priceJenisKertas = 0;
+          _weightJenisKertas = 0;
         }
 
         if (!basketModel.finishing.contains('Silahkan pilih')){
           _dropDownFinishing = basketModel.finishing;
+          _priceFinishing = basketModel.priceFinishing;
+          _weightFinishing = basketModel.weightFinishing;
+        } else {
+          _priceFinishing = 0;
+          _weightFinishing = 0;
         }
 
         if (basketModel.pages != 0) {
@@ -125,14 +144,9 @@ class _FormPrintPage extends State<FormPrintPage> {
           _pagesRange.text = basketModel.pagesRange;
         }
 
-        _copyPage.text = basketModel.copyPage;
+        _copyPageController.text = basketModel.copyPage == '' ? '1' : basketModel.copyPage;
+        _copyPage = int.parse(basketModel.copyPage == '' ? '1' : basketModel.copyPage);
         _notesDocument.text = basketModel.notes;
-
-        _priceJenisKertas = basketModel.priceJenisKertas;
-        _priceFinishing = basketModel.priceFinishing;
-        _weightJenisKertas = basketModel.weightJenisKertas;
-        _weightFinishing = basketModel.weightFinishing;
-        // _totalPrint = basketModel.total;
 
         _printName = basketModel.printName;
         _ukuranName = basketModel.ukuranName;
@@ -221,9 +235,12 @@ class _FormPrintPage extends State<FormPrintPage> {
   @override
   Widget build(BuildContext context) {
 
-    _totalPrint = (_priceJenisKertas + _priceFinishing) * (_copyPage.text == '' ? 1 : int.parse(_copyPage.text));
+    _totalPrint = (_priceJenisKertas + _priceFinishing) * _copyPage * (basketModel.pages_tot == '' ? 1 : int.parse(basketModel.pages_tot ?? '1'));
     _totalWeight = _weightJenisKertas + _weightFinishing;
-    print('total : $_totalPrint');
+    print('_priceJenisKertas : $_priceJenisKertas');
+    print('_priceFinishing : $_priceFinishing');
+    print('_copyPage : $_copyPage');
+    print('basketModel.pages_tot : ${basketModel.pages_tot}');
     _totalWeight = double.parse(_totalWeight.toStringAsFixed(3));
 
     var option = Row(
@@ -473,7 +490,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   child: TextFormField(
-                    controller: _copyPage,
+                    controller: _copyPageController,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.digitsOnly
@@ -481,6 +498,11 @@ class _FormPrintPage extends State<FormPrintPage> {
                     decoration: const InputDecoration(
                       hintText: 'Copy',
                     ),
+                    onChanged: (String? value) {
+                      setState((){
+                        _copyPage = int.parse(value == '' ? '1' : value!);
+                      });
+                    },
                   ),
                 ),
 
@@ -601,7 +623,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                       basketModel.jenisKertas = _dropDownJenisKertas;
                       basketModel.pages = _pages;
                       basketModel.pagesRange = _pagesRange.text;
-                      basketModel.copyPage = _copyPage.text;
+                      basketModel.copyPage = _copyPageController.text;
                       basketModel.finishing = _dropDownFinishing;
                       basketModel.notes = _notesDocument.text;
                       basketModel.total = _totalPrint;
@@ -611,7 +633,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                       basketModel.ukuranName = _ukuranName;
                       basketModel.jenisName = _jenisName;
                       basketModel.halamanName = _halamanName;
-                      basketModel.copyName = _copyPage.text;
+                      basketModel.copyName = _copyPageController.text;
                       basketModel.finishingName = _finishingName;
                       basketModel.catatanName = _notesDocument.text.isEmpty ? '-' : _notesDocument.text;
 
