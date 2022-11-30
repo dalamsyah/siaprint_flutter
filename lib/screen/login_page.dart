@@ -259,7 +259,7 @@ class _LoginPage extends State<LoginPage> {
           )),
           Container(
             padding: EdgeInsets.all(10),
-            child: Text('SIAPrint v$version-$buildNumber'),
+            child: Text('SIAPPrint v$version-$buildNumber'),
           )
         ],
       )

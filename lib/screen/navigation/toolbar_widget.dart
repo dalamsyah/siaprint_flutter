@@ -14,7 +14,7 @@ class ToolbarWidget {
            icon: Icon(Icons.arrow_back_ios_new_rounded),
            onPressed: () { Navigator.pop(context); },
          ),
-         Text(title ?? 'SIAPrint', style: TextStyle(color: Colors.grey),)
+         Text(title ?? 'SIAPPrint', style: TextStyle(color: Colors.grey),)
        ],
      ),
    );
