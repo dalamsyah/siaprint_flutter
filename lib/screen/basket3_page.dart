@@ -503,17 +503,6 @@ class _Basket3Page extends State<Basket3Page> {
 
                               List<BasketModel> basketListSelected = _basketService.listBasket.where((e) => e.is_checked == true).toList();
 
-                              TransactionModel transactionModel = TransactionModel(
-                                  listBasketModel: basketListSelected,
-                                  listBasketFormModel: [],
-                                  companyModel: companyModel!,
-                                  total_print: 0,
-                                  delivery_id: 0,
-                                  delivery_code: '',
-                                  total: 0);
-
-                              print(transactionModel);
-
                               if (companyModel == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                   content: Text('Mohon tempat print dipilih terlebih dahulu'),
@@ -529,6 +518,17 @@ class _Basket3Page extends State<Basket3Page> {
                                 ));
 
                               } else {
+
+                                TransactionModel transactionModel = TransactionModel(
+                                    listBasketModel: basketListSelected,
+                                    listBasketFormModel: [],
+                                    companyModel: companyModel!,
+                                    total_print: 0,
+                                    delivery_id: 0,
+                                    delivery_code: '',
+                                    total: 0);
+
+                                print(transactionModel);
 
                                 Navigator.of(context).pushNamed(CheckoutPage.tag, arguments: transactionModel);
                               }

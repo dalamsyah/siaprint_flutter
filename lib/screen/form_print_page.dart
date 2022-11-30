@@ -43,6 +43,8 @@ class _FormPrintPage extends State<FormPrintPage> {
   final int _totalDelivery = 0;
   final int _total = 0;
   int _copyPage = 1;
+  int _pageRange = 0;
+  String msgErrorPageRange = '';
 
   List<String> _ukuranKertas = ['Silahkan pilih'];
   List<String> _jenisKertas =  ['Silahkan pilih'];
@@ -52,7 +54,7 @@ class _FormPrintPage extends State<FormPrintPage> {
   List<FinishingModel> _finishingAll = [];
 
   int _pages = 0;
-  final TextEditingController _pagesRange = TextEditingController();
+  final TextEditingController _pagesRangeController = TextEditingController();
   final TextEditingController _copyPageController = TextEditingController();
   final List<String> _finishingDocument = <String>['Jilid', 'Polos'];
   final TextEditingController _notesDocument = TextEditingController();
@@ -141,7 +143,7 @@ class _FormPrintPage extends State<FormPrintPage> {
 
         if (basketModel.pages != 0) {
           _pages = basketModel.pages;
-          _pagesRange.text = basketModel.pagesRange;
+          _pagesRangeController.text = basketModel.pagesRange;
         }
 
         _copyPageController.text = basketModel.copyPage == '' ? '1' : basketModel.copyPage;
@@ -158,6 +160,11 @@ class _FormPrintPage extends State<FormPrintPage> {
 
       });
 
+    }).onError((error, stackTrace) {
+      print(error.toString());
+      setState((){
+        _is_loading = false;
+      });
     });
 
     // _total = basketModel.total;
@@ -232,15 +239,114 @@ class _FormPrintPage extends State<FormPrintPage> {
     print(_ukuranKertas.length);
   }
 
+  calcPageRange(String? pageRange, String totalPage) {
+    if (pageRange != '') {
+
+      String dash = "-";
+      String comma = ",";
+
+
+      if (pageRange!.contains(dash)){
+
+        int index = pageRange.indexOf(dash);
+
+        try {
+
+          int first = int.parse(pageRange.substring(0, index).trim());
+          int last = int.parse(pageRange.substring(index + 1).trim());
+
+          if (first == 0) {
+            _pageRange = 0;
+            setState((){
+              msgErrorPageRange = 'Halaman pertama tidak boleh 0';
+            });
+          } else if (last > int.parse(totalPage)) {
+            _pageRange = 0;
+            setState((){
+              msgErrorPageRange = 'Page range melebihi total halaman';
+            });
+          } else {
+            _pageRange = (last - first) + 1;
+
+            print('_pageRange 1: $_pageRange');
+
+            setState((){
+              msgErrorPageRange = '';
+            });
+          }
+
+          print('index: $index');
+
+        } on Exception catch (exception) {
+          _pageRange = 0;
+          setState((){
+            msgErrorPageRange = 'Format page range tidak sesuai. **';
+          });
+          print(exception.toString());
+        }
+
+      } else if (pageRange.contains(comma)) {
+
+        List index = pageRange.split(comma);
+
+        if (index.length > int.parse(totalPage)) {
+          _pageRange = 0;
+          setState((){
+            msgErrorPageRange = 'Page range melebihi total halaman';
+          });
+        } else {
+          _pageRange = index.length;
+          setState((){
+            msgErrorPageRange = '';
+          });
+        }
+
+      } else {
+
+        if (int.tryParse(pageRange) == null) {
+
+          _pageRange = 0;
+          setState((){
+            msgErrorPageRange = 'Format page range tidak sesuai. ###';
+          });
+
+        } else {
+
+          if (int.parse(pageRange) > int.parse(totalPage)) {
+            _pageRange = 0;
+            setState((){
+              msgErrorPageRange = 'Page range melebihi total halaman';
+            });
+
+          } else {
+
+            _pageRange = int.parse(pageRange);
+
+            print('_pageRange 2: $_pageRange');
+
+            setState((){
+              msgErrorPageRange = '';
+            });
+
+          }
+
+        }
+
+      }
+    } else {
+      setState((){
+        msgErrorPageRange = 'Page range tidak boleh kosong.';
+      });
+    }
+
+    print(pageRange);
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    _totalPrint = (_priceJenisKertas + _priceFinishing) * _copyPage * (basketModel.pages_tot == '' ? 1 : int.parse(basketModel.pages_tot ?? '1'));
+    _totalPrint = (_priceJenisKertas + _priceFinishing) * _copyPage * (_pageRange == 0 ? 1 : _pageRange);
     _totalWeight = _weightJenisKertas + _weightFinishing;
-    print('_priceJenisKertas : $_priceJenisKertas');
-    print('_priceFinishing : $_priceFinishing');
-    print('_copyPage : $_copyPage');
-    print('basketModel.pages_tot : ${basketModel.pages_tot}');
     _totalWeight = double.parse(_totalWeight.toStringAsFixed(3));
 
     var option = Row(
@@ -297,6 +403,16 @@ class _FormPrintPage extends State<FormPrintPage> {
               ),
             ),
           ) :
+      _dataInk.isEmpty ? Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Text('Terjadi kesalahan')
+            ],
+          ),
+        ),
+      ) :
     Scaffold(
       body: Container(
         child: SingleChildScrollView(
@@ -425,6 +541,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Radio(
                         value: 1,
@@ -433,12 +550,19 @@ class _FormPrintPage extends State<FormPrintPage> {
                           setState(() {
                             _pages = value as int;
                             _halamanName = 'All';
+
+                            _pageRange = int.parse(basketModel.pages_tot ?? '0');
+                            msgErrorPageRange = '';
+                            _pagesRangeController.text = '';
                           });
                         },
                       ),
 
-                      const Text(
-                        "All",
+                      Container(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: const Text(
+                          "All",
+                        ),
                       ),
 
                       Radio(
@@ -447,27 +571,52 @@ class _FormPrintPage extends State<FormPrintPage> {
                         onChanged: (value) {
                           setState(() {
                             _pages = value as int;
+                            _halamanName = value.toString();
                           });
+
+                          calcPageRange(_pagesRangeController.text, basketModel.pages_tot ?? '0');
                         },
                       ),
 
-                      const Text(
-                        "Page",
+                      Container(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: const Text(
+                          "Page",
+                        ),
                       ),
 
                       const SizedBox(width: 10,),
 
-                      SizedBox(
-                        width: 100,
-                        child: TextFormField(
-                          controller: _pagesRange,
-                          onChanged: (String? value) {
-                            _halamanName = value ?? '';
-                          },
-                          decoration: const InputDecoration(
-                            hintText: 'Page range',
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            child: TextFormField(
+                              enabled: _pages == 2,
+                              controller: _pagesRangeController,
+                              onChanged: (String? value) {
+                                _halamanName = value ?? '';
+                                calcPageRange(value, basketModel.pages_tot ?? '0');
+                              },
+                              decoration: const InputDecoration(
+                                hintText: 'Page range',
+                              ),
+                            ),
                           ),
-                        ),
+
+                          Container(
+                            width: 200,
+                            child: msgErrorPageRange != '' ?
+                            Text(msgErrorPageRange, style: TextStyle(color: Colors.red),
+                              maxLines: 2,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,) : Text(''),
+                          ),
+
+
+                        ],
                       )
 
                     ],
@@ -622,7 +771,7 @@ class _FormPrintPage extends State<FormPrintPage> {
                       basketModel.ukuranKertas = _dropDownUkuranKertas;
                       basketModel.jenisKertas = _dropDownJenisKertas;
                       basketModel.pages = _pages;
-                      basketModel.pagesRange = _pagesRange.text;
+                      basketModel.pagesRange = _pageRange.toString();
                       basketModel.copyPage = _copyPageController.text;
                       basketModel.finishing = _dropDownFinishing;
                       basketModel.notes = _notesDocument.text;
@@ -654,6 +803,8 @@ class _FormPrintPage extends State<FormPrintPage> {
                         if (basketModel.pagesRange == '') {
                           errorMsg = 'Page range harus dipilih';
                         }
+                      } else if ( _pagesRangeController.text != '') {
+                        errorMsg = msgErrorPageRange;
                       }
 
                       if (errorMsg != ''){

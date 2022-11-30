@@ -36,8 +36,8 @@ class _LoginPage extends State<LoginPage> {
 
   @override
   void initState() {
-    _controllerLogin.text = 'raimunsuandi';
-    _controllerPassword.text = 'nowomennocry1234';
+    _controllerLogin.text = '';
+    _controllerPassword.text = '';
     // _controllerLogin.text = 'test2';
     // _controllerPassword.text = 'dimas123456';
 
@@ -74,7 +74,7 @@ class _LoginPage extends State<LoginPage> {
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
       decoration: InputDecoration(
-        hintText: 'Email',
+        hintText: 'Email atau Username',
         contentPadding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),

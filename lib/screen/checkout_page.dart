@@ -308,6 +308,7 @@ class _CheckoutPage extends State<CheckoutPage> {
                       onChanged: (value) {
                         setState(() {
                           _delivery = value as int?;
+                          _totalDelivery = 0;
                         });
                       },
                     ),
