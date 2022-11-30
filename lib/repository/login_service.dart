@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
@@ -22,6 +23,8 @@ class LoginService {
     var data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
+
+      FirebaseCrashlytics.instance.setUserIdentifier(email);
 
       msg = data['message'];
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -109,6 +110,27 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                         ),
 
                         const Divider(),
+
+                        /*InkWell(
+                          child: const ListTile(
+                            leading: Icon(Icons.terminal_sharp),
+                            title: Text("Testing"),
+                          ),
+                          onTap: () async {
+                            try {
+                              int.parse("asd");
+                            }
+                            on Exception catch(e, s){
+                              await FirebaseCrashlytics.instance.recordError(
+                                  e,
+                                  s,
+                                  reason: 'a non-fatal error'
+                              );
+                            }
+                          },
+                        ),
+
+                        const Divider(),*/
 
                         InkWell(
                           child: ListTile(

@@ -1,4 +1,7 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/model/transaction_model.dart';
 import 'package:siapprint/screen/account_setting.dart';
@@ -22,6 +25,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getString('user') != null;
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await FirebaseCrashlytics.instance
+      .setCrashlyticsCollectionEnabled(true);
+
 
   runApp(MyApp(home: status == true ? const SingleNavigationPage() : const LoginPage()));
 }

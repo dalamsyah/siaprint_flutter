@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "529937391499",
+    "project_id": "siapprint",
+    "storage_bucket": "siapprint.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529937391499:android:2153ea2e83e5ae5fa0998e",
+        "android_client_info": {
+          "package_name": "com.siapprint.siapprint"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "529937391499-5e93r1lsj51rhmve9h424lk5h7p4cdge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs-00fU1ONWtHVHOmt0DUKxzuLnaPNXms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "529937391499-5e93r1lsj51rhmve9h424lk5h7p4cdge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

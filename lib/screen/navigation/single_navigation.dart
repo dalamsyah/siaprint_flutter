@@ -1,4 +1,5 @@
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:siapprint/screen/account_setting.dart';
 import 'package:siapprint/screen/basket3_page.dart';
@@ -17,6 +18,13 @@ class SingleNavigationPage extends StatefulWidget {
 }
 
 class _SingleNavigationPage extends State<SingleNavigationPage> {
+
+  @override
+  void initState() {
+    super.initState();
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
