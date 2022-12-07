@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_logs/flutter_logs.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/config/constant.dart';
@@ -10,6 +12,10 @@ import 'package:siapprint/model/user_model.dart';
 import 'package:siapprint/screen/login_page.dart';
 import 'package:siapprint/screen/navigation/toolbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'dart:async';
+import 'package:flutter_logs/flutter_logs.dart';
+import 'package:path_provider/path_provider.dart';
 
 typedef StringValue2 = Function();
 
@@ -111,13 +117,13 @@ class _AccountSettingPage extends State<AccountSettingPage> {
 
                         const Divider(),
 
-                        /*InkWell(
+                        InkWell(
                           child: const ListTile(
                             leading: Icon(Icons.terminal_sharp),
                             title: Text("Testing"),
                           ),
                           onTap: () async {
-                            try {
+                            /*try {
                               int.parse("asd");
                             }
                             on Exception catch(e, s){
@@ -126,11 +132,25 @@ class _AccountSettingPage extends State<AccountSettingPage> {
                                   s,
                                   reason: 'a non-fatal error'
                               );
-                            }
+                            }*/
+                            //
+                            // FlutterLogs.exportFileLogForName(
+                            //     logFileName: "Locations");
+                            //
+                            FlutterLogs.exportLogs(
+                                exportType: ExportType.ALL);
+
+                            // FlutterLogs.clearLogs();
+
+                            // List file = [];
+                            // Directory? externalDirectory = await getExternalStorageDirectory();
+                            //
+                            // FlutterLogs.logInfo('XXX', "found", 'External Storage:$externalDirectory');
+
                           },
                         ),
 
-                        const Divider(),*/
+                        const Divider(),
 
                         InkWell(
                           child: ListTile(
@@ -186,5 +206,6 @@ class _AccountSettingPage extends State<AccountSettingPage> {
       throw 'Could not launch ${Constant.web_editprofile}';
     }
   }
+
 
 }

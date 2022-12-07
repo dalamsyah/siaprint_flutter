@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_logs/flutter_logs.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:path/path.dart';
+import 'package:siapprint/config/format_date.dart';
 import 'package:siapprint/repository/upload_service.dart';
 import 'package:siapprint/screen/basket3_page.dart';
 
@@ -28,20 +31,90 @@ class _UploadPageState extends State<UploadPage> with SingleTickerProviderStateM
   bool _isLoading = false;
 
   selectFile() async {
-    final file = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx']
-    );
 
-    if (file != null) {
-      setState(() {
-        _file = File(file.files.single.path!);
-        _platformFiles.add( file.files.first );
-        _files.add(_file!);
-      });
+    // await FirebaseCrashlytics.instance.recordError(
+    //     'open select file',
+    //     null,
+    //     reason: 'open select file'
+    // );
+
+    FlutterLogs.logThis(
+        tag: 'Upload',
+        subTag: 'logData',
+        logMessage:
+        '${FormatDate.convert()} : Open file upload',
+        level: LogLevel.INFO);
+
+    try {
+
+      final file = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx']
+      );
+
+      if (file != null) {
+        setState(() {
+          _file = File(file.files.single.path!);
+          _platformFiles.add( file.files.first );
+          _files.add(_file!);
+        });
+
+
+        FlutterLogs.logThis(
+            tag: 'Upload',
+            subTag: 'logData',
+            logMessage:
+            '${FormatDate.convert()} : Upload selected ${file.paths}',
+            level: LogLevel.INFO);
+
+        // FirebaseCrashlytics.instance.log("file -> ${file.paths}");
+        //
+        // await FirebaseCrashlytics.instance.recordError(
+        //     'file -> ${file.paths}',
+        //     null,
+        //     reason: 'file not null'
+        // );
+        //
+        // print('file -> ${file.paths}');
+
+      } else {
+
+        FlutterLogs.logThis(
+            tag: 'Upload',
+            subTag: 'logData',
+            logMessage:
+            '${FormatDate.convert()} : Upload selected null',
+            level: LogLevel.INFO);
+
+        // FirebaseCrashlytics.instance.log("file null");
+        //
+        // await FirebaseCrashlytics.instance.recordError(
+        //     'file null',
+        //     null,
+        //     reason: 'file null'
+        // );
+
+        // print('file is null');
+      }
+
+      loadingController.forward();
+
+    } on Exception catch(e, stackTrace) {
+
+      FlutterLogs.logThis(
+          tag: 'Upload',
+          subTag: 'logData',
+          logMessage:
+          '${DateTime.now().millisecondsSinceEpoch} : Upload throw error ${e.toString()}',
+          level: LogLevel.INFO);
+
+      await FirebaseCrashlytics.instance.recordError(
+          e,
+          stackTrace,
+          reason: 'file select'
+      );
     }
 
-    loadingController.forward();
   }
 
   @override

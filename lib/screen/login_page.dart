@@ -130,68 +130,97 @@ class _LoginPage extends State<LoginPage> {
               String msg = data['message'];
               if (data['message'].toString().contains('Akun pengguna ini belum diaktifkan.')){
                 msg = 'Akun pengguna ini belum diaktifkan, silahkan aktifasi melalu link yang kamu berikan melalui email.';
+
+                Dialogs.materialDialog(
+                    context: context,
+                    actions: [
+                      Container(
+                        child: Column(
+                          children: [
+                            const Text('Error'),
+                            const SizedBox(height: 8.0),
+                            Text(msg),
+                            TextButton(
+                              child: const Text(
+                                'Kirim ulang pesan aktifasi sekali lagi',
+                                style: const TextStyle(color: Colors.black54),
+                              ),
+                              onPressed: () {
+
+                                Navigator.pop(context);
+
+                                showProgress(true);
+
+                                _service.resendactivation(_controllerLogin.text).then((value) {
+
+                                  Navigator.pop(context);
+
+                                  Dialogs.materialDialog(
+                                      context: context,
+                                      actions: [
+                                        Container(
+                                          child: Column(
+                                            children: [
+                                              const Text('Pesan'),
+                                              const SizedBox(height: 8.0),
+                                              Text('$value'),
+                                              TextButton(
+                                                child: const Text(
+                                                  'Tutup',
+                                                  style: TextStyle(color: Colors.black54),
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ]
+                                  );
+
+
+                                }).onError((error, stackTrace) {
+                                  Navigator.pop(context);
+                                });
+                              },
+                            ),
+
+                          ],
+                        ),
+                      )
+                    ]
+                );
+
+              } else {
+                Dialogs.materialDialog(
+                    context: context,
+                    actions: [
+                      Container(
+                        child: Column(
+                          children: [
+                            const Text('Error'),
+                            const SizedBox(height: 8.0),
+                            Text(msg),
+                            TextButton(
+                              child: const Text(
+                                'OK',
+                                style: const TextStyle(color: Colors.black54),
+                              ),
+                              onPressed: () {
+
+                                Navigator.pop(context);
+                              },
+                            ),
+
+                          ],
+                        ),
+                      )
+                    ]
+                );
               }
 
-              Dialogs.materialDialog(
-                  context: context,
-                  actions: [
-                    Container(
-                      child: Column(
-                        children: [
-                          const Text('Error'),
-                          const SizedBox(height: 8.0),
-                          Text(msg),
-                          TextButton(
-                            child: const Text(
-                              'Kirim ulang pesan aktifasi sekali lagi',
-                              style: const TextStyle(color: Colors.black54),
-                            ),
-                            onPressed: () {
 
-                              Navigator.pop(context);
-
-                              showProgress(true);
-
-                              _service.resendactivation(_controllerLogin.text).then((value) {
-
-                                Navigator.pop(context);
-
-                                Dialogs.materialDialog(
-                                    context: context,
-                                    actions: [
-                                      Container(
-                                        child: Column(
-                                          children: [
-                                            const Text('Pesan'),
-                                            const SizedBox(height: 8.0),
-                                            Text('$value'),
-                                            TextButton(
-                                              child: const Text(
-                                                'Tutup',
-                                                style: TextStyle(color: Colors.black54),
-                                              ),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ]
-                                );
-
-
-                              }).onError((error, stackTrace) {
-                                Navigator.pop(context);
-                              });
-                            },
-                          ),
-
-                        ],
-                      ),
-                    )
-                  ]
-              );
 
               // ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }

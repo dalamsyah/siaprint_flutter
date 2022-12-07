@@ -1,6 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_logs/flutter_logs.dart';
 import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siapprint/model/transaction_model.dart';
@@ -32,6 +33,23 @@ Future<void> main() async {
 
   await FirebaseCrashlytics.instance
       .setCrashlyticsCollectionEnabled(true);
+
+  //Initialize Logging
+  await FlutterLogs.initLogs(
+      logLevelsEnabled: [
+        LogLevel.INFO,
+        LogLevel.WARNING,
+        LogLevel.ERROR,
+        LogLevel.SEVERE
+      ],
+      timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
+      directoryStructure: DirectoryStructure.FOR_DATE,
+      logTypesEnabled: ["device","network","errors"],
+      logFileExtension: LogFileExtension.LOG,
+      logsWriteDirectoryName: "MyLogs",
+      logsExportDirectoryName: "Exported",
+      debugFileOperations: true,
+      isDebuggable: true);
 
 
   runApp(MyApp(home: status == true ? const SingleNavigationPage() : const LoginPage()));
