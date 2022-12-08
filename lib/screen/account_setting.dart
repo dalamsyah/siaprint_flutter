@@ -117,40 +117,40 @@ class _AccountSettingPage extends State<AccountSettingPage> {
 
                         const Divider(),
 
-                        InkWell(
-                          child: const ListTile(
-                            leading: Icon(Icons.terminal_sharp),
-                            title: Text("Testing"),
-                          ),
-                          onTap: () async {
-                            /*try {
-                              int.parse("asd");
-                            }
-                            on Exception catch(e, s){
-                              await FirebaseCrashlytics.instance.recordError(
-                                  e,
-                                  s,
-                                  reason: 'a non-fatal error'
-                              );
-                            }*/
-                            //
-                            // FlutterLogs.exportFileLogForName(
-                            //     logFileName: "Locations");
-                            //
-                            FlutterLogs.exportLogs(
-                                exportType: ExportType.ALL);
-
-                            // FlutterLogs.clearLogs();
-
-                            // List file = [];
-                            // Directory? externalDirectory = await getExternalStorageDirectory();
-                            //
-                            // FlutterLogs.logInfo('XXX', "found", 'External Storage:$externalDirectory');
-
-                          },
-                        ),
-
-                        const Divider(),
+                        // InkWell(
+                        //   child: const ListTile(
+                        //     leading: Icon(Icons.terminal_sharp),
+                        //     title: Text("Testing"),
+                        //   ),
+                        //   onTap: () async {
+                        //     /*try {
+                        //       int.parse("asd");
+                        //     }
+                        //     on Exception catch(e, s){
+                        //       await FirebaseCrashlytics.instance.recordError(
+                        //           e,
+                        //           s,
+                        //           reason: 'a non-fatal error'
+                        //       );
+                        //     }*/
+                        //     //
+                        //     // FlutterLogs.exportFileLogForName(
+                        //     //     logFileName: "Locations");
+                        //     //
+                        //     FlutterLogs.exportLogs(
+                        //         exportType: ExportType.ALL);
+                        //
+                        //     // FlutterLogs.clearLogs();
+                        //
+                        //     // List file = [];
+                        //     // Directory? externalDirectory = await getExternalStorageDirectory();
+                        //     //
+                        //     // FlutterLogs.logInfo('XXX', "found", 'External Storage:$externalDirectory');
+                        //
+                        //   },
+                        // ),
+                        //
+                        // const Divider(),
 
                         InkWell(
                           child: ListTile(

@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 
 class Constant {
-  static String baseUrlProduction = "http://siapprint.com/";
+  static String baseUrlProduction = "https://siapprint.com/";
   static String baseUrlDevelopment = "https://dev.siapprint.com/";
   // static String baseUrl = "http://192.168.1.8/siaprint/public/";
   // static String baseUrlDevelopment = "http://192.168.56.1/siaprint2/public/";
   // static String baseUrl = "http://192.168.128.72/siaprint/public/";
 
-  static String baseUrl = baseUrlDevelopment; //kReleaseMode ? baseUrlProduction : baseUrlDevelopment;
+  static String baseUrl = baseUrlProduction; //kReleaseMode ? baseUrlProduction : baseUrlDevelopment;
 
   static String apitoken = 'siaprint98765';
 
